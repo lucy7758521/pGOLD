@@ -1,0 +1,767 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pGOLD — 黄金，真正流通的时代来了</title>
+<meta name="description" content="pGOLD：1枚 = 1克黄金，由链上PAXG 100%储备支撑。比PAXG便宜31倍，专为小额支付与普通用户设计。运行在Arbitrum One，Gas费用极低。">
+<style>
+:root {
+  --bg-0: #060608;
+  --bg-1: rgba(255,255,255,0.02);
+  --bg-2: rgba(255,255,255,0.03);
+  --bg-3: rgba(255,255,255,0.05);
+  --line: rgba(212,168,67,0.08);
+  --gold: #d4a843;
+  --gold-dim: rgba(212,168,67,0.15);
+  --gold-glow: rgba(212,168,67,0.08);
+  --gold-glow2: rgba(212,168,67,0.06);
+  --green: #22d492;
+  --txt-0: #f0ede5;
+  --txt-1: #b0aca0;
+  --txt-2: #6b6560;
+  --sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg-0); color: var(--txt-0); font-family: var(--sans); font-size: 15px; line-height: 1.6; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.035; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 256px 256px; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #2a2e3e; border-radius: 3px; }
+
+/* ── NAV ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 62px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+  background: rgba(6,6,8,0.85); backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, background .3s;
+}
+.nav.scrolled { border-color: var(--line); background: rgba(6,6,8,0.96); }
+.nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: .4px; }
+.nav-logo .coin {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--gold) 0%, #8a6218 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #1a1000;
+  box-shadow: 0 0 18px var(--gold-glow);
+}
+.nav-links { display: flex; gap: 32px; font-size: 13.5px; color: var(--txt-1); }
+.nav-links a { transition: color .15s; padding: 4px 0; }
+.nav-links a:hover { color: var(--txt-0); }
+.nav-cta { display: flex; gap: 10px; }
+.btn { border-radius: 8px; padding: 9px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: .15s; }
+.btn-outline { background: transparent; border-color: var(--line); color: var(--txt-1); }
+.btn-outline:hover { border-color: var(--gold-dim); color: var(--txt-0); }
+.btn-gold { background: linear-gradient(135deg, var(--gold) 0%, #b8922e 100%); color: #1a1000; box-shadow: 0 4px 20px rgba(212,168,67,0.2); }
+.btn-gold:hover { background: linear-gradient(135deg, #e0b454 0%, #c49e34 100%); box-shadow: 0 4px 28px rgba(212,168,67,0.35), 0 0 0 1px rgba(212,168,67,0.2); transform: translateY(-1px); }
+.btn:active { transform: scale(0.97); }
+
+/* ── TICKER ── */
+.ticker {
+  position: fixed; top: 62px; left: 0; right: 0; z-index: 99;
+  height: 36px; background: var(--bg-1); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; overflow: hidden;
+}
+.ticker-inner { display: flex; gap: 0; animation: tickerScroll 40s linear infinite; white-space: nowrap; }
+.ticker-item {
+  display: flex; align-items: center; gap: 8px; padding: 0 28px;
+  font-size: 12px; color: var(--txt-1); border-right: 1px solid var(--line);
+}
+.ticker-item .label { color: var(--txt-2); }
+.ticker-item .val { font-family: var(--mono); font-size: 12px; }
+.ticker-item .val.up { color: var(--green); }
+.ticker-item .val.gold { color: var(--gold); }
+@keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 160px 40px 100px; text-align: center; position: relative; overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+}
+.hero-glow {
+  position: absolute; top: 30%; left: 50%; transform: translate(-50%,-50%);
+  width: 700px; height: 400px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(212,168,67,0.10) 0%, transparent 70%);
+  z-index: 0; pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; max-width: 820px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold-glow2); border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 20px; padding: 6px 16px; font-size: 12.5px; color: var(--gold);
+  margin-bottom: 28px; font-weight: 600; letter-spacing: .3px;
+}
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+.hero-h1 { font-size: clamp(36px, 6vw, 68px); font-weight: 800; line-height: 1.12; letter-spacing: -.5px; margin-bottom: 20px; }
+.hero-h1 .gold { color: var(--gold); }
+.hero-sub { font-size: clamp(15px, 2vw, 18px); color: var(--txt-1); line-height: 1.7; max-width: 580px; margin: 0 auto 36px; }
+.hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 64px; }
+.btn-hero { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+.hero-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; max-width: 860px; margin: 0 auto; }
+.stat-cell { background: var(--bg-1); padding: 20px 16px; }
+.stat-cell .s-label { font-size: 11px; color: var(--txt-2); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+.stat-cell .s-val { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--txt-0); }
+.stat-cell .s-val.gold { color: var(--gold); }
+.stat-cell .s-val.green { color: var(--green); }
+.stat-cell .s-sub { font-size: 11px; color: var(--txt-2); margin-top: 5px; }
+
+/* ── SECTION COMMON ── */
+section { padding: 100px 40px; }
+.section-inner { max-width: 1160px; margin: 0 auto; }
+.sec-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gold); font-weight: 700; margin-bottom: 14px; }
+.sec-h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.18; letter-spacing: -.3px; margin-bottom: 16px; }
+.sec-sub { font-size: 16px; color: var(--txt-1); max-width: 540px; line-height: 1.7; margin-bottom: 56px; }
+
+/* ── HOW IT WORKS ── */
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.how-card { background: var(--bg-1); padding: 32px 28px; position: relative; transition: background .2s, box-shadow .2s; }
+.how-card:hover { background: var(--bg-2); box-shadow: inset 0 0 40px rgba(212,168,67,0.03); }
+.how-num { font-family: var(--mono); font-size: 11px; color: var(--txt-2); letter-spacing: 1px; margin-bottom: 18px; }
+.how-icon { font-size: 28px; margin-bottom: 14px; }
+.how-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.how-desc { font-size: 13px; color: var(--txt-1); line-height: 1.65; }
+.how-arrow { display: none; }
+
+/* ── FIVE TRACKS ── */
+.tracks-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.track-card {
+  background: linear-gradient(160deg, rgba(18,16,26,0.95), rgba(13,13,20,0.98));
+  border: 1px solid rgba(212,168,67,0.1); border-radius: 14px;
+  padding: 26px 22px; position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.track-card:hover { border-color: rgba(212,168,67,0.28); transform: translateY(-4px); box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 20px rgba(212,168,67,0.08); }
+.track-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.track-letter { font-family: var(--mono); font-size: 11px; color: var(--gold); font-weight: 700; letter-spacing: 1px; margin-bottom: 12px; }
+.track-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.track-rate { font-family: var(--mono); font-size: 26px; font-weight: 800; color: var(--gold); margin: 10px 0; line-height: 1; }
+.track-rate span { font-size: 13px; color: var(--txt-2); font-family: var(--sans); font-weight: 400; }
+.track-desc { font-size: 12.5px; color: var(--txt-1); line-height: 1.6; }
+.track-tag { display: inline-block; margin-top: 12px; font-size: 11px; background: var(--gold-glow2); border: 1px solid rgba(212,168,67,0.2); color: var(--gold); padding: 3px 9px; border-radius: 5px; font-weight: 600; }
+
+/* ── COMPARE (1g vs 1oz) ── */
+.compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.compare-card { border: 1px solid var(--line); border-radius: 16px; padding: 36px 32px; transition: box-shadow .2s; }
+.compare-card.pgold { background: linear-gradient(160deg, rgba(212,168,67,0.09), rgba(13,13,20,0.97)); border-color: rgba(212,168,67,0.35); box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 30px rgba(212,168,67,0.06); }
+.compare-card.pgold:hover { box-shadow: 0 12px 56px rgba(0,0,0,0.5), 0 0 40px rgba(212,168,67,0.1); }
+.compare-card.paxg { background: linear-gradient(160deg, rgba(14,13,22,0.95), rgba(10,10,18,0.98)); box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+.compare-logo { font-size: 32px; font-weight: 900; margin-bottom: 8px; }
+.compare-logo.gold-txt { color: var(--gold); }
+.compare-tagline { font-size: 14px; color: var(--txt-1); margin-bottom: 28px; }
+.compare-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.compare-row:last-child { border-bottom: none; }
+.compare-row .key { color: var(--txt-2); }
+.compare-row .val { font-weight: 600; font-family: var(--mono); font-size: 13px; }
+.compare-row .val.good { color: var(--green); }
+.compare-win {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--gold-glow2); border: 1px solid rgba(212,168,67,0.2);
+  border-radius: 10px; padding: 14px 18px; margin-top: 20px; font-size: 13px;
+}
+.compare-win .ico { font-size: 20px; }
+
+/* ── RESERVE PROOF ── */
+.reserve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.reserve-card { background: linear-gradient(160deg, rgba(14,13,22,0.95), rgba(10,10,18,0.98)); border: 1px solid rgba(212,168,67,0.1); border-radius: 14px; padding: 28px 26px; box-shadow: 0 4px 24px rgba(0,0,0,0.4); transition: border-color .2s, box-shadow .2s; }
+.reserve-card:hover { border-color: rgba(212,168,67,0.22); box-shadow: 0 8px 36px rgba(0,0,0,0.5); }
+.reserve-card.highlight { border-color: rgba(212,168,67,0.3); background: linear-gradient(160deg, rgba(212,168,67,0.07), rgba(14,13,22,0.95)); box-shadow: 0 4px 32px rgba(212,168,67,0.1); }
+.res-label { font-size: 11px; color: var(--txt-2); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 10px; }
+.res-val { font-family: var(--mono); font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+.res-val.green { color: var(--green); }
+.res-val.gold { color: var(--gold); }
+.res-sub { font-size: 12.5px; color: var(--txt-1); line-height: 1.55; margin-bottom: 18px; }
+.res-bar { height: 8px; background: var(--bg-3); border-radius: 4px; overflow: hidden; margin-top: 14px; }
+.res-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); border-radius: 4px; transition: width 1s; }
+.proof-links { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.proof-link { display: flex; align-items: center; justify-content: space-between; background: var(--bg-2); border: 1px solid var(--line); border-radius: 9px; padding: 12px 16px; font-size: 13px; transition: border-color .15s; }
+.proof-link:hover { border-color: var(--gold-dim); }
+.proof-link .pl-left { display: flex; align-items: center; gap: 10px; }
+.proof-link .pl-icon { font-size: 16px; }
+.proof-link .pl-lbl { font-weight: 600; }
+.proof-link .pl-sub { font-size: 11px; color: var(--txt-2); }
+.proof-link .pl-arr { color: var(--gold); font-size: 14px; }
+
+/* ── ROADMAP ── */
+.roadmap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.rm-card { background: linear-gradient(160deg, rgba(14,13,22,0.95), rgba(10,10,16,0.98)); border: 1px solid rgba(212,168,67,0.09); border-radius: 14px; padding: 28px 24px; position: relative; transition: border-color .2s, box-shadow .2s; box-shadow: 0 4px 20px rgba(0,0,0,0.35); }
+.rm-card:hover { border-color: rgba(212,168,67,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.rm-card.active { border-color: rgba(212,168,67,0.3); background: linear-gradient(160deg, rgba(212,168,67,0.06), rgba(14,13,22,0.98)); box-shadow: 0 4px 24px rgba(212,168,67,0.08); }
+.rm-phase { font-size: 11px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+.rm-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+.rm-list { display: flex; flex-direction: column; gap: 8px; }
+.rm-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--txt-1); }
+.rm-item::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--gold-dim); margin-top: 7px; flex-shrink: 0; }
+.rm-item.done { color: var(--txt-0); }
+.rm-item.done::before { background: var(--green); }
+.rm-status { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 5px; margin-bottom: 14px; }
+.rm-status.live { background: rgba(34,212,146,0.12); color: var(--green); }
+.rm-status.soon { background: var(--gold-glow2); color: var(--gold); }
+.rm-status.future { background: var(--bg-3); color: var(--txt-2); }
+
+/* ── CTA BAND ── */
+.cta-band {
+  margin: 0 40px 80px; border-radius: 20px; padding: 72px 60px;
+  background: linear-gradient(135deg, rgba(212,168,67,0.10) 0%, rgba(212,168,67,0.03) 50%, rgba(6,6,8,0) 100%);
+  border: 1px solid rgba(212,168,67,0.22); text-align: center; position: relative; overflow: hidden;
+}
+.cta-band::before {
+  content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 300px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(212,168,67,0.08), transparent 70%);
+  pointer-events: none;
+}
+.cta-band .cta-h { font-size: clamp(24px, 4vw, 40px); font-weight: 800; margin-bottom: 16px; }
+.cta-band .cta-sub { font-size: 16px; color: var(--txt-1); margin-bottom: 36px; }
+.cta-band-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* ── FOOTER ── */
+footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60px 40px 36px; }
+.footer-inner { max-width: 1160px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+.footer-brand .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; margin-bottom: 14px; }
+.footer-brand .coin { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg, var(--gold), #8a6218); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #1a1000; }
+.footer-brand p { font-size: 13px; color: var(--txt-2); line-height: 1.7; max-width: 260px; }
+.footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--txt-2); margin-bottom: 16px; }
+.footer-col a { display: block; font-size: 13px; color: var(--txt-1); margin-bottom: 10px; transition: color .15s; }
+.footer-col a:hover { color: var(--gold); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 28px; border-top: 1px solid var(--line); font-size: 12px; color: var(--txt-2); flex-wrap: wrap; gap: 12px; }
+.footer-bottom .chain-badge { display: flex; align-items: center; gap: 6px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; }
+.footer-bottom .chain-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .tracks-grid { grid-template-columns: repeat(3, 1fr); }
+  .roadmap-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  section { padding: 70px 20px; }
+  .hero { padding: 130px 20px 80px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .how-grid { grid-template-columns: 1fr; }
+  .tracks-grid { grid-template-columns: repeat(2, 1fr); }
+  .compare-wrap { grid-template-columns: 1fr; }
+  .reserve-grid { grid-template-columns: 1fr; }
+  .roadmap-grid { grid-template-columns: 1fr; }
+  .cta-band { margin: 0 16px 60px; padding: 48px 28px; }
+  .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+@media (max-width: 480px) {
+  .hero-stats { grid-template-columns: 1fr 1fr; }
+  .tracks-grid { grid-template-columns: 1fr; }
+  .hero-h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">
+    <div class="coin">pG</div>
+    pGOLD
+  </div>
+  <div class="nav-links">
+    <a href="#how">工作原理</a>
+    <a href="#tracks">激励体系</a>
+    <a href="#compare">vs PAXG</a>
+    <a href="#reserve">储备证明</a>
+    <a href="#roadmap">路线图</a>
+    <a href="#" style="color:var(--gold)">文档</a>
+  </div>
+  <div class="nav-cta">
+    <a href="dapp_v3.html"><button class="btn btn-outline">DApp</button></a>
+    <a href="swap_v3.html"><button class="btn btn-gold">开始交易</button></a>
+  </div>
+</nav>
+
+<!-- ── TICKER ── -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker">
+    <div class="ticker-item"><span class="label">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
+    <div class="ticker-item"><span class="label">PAXG 金价</span><span class="val">$3,098.40</span></div>
+    <div class="ticker-item"><span class="label">储备覆盖率</span><span class="val gold">100.04%</span></div>
+    <div class="ticker-item"><span class="label">PAXG 储备</span><span class="val">40,182 oz</span></div>
+    <div class="ticker-item"><span class="label">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
+    <div class="ticker-item"><span class="label">24h 成交量</span><span class="val">$8.42M</span></div>
+    <div class="ticker-item"><span class="label">创世池剩余</span><span class="val gold">142天</span></div>
+    <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/笔</span></div>
+    <div class="ticker-item"><span class="label">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
+    <div class="ticker-item"><span class="label">PAXG 金价</span><span class="val">$3,098.40</span></div>
+    <div class="ticker-item"><span class="label">储备覆盖率</span><span class="val gold">100.04%</span></div>
+    <div class="ticker-item"><span class="label">PAXG 储备</span><span class="val">40,182 oz</span></div>
+    <div class="ticker-item"><span class="label">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
+    <div class="ticker-item"><span class="label">24h 成交量</span><span class="val">$8.42M</span></div>
+    <div class="ticker-item"><span class="label">创世池剩余</span><span class="val gold">142天</span></div>
+    <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/笔</span></div>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> Arbitrum One · 实时储备可验证 · 0.25% 手续费</div>
+    <h1 class="hero-h1">黄金，<span class="gold">真正流通</span><br>的时代来了</h1>
+    <p class="hero-sub">1 pGOLD = 1 克黄金，由链上 PAXG 100% 储备支撑。<br>比 PAXG 单价低 31 倍，专为普通用户与小额支付设计。</p>
+    <div class="hero-btns">
+      <a href="swap_v3.html"><button class="btn btn-gold btn-hero">立即交易 →</button></a>
+      <a href="dapp_v3.html"><button class="btn btn-outline btn-hero">进入 DApp</button></a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-cell">
+        <div class="s-label">储备覆盖率</div>
+        <div class="s-val green" id="cnt-coverage">100.04%</div>
+        <div class="s-sub">实时预言机验证</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-label">PAXG 链上储备</div>
+        <div class="s-val gold" id="cnt-paxg">40,182</div>
+        <div class="s-sub">oz · 约 1,249 kg</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-label">pGOLD 流通量</div>
+        <div class="s-val" id="cnt-circ">1,248,930</div>
+        <div class="s-sub">克 · 1g 起购</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-label">最高年化奖励</div>
+        <div class="s-val gold">1800%</div>
+        <div class="s-sub">10 年线性释放</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-label">链上 Gas 费用</div>
+        <div class="s-val">≈$0.02</div>
+        <div class="s-sub">Arbitrum One</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how" style="background:var(--bg-1); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="section-inner">
+    <div class="sec-label">工作原理</div>
+    <h2 class="sec-h2">手续费如何变成储备？</h2>
+    <p class="sec-sub">每一笔交易，协议自动将手续费买入 PAXG，储备持续增厚，奖励通过独立铸币发放，两者互不干扰。</p>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">STEP 01</div>
+        <div class="how-icon">💱</div>
+        <div class="how-title">用户交易</div>
+        <div class="how-desc">用户在内部 AMM（x·y=k）中买入或卖出 pGOLD，收取 <strong style="color:var(--gold)">0.25%</strong> 手续费，往返仅 0.5%。</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">STEP 02</div>
+        <div class="how-icon">🔀</div>
+        <div class="how-title">手续费路由</div>
+        <div class="how-desc">FeeRouter 硬编码分配：<strong>90%→ 购金储备</strong>，5% 运营，3% 保险，1.5% 流动性，0.5% 应急。</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">STEP 03</div>
+        <div class="how-icon">🥇</div>
+        <div class="how-title">自动购入 PAXG</div>
+        <div class="how-desc">Treasury 通过 Uniswap V3 将手续费的 90% 即时兑换为 PAXG，锁入链上金库，永久不动。</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">STEP 04</div>
+        <div class="how-icon">📈</div>
+        <div class="how-title">储备持续增厚</div>
+        <div class="how-desc">每笔交易都让 PAXG 储备更多，覆盖率始终 ≥ 100%，任何人可在 Arbitrum 链上实时验证。</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">STEP 05</div>
+        <div class="how-icon">🪙</div>
+        <div class="how-title">独立铸币发奖励</div>
+        <div class="how-desc">奖励来自独立 pGOLD 铸造，<strong>不从手续费中扣</strong>。储备增厚为新铸币提供黄金背书，逻辑自洽。</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">STEP 06</div>
+        <div class="how-icon">🔄</div>
+        <div class="how-title">信任飞轮转动</div>
+        <div class="how-desc">储备增加 → 新用户信任 → 交易量增加 → 手续费增加 → 储备继续增加。飞轮自我加速，10 年成就一个黄金资产。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FIVE TRACKS ── -->
+<section id="tracks">
+  <div class="section-inner">
+    <div class="sec-label">五轨激励体系</div>
+    <h2 class="sec-h2">每一类参与者，都有专属回报</h2>
+    <p class="sec-sub">A 留人、B 争人、C 信人、D 养人、E 谢人。五轨独立运行，互不冲突，可完全叠加。</p>
+    <div class="tracks-grid">
+      <div class="track-card">
+        <div class="track-letter">TRACK A</div>
+        <div class="track-title">持有分红</div>
+        <div class="track-rate">3.5%<span> APR</span></div>
+        <div class="track-desc">持有并质押 pGOLD 即可按日获得分红，无需操作，无竞争门槛。</div>
+        <span class="track-tag">持有即挖矿</span>
+      </div>
+      <div class="track-card">
+        <div class="track-letter">TRACK B</div>
+        <div class="track-title">交易大师榜</div>
+        <div class="track-rate">1000%<span> 年榜</span></div>
+        <div class="track-desc">月榜 300%、季榜 500%、年榜 1000%，Top 100 独立结算，叠加最高 1800%，10 年线性释放。</div>
+        <span class="track-tag">可叠加</span>
+      </div>
+      <div class="track-card">
+        <div class="track-letter">TRACK C</div>
+        <div class="track-title">燃烧挖矿</div>
+        <div class="track-rate">×10<span> 补偿</span></div>
+        <div class="track-desc">累计手续费 × 10 倍补偿，单轮上限 50K pGOLD，10 年线性释放，等效年化 100%。信仰者的轨道。</div>
+        <span class="track-tag">无需质押</span>
+      </div>
+      <div class="track-card">
+        <div class="track-letter">TRACK D</div>
+        <div class="track-title">战队 &amp; 推荐</div>
+        <div class="track-rate">20%<span> 直推</span></div>
+        <div class="track-desc">直接推荐 20%，间接推荐 5%，战队队长分享团队业绩 30%，队员共享 70%。Merkle 链上发放。</div>
+        <span class="track-tag">无上限</span>
+      </div>
+      <div class="track-card">
+        <div class="track-letter">TRACK E</div>
+        <div class="track-title">创世池 ICO</div>
+        <div class="track-rate">10x<span> D1-30</span></div>
+        <div class="track-desc">180 天创世窗口，D1-30 享 10x 权重，D31-60 为 7x，D61-90 为 4x，D91-180 为 2x。3 年季度解锁，感谢最早的信任。</div>
+        <span class="track-tag">个人上限 1,000g</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPARE ── -->
+<section id="compare" style="background:var(--bg-1); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="section-inner">
+    <div class="sec-label">pGOLD vs PAXG</div>
+    <h2 class="sec-h2">同样黄金背书，单位小 31 倍</h2>
+    <p class="sec-sub">PAXG 是 1 盎司（≈31.1g）一枚，约 $3,098。pGOLD 是 1 克一枚，约 $93，更适合普通用户持有和小额支付。</p>
+    <div class="compare-wrap">
+      <div class="compare-card pgold">
+        <div class="compare-logo gold-txt">pGOLD</div>
+        <div class="compare-tagline">1 枚 = 1 克黄金 · 专为普通用户设计</div>
+        <div class="compare-row"><span class="key">单枚价格</span><span class="val good">≈ $93</span></div>
+        <div class="compare-row"><span class="key">对应黄金</span><span class="val">1 克</span></div>
+        <div class="compare-row"><span class="key">交易手续费</span><span class="val good">0.25% / 笔</span></div>
+        <div class="compare-row"><span class="key">运行链</span><span class="val good">Arbitrum One（Gas ≈$0.02）</span></div>
+        <div class="compare-row"><span class="key">储备背书</span><span class="val good">PAXG 100% 链上可验证</span></div>
+        <div class="compare-row"><span class="key">激励体系</span><span class="val good">五轨（A/B/C/D/E），最高 1800%</span></div>
+        <div class="compare-row"><span class="key">最小购买</span><span class="val good">1 pGOLD（≈$93）</span></div>
+        <div class="compare-win"><span class="ico">✅</span><span>更小单位意味着更广泛的用户群、更活跃的流动性、更多手续费、更大的 PAXG 储备增速。</span></div>
+      </div>
+      <div class="compare-card paxg">
+        <div class="compare-logo" style="color:var(--txt-1);">PAXG</div>
+        <div class="compare-tagline">1 枚 = 1 盎司黄金 · 机构级持有</div>
+        <div class="compare-row"><span class="key">单枚价格</span><span class="val">≈ $3,098</span></div>
+        <div class="compare-row"><span class="key">对应黄金</span><span class="val">31.1 克（1 盎司）</span></div>
+        <div class="compare-row"><span class="key">交易手续费</span><span class="val">0.02% 铸造 + DEX 费</span></div>
+        <div class="compare-row"><span class="key">运行链</span><span class="val">Ethereum（Gas 较高）</span></div>
+        <div class="compare-row"><span class="key">储备背书</span><span class="val">实物金条，Paxos 审计</span></div>
+        <div class="compare-row"><span class="key">激励体系</span><span class="val">无原生激励体系</span></div>
+        <div class="compare-row"><span class="key">最小购买</span><span class="val">0.01 PAXG（≈$31）</span></div>
+        <div style="margin-top:20px; font-size:13px; color:var(--txt-2); line-height:1.6;">pGOLD 的 PAXG 储备由协议自动购入并在链上公开持有。pGOLD 本质上是 PAXG 的"克单位版"，为更广泛的用户群提供门槛更低的黄金资产通道。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RESERVE PROOF ── -->
+<section id="reserve">
+  <div class="section-inner">
+    <div class="sec-label">储备透明度</div>
+    <h2 class="sec-h2">链上可验证，不信任，只验证</h2>
+    <p class="sec-sub">所有 PAXG 储备均持有在公开的 Arbitrum One 合约地址中，任何人任何时候可独立核查。</p>
+    <div class="reserve-grid">
+      <div class="reserve-card highlight">
+        <div class="res-label">储备覆盖率</div>
+        <div class="res-val green">100.04%</div>
+        <div class="res-sub">每枚流通中的 pGOLD 均有等量 PAXG 黄金储备支撑。覆盖率由链上预言机实时校验，低于 100% 时协议自动冻结新铸造。</div>
+        <div style="font-size:12px; color:var(--txt-2); margin-bottom:6px;">覆盖率 100.04%</div>
+        <div class="res-bar"><div class="res-bar-fill" style="width:100%;"></div></div>
+      </div>
+      <div class="reserve-card">
+        <div class="res-label">PAXG 链上储备</div>
+        <div class="res-val gold">40,182 oz</div>
+        <div class="res-sub">≈ 1,249 千克实物黄金当量，持有在 Treasury 合约五个子账户（金库 90% / 运营 5% / 保险 3% / 流动性 1.5% / 应急 0.5%）。</div>
+        <div class="proof-links">
+          <a class="proof-link" href="#" target="_blank">
+            <div class="pl-left"><span class="pl-icon">⛓</span><div><div class="pl-lbl">Treasury 合约</div><div class="pl-sub">Arbiscan 实时余额</div></div></div>
+            <span class="pl-arr">→</span>
+          </a>
+          <a class="proof-link" href="#" target="_blank">
+            <div class="pl-left"><span class="pl-icon">📊</span><div><div class="pl-lbl">The Graph 子图</div><div class="pl-sub">所有交易与储备数据</div></div></div>
+            <span class="pl-arr">→</span>
+          </a>
+          <a class="proof-link" href="#" target="_blank">
+            <div class="pl-left"><span class="pl-icon">📋</span><div><div class="pl-lbl">Paxos 审计报告</div><div class="pl-sub">PAXG 实物黄金每月审计</div></div></div>
+            <span class="pl-arr">→</span>
+          </a>
+        </div>
+      </div>
+      <div class="reserve-card">
+        <div class="res-label">手续费分配（硬编码）</div>
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+            <span style="color:var(--txt-1);">购金储备（GOLD_RESERVE）</span>
+            <span style="font-family:var(--mono); color:var(--gold); font-weight:700;">90%</span>
+          </div>
+          <div class="res-bar"><div class="res-bar-fill" style="width:90%;"></div></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--txt-2);">
+            <span>运营 5%</span><span>·</span><span>保险 3%</span><span>·</span><span>流动性 1.5%</span><span>·</span><span>应急 0.5%</span>
+          </div>
+          <div style="font-size:12.5px; color:var(--txt-1); margin-top:6px; line-height:1.6;">分配比例由 FeeRouter 合约硬编码，不可升级，不可修改，协议无法挪用。</div>
+        </div>
+      </div>
+      <div class="reserve-card">
+        <div class="res-label">合约安全</div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
+            <span style="color:var(--green); font-size:16px;">✓</span>
+            <span style="color:var(--txt-1);">16 个合约，5 层架构（Core / Incentive / Financial / Defense / Governance）</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
+            <span style="color:var(--green); font-size:16px;">✓</span>
+            <span style="color:var(--txt-1);">OpenZeppelin Contracts 5.x，AccessControl + Pausable + Permit</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
+            <span style="color:var(--green); font-size:16px;">✓</span>
+            <span style="color:var(--txt-1);">212 单元测试全部通过，0 失败（Hardhat + ethers v6）</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
+            <span style="color:var(--green); font-size:16px;">✓</span>
+            <span style="color:var(--txt-1);">48 小时 Timelock 守护所有参数变更，BUSL-1.1 许可证</span>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
+            <span style="color:var(--green); font-size:16px;">✓</span>
+            <span style="color:var(--txt-1);">三层价格防御：软锚定 / 条件赎回 / 稳定基金，防止 pGOLD 脱锚</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section id="roadmap" style="background:var(--bg-1); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="section-inner">
+    <div class="sec-label">路线图</div>
+    <h2 class="sec-h2">10 年，打造真正的黄金资产</h2>
+    <p class="sec-sub">协议设计以 10 年为周期，逐步扩大储备规模、激励生态与全球黄金结算网络。</p>
+    <div class="roadmap-grid">
+      <div class="rm-card active">
+        <div class="rm-phase">Phase 1</div>
+        <div class="rm-status live"><span>●</span> 进行中</div>
+        <div class="rm-title">协议上线 &amp; 创世池</div>
+        <div class="rm-list">
+          <div class="rm-item done">16 个核心合约部署至 Arbitrum One</div>
+          <div class="rm-item done">212 单元测试全部通过</div>
+          <div class="rm-item done">内部 AMM（PGOLDSwap）上线</div>
+          <div class="rm-item">创世池 180 天 ICO 开放</div>
+          <div class="rm-item">The Graph 子图上线</div>
+        </div>
+      </div>
+      <div class="rm-card">
+        <div class="rm-phase">Phase 2</div>
+        <div class="rm-status soon"><span>◎</span> 即将开始</div>
+        <div class="rm-title">生态扩张 &amp; 商家接入</div>
+        <div class="rm-list">
+          <div class="rm-item">Top 100 月榜 / 季榜 / 年榜激活</div>
+          <div class="rm-item">燃烧挖矿（Track C）全面开放</div>
+          <div class="rm-item">战队 &amp; 推荐系统（Track D）上线</div>
+          <div class="rm-item">首批商家贸易结算试点</div>
+          <div class="rm-item">三层价格防御系统激活</div>
+        </div>
+      </div>
+      <div class="rm-card">
+        <div class="rm-phase">Phase 3</div>
+        <div class="rm-status future">○ 规划中</div>
+        <div class="rm-title">跨链 &amp; 全球流通</div>
+        <div class="rm-list">
+          <div class="rm-item">跨链桥接（Base / Polygon / BNB Chain）</div>
+          <div class="rm-item">法币出金通道（东南亚 / 中东试点）</div>
+          <div class="rm-item">vPGOLD 二级市场做市</div>
+          <div class="rm-item">机构托管服务</div>
+          <div class="rm-item">PAXG 持仓排名进入全球前 10</div>
+        </div>
+      </div>
+      <div class="rm-card">
+        <div class="rm-phase">Phase 4</div>
+        <div class="rm-status future">○ 愿景</div>
+        <div class="rm-title">成为黄金结算标准</div>
+        <div class="rm-list">
+          <div class="rm-item">全球黄金贸易 pGOLD 结算网络</div>
+          <div class="rm-item">协议 DAO 治理完全去中心化</div>
+          <div class="rm-item">年储备增长 &gt; 1 吨黄金</div>
+          <div class="rm-item">1 亿美元以上月交易量</div>
+          <div class="rm-item">信任飞轮完成第一个完整周期</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BAND ── -->
+<div class="cta-band">
+  <h2 class="cta-h">现在入场，参与第一个完整周期</h2>
+  <p class="cta-sub">创世池 D1–30 权重为 10x，是参与成本最低、回报倍率最高的窗口。每过一档，权重递减不可逆。</p>
+  <div class="cta-band-btns">
+    <a href="swap_v3.html"><button class="btn btn-gold" style="padding:14px 36px;font-size:15px;">立即购买 pGOLD</button></a>
+    <a href="dapp_v3.html"><button class="btn btn-outline" style="padding:14px 36px;font-size:15px;">进入创世池 ICO</button></a>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo"><div class="coin">pG</div>pGOLD</div>
+        <p>1 pGOLD = 1 克黄金。由链上 PAXG 100% 储备支撑，运行在 Arbitrum One。专为普通用户与小额支付设计的黄金资产协议。</p>
+      </div>
+      <div class="footer-col">
+        <h4>产品</h4>
+        <a href="swap_v3.html">Swap 交易</a>
+        <a href="dapp_v3.html">DApp 主页</a>
+        <a href="dapp_v3.html">创世池 ICO</a>
+        <a href="dapp_v3.html">质押分红</a>
+        <a href="dapp_v3.html">排行榜</a>
+      </div>
+      <div class="footer-col">
+        <h4>协议</h4>
+        <a href="#">白皮书</a>
+        <a href="#">合约审计</a>
+        <a href="#">储备证明</a>
+        <a href="#">The Graph 子图</a>
+        <a href="#">开源代码</a>
+      </div>
+      <div class="footer-col">
+        <h4>社区</h4>
+        <a href="#">Twitter / X</a>
+        <a href="#">Telegram</a>
+        <a href="#">Discord</a>
+        <a href="#">Medium</a>
+        <a href="#">联系我们</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 pGOLD Protocol · BUSL-1.1 License · 非投资建议</span>
+      <div class="chain-badge">
+        <div class="chain-dot"></div>
+        <span>Arbitrum One · 区块同步正常</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Nav scroll effect ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── Counter animation ──
+function animateCounter(el, target, decimals, suffix) {
+  const duration = 1800;
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const val = target * ease;
+    el.textContent = val.toLocaleString('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const counterDefs = [
+  { id: 'cnt-coverage', target: 100.04, decimals: 2, suffix: '%' },
+  { id: 'cnt-paxg',     target: 40182,  decimals: 0, suffix: '' },
+  { id: 'cnt-circ',     target: 1248930, decimals: 0, suffix: '' },
+];
+const observed = new Set();
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !observed.has(e.target.id)) {
+      observed.add(e.target.id);
+      const cfg = counterDefs.find(c => c.id === e.target.id);
+      if (cfg) animateCounter(e.target, cfg.target, cfg.decimals, cfg.suffix);
+    }
+  });
+}, { threshold: 0.4 });
+counterDefs.forEach(c => {
+  const el = document.getElementById(c.id);
+  if (el) io.observe(el);
+});
+
+// ── Smooth scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ── Reserve bar animated on scroll ──
+const barFill = document.querySelector('.res-bar-fill');
+if (barFill) {
+  barFill.style.width = '0%';
+  const barObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      setTimeout(() => { barFill.style.width = '100%'; }, 200);
+      barObs.disconnect();
+    }
+  }, { threshold: 0.5 });
+  barObs.observe(barFill.parentElement);
+}
+
+// ── Fade-in on scroll for cards ──
+const fadeEls = document.querySelectorAll('.how-card, .track-card, .rm-card, .reserve-card, .compare-card');
+const fadeObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+      fadeObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+fadeEls.forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(18px)';
+  el.style.transition = 'opacity .5s ease, transform .5s ease';
+  fadeObs.observe(el);
+});
+</script>
+</body>
+</html>

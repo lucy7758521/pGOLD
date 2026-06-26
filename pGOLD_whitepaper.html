@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pGOLD 白皮书 V3.0 — 数字黄金驱动的全球资产炼金术</title>
+<style>
+:root {
+  --gold: #d4a843;
+  --gold-light: #e0c26b;
+  --gold-dark: #9A7B2A;
+  --bg: #060608;
+  --card: rgba(255,255,255,0.02);
+  --border: rgba(212,168,67,0.08);
+  --text: #f0ede5;
+  --text-dim: #b0aca0;
+  --muted: #6b6560;
+  --green: #4ECB71;
+  --red: #E05555;
+  --blue: #64B5F6;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; font-size: 15px; }
+body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.035; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 256px 256px; }
+.cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; background: radial-gradient(ellipse at 50% 30%, rgba(212,168,67,0.12) 0%, rgba(6,6,8,0) 70%); position: relative; }
+.cover::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.cover .icon-gold { font-size: 72px; margin-bottom: 24px; animation: pulse 3s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+.cover h1 { font-size: 42px; font-weight: 700; background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-dark) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; letter-spacing: 4px; }
+.cover .subtitle { font-size: 20px; color: var(--text-dim); margin-bottom: 40px; letter-spacing: 2px; }
+.cover .meta { font-size: 14px; color: #6b6560; margin-top: 40px; }
+.cover .meta span { display: inline-block; margin: 0 20px; }
+
+.toc { max-width: 800px; margin: 60px auto; padding: 40px; }
+.toc h2 { font-size: 28px; color: var(--gold); margin-bottom: 32px; text-align: center; letter-spacing: 8px; }
+.toc ol { list-style: none; counter-reset: toc; }
+.toc li { counter-increment: toc; padding: 10px 0; border-bottom: 1px solid rgba(212,168,67,0.08); font-size: 15px; }
+.toc li::before { content: counter(toc, cjk-ideographic) "、"; color: var(--gold); font-weight: 600; margin-right: 8px; }
+.toc li a { color: #b0aca0; text-decoration: none; transition: color 0.2s; }
+.toc li a:hover { color: var(--gold); }
+
+.content { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+.chapter { margin: 80px 0; padding-top: 60px; border-top: 1px solid rgba(212,168,67,0.08); }
+.chapter:first-of-type { border-top: none; }
+.chapter-num { font-size: 13px; color: var(--gold); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
+.chapter h2 { font-size: 28px; font-weight: 700; color: #f0ede5; margin-bottom: 8px; }
+.chapter h3 { font-size: 20px; font-weight: 600; color: var(--gold); margin: 40px 0 16px; padding-left: 12px; border-left: 3px solid var(--gold); }
+.chapter h4 { font-size: 16px; font-weight: 600; color: #b0aca0; margin: 28px 0 12px; }
+.chapter p { margin: 12px 0; color: #b0aca0; text-align: justify; }
+.chapter p strong { color: var(--gold); }
+
+.box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin: 20px 0; }
+.box.gold-border { border-color: rgba(212,168,67,0.3); }
+.box h5 { color: var(--gold); font-size: 14px; margin-bottom: 10px; }
+.highlight-box { background: linear-gradient(135deg, rgba(212,168,67,0.08) 0%, rgba(212,168,67,0.02) 100%); border: 1px solid rgba(212,168,67,0.2); border-radius: 10px; padding: 20px 24px; margin: 20px 0; }
+.insight-box { background: #1a2010; border: 1px solid #3a4a1a; border-radius: 8px; padding: 16px 20px; margin: 16px 0; font-size: 14px; }
+.insight-box strong { color: var(--gold); }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+th { background: rgba(255,255,255,0.03); color: var(--gold); padding: 10px 14px; text-align: left; font-weight: 500; font-size: 13px; }
+td { padding: 8px 14px; border-bottom: 1px solid rgba(212,168,67,0.08); }
+tr:last-child td { border-bottom: none; }
+td.num { text-align: right; font-family: 'SF Mono','Consolas',monospace; font-variant-numeric: tabular-nums; }
+td.gold { color: var(--gold); }
+td.green { color: var(--green); }
+td.red { color: var(--red); }
+
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+.metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+.metric-card .value { font-size: 22px; font-weight: 700; font-family: 'SF Mono','Consolas',monospace; }
+.metric-card .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+.tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+.tier-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 16px; text-align: center; }
+.tier-card.top { border-color: rgba(212,168,67,0.3); background: rgba(212,168,67,0.05); }
+.tier-name { font-size: 15px; font-weight: 600; color: #b0aca0; margin-bottom: 12px; }
+.tier-mult { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+.tier-period { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+.tier-bar { font-size: 12px; color: #6b6560; padding-top: 12px; border-top: 1px solid rgba(212,168,67,0.08); }
+
+.flow { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 12px 0; flex-wrap: wrap; }
+.flow-step { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 80px; }
+.flow-step .label { font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+.flow-step .icon { font-size: 24px; }
+.flow-arrow { color: var(--gold); font-size: 24px; }
+
+.chart-container { width: 100%; margin: 16px 0; position: relative; }
+.chart-container.tall { height: 360px; }
+.chart-container h5 { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; text-align: center; }
+.chart-loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: #6b6560; font-size: 13px; pointer-events: none; }
+.chart-loader-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 1.2s ease-in-out infinite; margin-right: 6px; vertical-align: middle; }
+.chart-loaded .chart-loader { display: none; }
+
+.tri-arch { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0; margin: 24px 0; align-items: center; }
+.tri-node { background: var(--card); border-radius: 14px; padding: 20px 14px; text-align: center; border: 2px solid rgba(212,168,67,0.08); }
+.tri-node.traders { border-color: #4CAF50; }
+.tri-node.merchants { border-color: #2196F3; }
+.tri-node.protocol { border-color: #d4a843; }
+.tri-node .tri-icon { font-size: 28px; margin-bottom: 6px; }
+.tri-node .tri-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.tri-node .tri-sub { font-size: 11px; color: #6b6560; line-height: 1.6; }
+.tri-flow { text-align: center; font-size: 11px; color: #6b6560; padding: 8px; }
+.tri-flow .arrow { display: block; font-size: 18px; }
+.tri-flow .label { display: block; font-size: 10px; color: #6b6560; margin-top: 2px; }
+
+.footer { text-align: center; padding: 60px 20px; color: #6b6560; font-size: 13px; }
+.footer .gold-line { width: 120px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto 24px; }
+
+@media (max-width: 768px) {
+  .cover h1 { font-size: 28px; }
+  .tier-grid { grid-template-columns: 1fr; }
+  .metrics-row { grid-template-columns: 1fr 1fr; }
+  .tri-arch { grid-template-columns: 1fr; gap: 8px; }
+}
+/* WP Navigation Bar */
+.wp-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 48px; background: rgba(6,6,8,.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(212,168,67,.12); font-size: 13px; }
+.wp-nav a { color: var(--text-dim); text-decoration: none; margin: 0 8px; transition: color .2s; }
+.wp-nav a:hover { color: var(--gold); }
+.wp-nav .wp-nav-brand { color: var(--gold); font-weight: 600; font-size: 14px; letter-spacing: 1px; }
+.wp-nav .wp-nav-accent { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV BAR ===== -->
+<nav class="wp-nav">
+  <div><a href="frontend/index.html" class="wp-nav-brand">pGOLD</a></div>
+  <div>
+    <a href="frontend/index.html">官网</a>
+    <a href="frontend/swap_v3.html" class="wp-nav-accent">Swap</a>
+    <a href="frontend/dapp_v3.html" class="wp-nav-accent">DApp</a>
+    <a href="pGOLD_Roadshow_V3.pptx" download style="color:var(--text-dim);font-size:12px;">PPT ↓</a>
+  </div>
+</nav>
+
+<!-- ===== COVER ===== -->
+<div class="cover" id="cover">
+  <div class="icon-gold">🪙</div>
+  <h1>pGOLD 白皮书</h1>
+  <div class="subtitle">数字黄金驱动的全球资产炼金术</div>
+  <div class="meta">
+    <span>V5.0</span><span>2026年6月</span><span>仅供参考，不构成投资建议</span>
+  </div>
+</div>
+
+<!-- ===== TOC ===== -->
+<div class="toc">
+  <h2>目　录</h2>
+  <ol>
+    <li><a href="#ch1">宏大愿景：数字黄金的全球流通</a></li>
+    <li><a href="#ch2">pGOLD：1克黄金的数字化身</a></li>
+    <li><a href="#ch3">冷启动引擎：五轨交易激励体系</a></li>
+    <li><a href="#ch4">代币经济模型：供给、通胀与稳态</a></li>
+    <li><a href="#ch5">协议可持续性：收支平衡与储备证明</a></li>
+    <li><a href="#ch6">三方经济体：交易用户·市场用户·协议</a></li>
+    <li><a href="#ch7">资产置换：从Token到硬资产</a></li>
+    <li><a href="#ch8">资本市场之路：RWA证券化与纳斯达克</a></li>
+    <li><a href="#ch9">价值飞轮：万亿市值的实现路径</a></li>
+    <li><a href="#ch10">治理、合规与安全</a></li>
+    <li><a href="#ch11">执行路线图</a></li>
+    <li><a href="#ch12">风险矩阵与应对</a></li>
+    <li><a href="#ch13">附录：关键参数速查</a></li>
+  </ol>
+  <div style="text-align:center;margin-top:20px;"><a href="#cover" style="font-size:12px;color:var(--gold);text-decoration:none;">↑ 回到封面</a></div>
+</div>
+
+<div class="content">
+
+<!-- ===== CHAPTER 1 ===== -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">第一章</div>
+  <h2>宏大愿景：数字黄金的全球流通</h2>
+
+  <h3>1.1 我们想做什么</h3>
+  <p>创建一个以<strong>实物黄金全额储备</strong>为背书的链上数字资产——<strong>pGOLD</strong>。1枚pGOLD永远等于1克实物黄金的数字化权益，任何人可以在任何时间赎回等量实物黄金。</p>
+  <p>但这不是终点。pGOLD的真正使命是成为<strong>全球通用的支付工具</strong>——一种可以在任何国家、任何场景下使用的"数字黄金货币"。当俄罗斯帝王蟹出口商用pGOLD向全球进口商结算、中东石油贸易商用pGOLD支付运费、各地工厂用pGOLD跨境采购设备的时候，我们就完成了从Token到货币的质变。</p>
+
+  <h3>1.2 为什么是黄金</h3>
+  <div class="highlight-box">
+    <p>黄金是人类历史上最持久的价值存储工具。5,000年来，没有一种法定货币能够存活超过200年，但黄金从未归零。</p>
+    <p>年开采增量仅占存量的<strong>1.5%–1.8%</strong>，天然抗通胀。全球央行连续多年净买入黄金，2024年全球央行购金量突破1,000吨。</p>
+    <p>但实物黄金有致命缺陷：<strong>难以分割、难以运输、难以用于日常支付</strong>。我们将黄金搬上区块链，保留其抗通胀的硬通货属性，赋予其数字货币的流动性和便利性。</p>
+  </div>
+
+  <h3>1.3 三方经济体：不是交易所，是支付网络</h3>
+  <p>pGOLD不只是一个交易标的。它背后站着<strong>三种用户</strong>，形成完整的经济闭环：</p>
+  <div class="tri-arch">
+    <div class="tri-node traders">
+      <div class="tri-icon">📊</div>
+      <div class="tri-title">交易用户</div>
+      <div class="tri-sub">链上高频交易<br>创造流动性<br>支付0.25%手续费</div>
+    </div>
+    <div class="tri-flow"><span class="arrow">→</span><span class="label">手续费</span></div>
+    <div class="tri-node protocol">
+      <div class="tri-icon">🏦</div>
+      <div class="tri-title">协议</div>
+      <div class="tri-sub">管理黄金金库<br>购金·铸币<br>保障全额偿付</div>
+    </div>
+    <div class="tri-flow"><span class="arrow">←</span><span class="label">奖励</span></div>
+    <div class="tri-node merchants">
+      <div class="tri-icon">🦀</div>
+      <div class="tri-title">市场用户</div>
+      <div class="tri-sub">实体贸易结算<br>跨境即时支付<br>零SWIFT费</div>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:13px;color:var(--text-dim);margin-top:8px;">交易用户提供流动性 → 协议收取手续费购买黄金 → 市场用户用pGOLD结算实物贸易 → 解锁的pGOLD被真实需求吸收 → 形成飞轮</p>
+
+  <h3>1.4 终局：万能支付工具</h3>
+  <p>当pGOLD的流通盘足够深、价格足够稳定、用户基数足够大之后，它将不再是投机标的，而是一个<strong>可随时兑换黄金的支付工具</strong>。届时：</p>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="value" style="color:var(--gold);">跨境支付</div><div class="label">秒级到账，无SWIFT延迟，无中间行费用</div></div>
+    <div class="metric-card"><div class="value" style="color:var(--gold);">大宗贸易</div><div class="label">100吨帝王蟹、石油、矿产，pGOLD一站结算</div></div>
+    <div class="metric-card"><div class="value" style="color:var(--gold);">资产置换</div><div class="label">用pGOLD折价收购矿山、能源、地产</div></div>
+    <div class="metric-card"><div class="value" style="color:var(--gold);">日常消费</div><div class="label">扫码支付，1 pGOLD ≈ 当前金价</div></div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 2 ===== -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">第二章</div>
+  <h2>pGOLD：1克黄金的数字化身</h2>
+
+  <h3>2.1 核心定义</h3>
+  <table>
+    <tr><th style="width:180px;">参数</th><th>设定</th></tr>
+    <tr><td>名称</td><td><strong>pGOLD</strong>（Protocol Gold）</td></tr>
+    <tr><td>标准</td><td>ERC-20（首发Base链，后续跨链至Arbitrum、Solana、Sui）</td></tr>
+    <tr><td>锚定物</td><td><strong>1 pGOLD = 1克实物黄金</strong>的数字化权益</td></tr>
+    <tr><td>流通储备</td><td>100%实物黄金背书，链上实时储备证明</td></tr>
+    <tr><td>定价机制</td><td>跟随国际金价实时浮动，参考伦敦金定盘价</td></tr>
+    <tr><td>可赎回</td><td>任何持有者可将pGOLD兑换为实物黄金（需KYC/AML）</td></tr>
+  </table>
+
+  <h3>2.2 铸造与赎回</h3>
+  <div class="box gold-border">
+    <div class="flow">
+      <div class="flow-step"><div class="label">存入美元</div><div class="icon">💵</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">预言机报价</div><div class="icon">📡</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">铸造 pGOLD</div><div class="icon">🪙</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">金库购入实物金</div><div class="icon">🏦</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-dim);margin-top:8px;">铸造价格 = 预言机实时金价 × (1 + 动态溢价0.1%–0.2%)　｜　赎回价格 = 预言机实时金价 × (1 − 0.05%赎回费)</p>
+  </div>
+
+  <h3>2.3 双金库体系</h3>
+  <table>
+    <tr><th>金库类型</th><th>用途</th><th>证明方式</th></tr>
+    <tr><td><strong>流通储备</strong></td><td>对应链上用户持有的pGOLD，不可挪用</td><td>链上Proof of Reserve，实时可查</td></tr>
+    <tr><td><strong>可售储备</strong></td><td>协议自有额外黄金，用于OTC、资产置换</td><td>定期独立审计，不在流通证明范围内</td></tr>
+  </table>
+</div>
+
+<!-- ===== CHAPTER 3 ===== -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">第三章</div>
+  <h2>冷启动引擎：五轨交易激励体系</h2>
+  <p>一个新Token最大的敌人是冷启动时期的流动性荒漠。我们设计了一套精密的五轨博弈论激励机制，用代币奖励驱动全球用户自主贡献交易量。在此基础上，单独设立E轨创世池，感谢协议最早的信仰者——不破坏A/B/C/D四轨竞争逻辑，作为独立的开幕烟花。</p>
+
+  <h3>3.1 五轨激励总览</h3>
+  <table>
+    <tr><th>轨道</th><th>机制</th><th>奖励</th><th>锁仓</th><th>目标人群</th></tr>
+    <tr><td class="gold">A. 持有分红</td><td>持有pGOLD即可获得分红</td><td>年化 3.5%</td><td>无锁仓</td><td>长期持有者</td></tr>
+    <tr><td class="gold">B. Top 100交易大师</td><td>按交易量+存入量排名，前100名获奖</td><td>月300%/季500%/年1000%</td><td>10年线性释放</td><td>高频交易者、做市商</td></tr>
+    <tr><td class="gold">C. 燃烧挖矿</td><td>交易者的累计手续费补偿</td><td>累计手续费 × 1000%</td><td>10年线性释放</td><td>所有交易者（手续费返还保障）</td></tr>
+    <tr><td class="gold">D. 费率特权</td><td>按等级享受手续费折扣</td><td>最高减免50%</td><td>—</td><td>高频/大额交易者</td></tr>
+    <tr><td class="gold">E. 创世池(ICO)</td><td>早期入场阶梯权重，白送感谢</td><td>池子200K pGOLD</td><td>3年线性释放</td><td>协议最早的信仰者</td></tr>
+  </table>
+
+  <div class="insight-box"><strong>设计哲学：</strong>A轨留人、B轨争人、C轨信人、D轨养人<strong>、E轨谢人</strong>。五条轨道相互嵌套——其中<strong>C轨（燃烧挖矿）与B轨（Top 100）平行独立、奖励可叠加</strong>，<strong>E轨（创世池）与A/B/C/D四轨完全独立叠加</strong>。C轨是信仰者轨道：无需质押，只需交易；持续燃烧，持续致富。E轨是感恩轨道：感谢最早来的人承担了最大的不确定性。</div>
+
+  <h3>3.2 B轨：Top 100 交易大师席位</h3>
+  <p>这是整个激励体系的核心引擎。每月、每季、每年，根据<strong>有效交易量</strong>评选Top 100交易大师。获奖者存入pGOLD作为奖励基数，获得<strong>倍数奖励（锁仓10年、线性释放）</strong>。</p>
+
+  <div class="tier-grid">
+    <div class="tier-card">
+      <div class="tier-name">月榜 Top 100</div>
+      <div class="tier-mult" style="color:var(--blue);">300%</div>
+      <div class="tier-period">锁仓10年 · 线性释放 · 等效年化~30%</div>
+      <div class="tier-bar">上榜门槛：月交易量 ≥ $1M</div>
+    </div>
+    <div class="tier-card top">
+      <div class="tier-name">季榜 Top 100</div>
+      <div class="tier-mult" style="color:var(--gold);">500%</div>
+      <div class="tier-period">锁仓10年 · 线性释放 · 等效年化~50%</div>
+      <div class="tier-bar">上榜门槛：季交易量 ≥ $30M</div>
+    </div>
+    <div class="tier-card top">
+      <div class="tier-name">年榜 Top 100</div>
+      <div class="tier-mult" style="color:var(--gold-light);">1000%</div>
+      <div class="tier-period">锁仓10年 · 线性释放 · 等效年化~100%</div>
+      <div class="tier-bar">上榜门槛：年交易量 ≥ $500M</div>
+    </div>
+  </div>
+
+  <div class="insight-box"><strong>取消1000%硬顶：</strong>月/季/年奖励独立结算叠加——持续上榜者全年累计可达1800%（300%+500%+1000%）。10年线性释放确保增发平滑。全民造富，共享果实。</div>
+
+  <h4>叠加规则（无硬顶限制）</h4>
+  <p>一个用户在一年内可能同时获得月榜、季榜和年榜资格。<strong>独立结算（月/季/年互不抵扣）</strong>——取消硬顶后总奖励可达存入量 × 1800%。</p>
+  <div class="box">
+    <p><strong>示例：</strong>某巨鲸12个月全部上榜月榜，4个季度全部上榜季榜，且入选年榜Top 10。</p>
+    <p>→ 上限：无硬顶——月/季/年独立结算，全年满额叠加可达 存入量 × 1800%</p>
+    <p>→ 月榜300% + 季榜500% + 年榜1000% = 1800%（全额叠加，互不抵扣）</p>
+    <p style="color:var(--text-dim);font-size:13px;">取消硬顶后：月300%+季500%+年1000%=1800%满额叠加。全民造富，共享果实。</p>
+  </div>
+
+  <h4>存入锚定：排名是门票，存入是基数</h4>
+  <p>Top 100排名只决定<strong>是否有资格获取奖励</strong>。奖励金额由<strong>存入量</strong>决定：</p>
+  <p style="text-align:center;font-size:18px;font-weight:600;margin:20px 0;"><span style="color:var(--gold);">奖励 = 存入量 × 奖励倍率</span></p>
+  <div class="insight-box"><strong>经济含义：</strong>排名是门票，存入量是筹码。用户必须在获奖当月额外存入pGOLD。这确保了奖励有真实成本、锁仓减少流通盘抛压、协议获得持续的流动性注入。</div>
+
+  <h4>存入量阶梯分布（保守情景）</h4>
+  <table>
+    <tr><th>排名区间</th><th>建议存入量</th><th>等值USD</th><th>年榜奖励总额</th></tr>
+    <tr><td>Top 1–10（巨鲸）</td><td class="num">~5,882 pGOLD</td><td class="num">$500K</td><td class="num gold">$2.5M</td></tr>
+    <tr><td>Top 11–50（中坚）</td><td class="num">~1,176 pGOLD</td><td class="num">$100K</td><td class="num gold">$500K</td></tr>
+    <tr><td>Top 51–100（新锐）</td><td class="num">~353 pGOLD</td><td class="num">$30K</td><td class="num gold">$150K</td></tr>
+  </table>
+
+  <h4>模拟案例：巨鲸用户的一年</h4>
+  <table>
+    <tr><th>参数</th><th>数值</th></tr>
+    <tr><td>存入量</td><td>10,000 pGOLD（~$850K）</td></tr>
+    <tr><td>年交易量</td><td>$500M+（入选年榜）</td></tr>
+    <tr><td>年手续费支出</td><td class="red">$90K（0.25% × $36M月交易量）</td></tr>
+    <tr><td>年榜奖励（独立结算叠加）</td><td class="gold">10,000 × 1000% = 50,000 pGOLD</td></tr>
+    <tr><td>锁仓方式</td><td>10年线性释放，日均解锁 ~19.6 pGOLD（约$1,666/天）</td></tr>
+    <tr><td>10年总解锁</td><td>50,000 pGOLD（等值$4.25M）</td></tr>
+    <tr><td>手续费/奖励比</td><td>90K / 4.25M = <strong>2.1%</strong>— 手续费仅覆盖奖励的2.1%</td></tr>
+  </table>
+
+  <h3>3.3 C轨：燃烧挖矿（信仰者轨道 · 无需质押）</h3>
+  <p>燃烧挖矿是<strong>与Top 100平行的独立激励轨道</strong>。只要发生交易手续费燃烧，无论是否上榜，均可触发补偿。<strong>燃烧收益与榜单收益可叠加</strong>——用户同时上榜又燃烧，两边一起拿。唯一区别：燃烧<strong>无需质押</strong>，上榜<strong>必须质押</strong>存入pGOLD。</p>
+  <p>散户是手续费的主要贡献者——他们持续交易、持续燃烧手续费，<strong>是协议最坚定的信仰者</strong>。只要持续交易并贡献手续费，协议就补偿：</p>
+  <div class="highlight-box">
+    <p style="text-align:center;font-size:18px;font-weight:600;">
+      <span style="color:var(--gold);">补偿 = 累计手续费 × 1000%</span><br>
+      <span style="font-size:14px;color:var(--text-dim);">锁仓10年 · 线性释放 · 年一解锁 = 100%手续费返还</span><br>
+      <span style="font-size:13px;color:var(--blue);">链上补偿上限：单轮 ≤ 50,000 pGOLD · 累计 ≤ 6,000,000 pGOLD · 可由GOVERNOR调整</span>
+    </p>
+  </div>
+  <div class="insight-box"><strong>为什么是1000%？</strong>燃烧矿工是协议的信仰基石——他们不是只交易一次的过客，而是年复一年贡献手续费、成为协议最忠诚的推广者。1000%补偿中，100%返还年手续费，额外900%是对他们持续贡献的远期回报。10年线性释放确保平滑解锁——第一年100%手续费返还，后续9年是纯收益。他们值得赚到应有的回报，也会成为最好的推广者。</div>
+
+  <h4>散户模拟：信仰者的年度账本</h4>
+  <table>
+    <tr><th>参数</th><th>数值</th></tr>
+    <tr><td>存入量</td><td>117 pGOLD（~$10K）</td></tr>
+    <tr><td>年均交易量</td><td>$600K</td></tr>
+    <tr><td>年手续费</td><td class="red">$1,500（0.25%）</td></tr>
+    <tr><td>累计手续费（年）</td><td class="red">$1,500</td></tr>
+    <tr><td>燃烧补偿（累计手续费 × 1000%）</td><td class="gold">$15,000（约176 pGOLD）</td></tr>
+    <tr><td>年一解锁（10年线性）</td><td class="gold">$1,500（约18 pGOLD）</td></tr>
+    <tr><td>日解锁</td><td>~0.05 pGOLD/天（约$4.1/天）</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--text-dim);">年一解锁$1,500，100%覆盖年手续费$1,500。每年手续费全额返还，后续9年纯赚$13,500。用户有极强动力持续交易、持续贡献手续费——成为协议最忠诚的推广者。如果该散户某月达到上榜门槛，燃烧与榜单奖励<strong>叠加</strong>——两边一起拿。</p>
+
+  <h3>3.4 关于BOT和刷量</h3>
+  <div class="box gold-border">
+    <p>我们的态度：<strong>BOT不是敌人，是付费客户。</strong></p>
+    <p>链上交易有Gas费、滑点和区块确认延迟。每次BOT交易都要支付0.25%手续费，而奖励是锁仓10年的pGOLD——<strong>BOT刷得越多，协议收入越多，锁仓量越大</strong>。用即期现金换远期Token，BOT是在帮我们冷启动。</p>
+  </div>
+
+  <h3>3.5 E轨 · 创世池：感谢最早来的人</h3>
+  <p><strong>E轨（创世池）是协议给早期信仰者的感谢，不破坏A/B/C/D四轨竞争逻辑，作为独立的开幕烟花。</strong>协议上线后的前180天内，任何用户都可以参与ICO认购——但他们的每一分钱都用来购买真实的PAXG黄金，获得1:1完全背书的pGOLD。创世池的200,000 pGOLD是<strong>额外赠送</strong>的感谢。</p>
+
+  <h4>核心原理</h4>
+  <div class="highlight-box">
+    <p style="text-align:center;font-size:16px;font-weight:600;">
+      <span style="color:var(--gold);">认购 = 全价买黄金（1:1背书）+ 白送创世池份额</span><br>
+      <span style="color:var(--gold);">创世池 = 200,000 pGOLD 预铸（15%手续费逐步买金背书）</span><br>
+      <span style="color:var(--gold);">权重 = 阶梯递减：D1-30(10x) → D31-60(7x) → D61-90(4x) → D91-180(2x)</span>
+    </p>
+  </div>
+
+  <h4>四阶梯权重</h4>
+  <table>
+    <tr><th>阶梯</th><th>窗口</th><th>权重</th><th>身份标签</th><th>叙事</th></tr>
+    <tr style="background:rgba(127,119,221,0.06)"><td>第1档</td><td>D1-30</td><td style="color:#A371F7;font-weight:700">10x</td><td>先驱</td><td>第一天就来的，赌的是项目能不能活</td></tr>
+    <tr style="background:rgba(91,142,191,0.06)"><td>第2档</td><td>D31-60</td><td style="color:#5B8EBF;font-weight:700">7x</td><td>早期</td><td>看了一个月，确认不是骗局</td></tr>
+    <tr style="background:rgba(210,153,29,0.06)"><td>第3档</td><td>D61-90</td><td style="color:#D2991D;font-weight:700">4x</td><td>建设者</td><td>生态开始运转，窗口还在</td></tr>
+    <tr><td>第4档</td><td>D91-180</td><td style="font-weight:700">2x</td><td>支持者</td><td>末班车，赶上最后的红利</td></tr>
+  </table>
+
+  <h4>关键参数</h4>
+  <table>
+    <tr><th>参数</th><th>数值</th><th>说明</th></tr>
+    <tr><td>创世池总量</td><td>200,000 pGOLD</td><td>硬顶，不超发</td></tr>
+    <tr><td>创世窗口</td><td>180天</td><td>协议上线日 ~ D+180</td></tr>
+    <tr><td>释放周期</td><td>3年线性释放</td><td>每季度1/12，短于B/C轨的10年</td></tr>
+    <tr><td>个人硬顶</td><td>$85,000 (1,000 pGOLD)</td><td>防巨鲸垄断池子</td></tr>
+    <tr><td>背书方式</td><td>15%手续费→逐步买PAXG填坑</td><td>约5个月(基准场景)全额覆盖</td></tr>
+    <tr><td>与A/B/C/D轨关系</td><td>完全独立叠加</td><td>ICO参与者也可在B轨争排名、C轨燃烧</td></tr>
+  </table>
+
+  <h4>ICO vs 传统ICO 的根本区别</h4>
+  <table>
+    <tr><th>维度</th><th style="color:var(--red)">传统ICO</th><th style="color:var(--green)">pGOLD 创世池ICO</th></tr>
+    <tr><td>用户的钱去哪了</td><td class="red">项目方口袋</td><td class="green">全额购买PAXG黄金</td></tr>
+    <tr><td>代币有实际资产支撑吗</td><td class="red">通常没有</td><td class="green">100%黄金背书</td></tr>
+    <tr><td>项目死了</td><td class="red">血本无归</td><td class="green">黄金还在，本金还在</td></tr>
+    <tr><td>额外的奖励</td><td>—</td><td class="green">创世池白送，不花用户一分钱</td></tr>
+    <tr><td>给用户的叙事</td><td class="red">"将来可能值钱"</td><td class="green">"你的钱买了真黄金，再谢谢你最早来"</td></tr>
+  </table>
+
+  <h4>参与者盈亏分析（以D1先驱为例）</h4>
+  <table>
+    <tr><th>情景</th><th>pGOLD市价</th><th>$85K存入的持有价值</th><th>盈亏</th></tr>
+    <tr><td>协议死（仅背书部分）</td><td>1,000@$85 + 2,400@$0</td><td>$85,000</td><td style="color:var(--cyan)">不赔</td></tr>
+    <tr><td>覆盖恢复70%</td><td>$59.5</td><td>$202,300</td><td style="color:var(--green)">+138%</td></tr>
+    <tr><td>完全覆盖(金价$85)</td><td>$85</td><td>$289,000</td><td style="color:var(--green)">+240%</td></tr>
+    <tr><td>金价涨到$100</td><td>$100</td><td>$340,000</td><td style="color:var(--green)">+300%</td></tr>
+  </table>
+
+  <div class="insight-box">
+    <strong>一句话总结：</strong>创世池ICO是"开幕烟花"而不是"长期赛制"。窗口关闭后，所有人按能力在B/C轨平等竞争。
+    我们不承诺固定回报——我们承诺的是：<strong>你的本金永远是黄金，而创世池是我们额外说的一声谢谢。</strong>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 4 ===== -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">第四章</div>
+  <h2>代币经济模型：供给、通胀与稳态</h2>
+  <p>最核心的问题：我们给出去了那么多奖励，pGOLD会不会变成无限增发的空气币？答案是：<strong>不会。</strong>因为三个机制同时作用——<strong>10年线性锁仓平滑供给、0.25%手续费收入持续买金、实物黄金储备全额覆盖</strong>。</p>
+
+  <h3>4.1 供给扩张曲线（10年预测）</h3>
+  <div class="chart-container tall" id="supplyChartWrap">
+    <h5>pGOLD 流通量 · 锁仓量 · 总发行量（基准情景：10吨初始黄金储备）</h5>
+    <canvas id="supplyChart" width="800" height="360"></canvas>
+    <div class="chart-loader"><span class="chart-loader-dot"></span> 图表加载中…</div>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card"><div class="value" style="color:var(--gold);" id="mInitialSupply">—</div><div class="label">初始流通量</div></div>
+    <div class="metric-card"><div class="value" style="color:var(--green);" id="mY10Circ">—</div><div class="label">第10年流通量</div></div>
+    <div class="metric-card"><div class="value" style="color:var(--gold);" id="m5yrGrowth">—</div><div class="label">5年累计增长</div></div>
+    <div class="metric-card"><div class="value" id="m10yrGrowth">—</div><div class="label">10年累计增长</div></div>
+  </div>
+
+  <h3>4.2 年通胀率对比</h3>
+  <div class="chart-container tall" id="inflationChartWrap">
+    <h5>pGOLD 年通胀率 vs 实物黄金 vs USD M2</h5>
+    <canvas id="inflationChart" width="800" height="360"></canvas>
+    <div class="chart-loader"><span class="chart-loader-dot"></span> 图表加载中…</div>
+  </div>
+  <div class="insight-box"><strong>关键发现：</strong>pGOLD 10年锁仓设计使前3年流通量增长极低。年均通胀率与实物黄金开采率（~1.7%）处于同一水平，远低于USD M2增速（~6%）。</div>
+
+  <h3>4.3 黄金储备覆盖率</h3>
+  <div class="chart-container tall" id="reserveChartWrap">
+    <h5>黄金储备覆盖率（金库黄金 ÷ 流通 pGOLD + 未偿承诺）</h5>
+    <canvas id="reserveChart" width="800" height="360"></canvas>
+    <div class="chart-loader"><span class="chart-loader-dot"></span> 图表加载中…</div>
+  </div>
+  <div class="insight-box"><strong>覆盖率始终 ≥ 100%。</strong>0.25%手续费收入持续购入实物黄金，购金速度 > pGOLD解锁速度。第10年储备覆盖率远超100%，意味着协议持有的实物黄金比市场上所有pGOLD承诺的总和还要多。</div>
+
+  <h3>4.4 与主流资产的供给对比</h3>
+  <table>
+    <tr><th>指标</th><th>pGOLD</th><th>实物黄金</th><th>比特币</th><th>美元</th></tr>
+    <tr><td>年供给增量</td><td class="gold">~1–3%</td><td>~1.7%</td><td>~0.8%</td><td class="red">~6%</td></tr>
+    <tr><td>储备背书</td><td class="gold">100%+ 实物黄金</td><td>自身</td><td>无</td><td>美国信用</td></tr>
+    <tr><td>5年供给增长</td><td class="gold">~10–25%</td><td>~8.5%</td><td>~4%</td><td class="red">~34%</td></tr>
+    <tr><td>变现能力</td><td class="gold">24/7 赎回实物金</td><td>需实物交割</td><td>需交易所</td><td>银行体系</td></tr>
+    <tr><td>可编程性</td><td class="gold">智能合约</td><td>无</td><td>有限</td><td>无</td></tr>
+  </table>
+
+  <h3>4.5 为什么不是资金盘</h3>
+  <div class="highlight-box">
+    <p><strong>资金盘的五个致命特征，pGOLD一个都不沾：</strong></p>
+    <p>❌ <strong>后来者养先来者</strong> → pGOLD的奖励由协议发行计划覆盖，所有收入来自真实交易手续费，不依赖新用户充值。</p>
+    <p>❌ <strong>没有外部真实收入</strong> → 年手续费收入从0.25%费率中产生，100%进入金库购买实物黄金。黄金只增不减。</p>
+    <p>❌ <strong>承诺不可兑现</strong> → 每一枚pGOLD都有实物黄金对应。金库对公众实时可查，任何人都可以验证储备覆盖率。</p>
+    <p>❌ <strong>单一用户类型、零和博弈</strong> → pGOLD有交易用户、市场用户两股独立的需求力量。即使交易激励停止，商家仍需要pGOLD结算实体贸易。不存在"最后只有接盘侠"的局面。</p>
+    <p>❌ <strong>增发无上限</strong> → pGOLD的奖励全部来自手续费收入的合理比例铸造，创世池有200K pGOLD硬顶。所有代币增发都有黄金背书或明确的填坑计划。</p>
+    <p>✅ <strong>pGOLD的本质：</strong>用机制设计激励真实交易 → 手续费购买实物黄金 → 黄金储备为每一枚pGOLD背书 → 市场用户用pGOLD结算真实贸易。五轨激励中的E轨创世池作为独立开幕烟花，用未来手续费填坑，不制造无限负债。这是<strong>流动性冷启动 + 实物资产支撑 + 三方经济体</strong>，不是庞氏。</p>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 5 ===== -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">第五章</div>
+  <h2>协议可持续性：收支平衡与储备证明</h2>
+
+  <h3>5.1 收入来源（基准情景）</h3>
+  <table>
+    <tr><th>收入源</th><th>计算</th><th>年收入</th></tr>
+    <tr><td>年榜Top 100交易量</td><td>100人 × $500M年量</td><td class="num">$50B</td></tr>
+    <tr><td>→ 手续费（0.25%）</td><td>$50B × 0.25%</td><td class="num gold">$125.0M</td></tr>
+    <tr><td>燃烧矿工交易量</td><td>5,000人 × $100K</td><td class="num">$0.5B</td></tr>
+    <tr><td>→ 手续费</td><td>$0.5B × 0.25%</td><td class="num gold">$1.25M</td></tr>
+    <tr><td>散户及其他（~5%）</td><td>—</td><td class="num gold">$6.3M</td></tr>
+    <tr style="font-weight:700;background:rgba(212,168,67,0.06);"><td>年总收入</td><td></td><td class="num gold" style="font-size:15px;">$132.6M</td></tr>
+  </table>
+
+  <h3>5.2 支出结构（代币解锁）</h3>
+  <p style="font-size:13px;color:var(--text-dim);">"支出"是指年解锁pGOLD的等值美元——协议用手续费收入回购这些解锁的pGOLD。</p>
+  <table>
+    <tr><th>支出项</th><th>计算</th><th>年解锁</th></tr>
+    <tr><td>年榜奖励年一解锁（10年）</td><td>存入$10.5M × 1000% ÷ 10</td><td class="num red">$15.0M</td></tr>
+    <tr><td>燃烧矿工补偿年一解锁（10年）</td><td>累计手续费$1.25M × 1000% ÷ 10</td><td class="num red">$1.25M</td></tr>
+    <tr style="font-weight:700;background:rgba(224,85,85,0.06);"><td>年解锁合计</td><td></td><td class="num red" style="font-size:15px;">$16.25M</td></tr>
+    <tr><td>运营成本</td><td>团队/法务/审计/营销</td><td class="num red">$15.0M</td></tr>
+    <tr style="font-weight:700;font-size:15px;background:rgba(255,255,255,0.02);"><td>总支出</td><td></td><td class="num red">$31.25M</td></tr>
+    <tr style="font-weight:700;font-size:16px;background:rgba(78,203,113,0.08);"><td>年净利润</td><td></td><td class="num green">+$101.35M</td></tr>
+    <tr><td>手续费回购覆盖率</td><td>$132.6M ÷ $16.25M</td><td class="num gold" style="font-size:15px;">8.16x</td></tr>
+  </table>
+
+  <div class="insight-box"><strong>8.16x回购覆盖率：</strong>协议每年仅需约12%的手续费收入回购解锁pGOLD，剩余约88%（$116M）为自由盈余，用于购金扩储、资产收购和生态建设。燃烧补偿基于累计手续费而非亏损，10年线性释放使每笔补偿年解锁仅为原手续费的100%，财务状况极为稳健。</div>
+
+  <h3>5.3 燃烧矿工单人解剖</h3>
+  <div class="box gold-border">
+    <div class="metrics-row">
+      <div class="metric-card"><div class="value" style="color:var(--green);">+$250</div><div class="label">年手续费贡献</div></div>
+      <div class="metric-card"><div class="value" style="color:var(--red);">−$250</div><div class="label">年一补偿解锁</div></div>
+      <div class="metric-card"><div class="value" style="color:var(--gold);">持平</div><div class="label">手续费 = 补偿解锁（100%返还）</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-dim);">假设：单矿工年交易量$100K，累计手续费$250（0.25%费率），燃烧补偿1000%，10年线性释放。</p>
+    <p>单人手续费贡献（$250）与年一补偿解锁（$250）持平——1000%补偿÷10年线性释放 = 每年返还100%手续费。<strong>10年累计回报10倍于手续费支出</strong>。补偿以锁仓pGOLD支付，由协议发行计划覆盖。Top 100交易量的巨额手续费（$125M+）足以覆盖全体矿工的解锁量（$1.25M），覆盖率100x。</p>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 6: THREE-PARTY ECONOMY ===== -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">第六章</div>
+  <h2>三方经济体：交易用户·市场用户·协议</h2>
+  <p>上一章的模型假设<strong>所有解锁的pGOLD都需要协议回购</strong>。但现实中，协议不是唯一的买方——还有<strong>市场用户</strong>。</p>
+
+  <h3>6.1 市场用户是谁</h3>
+  <p>市场用户是<strong>用pGOLD结算真实货物和服务的商家和企业</strong>。他们买pGOLD不是为了投机，而是为了用。</p>
+  <div class="highlight-box">
+    <p>🦀 <strong>国际进口商</strong>从俄罗斯采购100吨帝王蟹，用pGOLD结算——省去SWIFT转账的3天延迟和$50–200/笔的中间行费用。</p>
+    <p>🛢️ <strong>中东石油贸易商</strong>用pGOLD支付运费和仓储费——传统银行对石油贸易的合规审查长达数周，链上结算秒级完成。</p>
+    <p>🏭 <strong>东南亚工厂</strong>用pGOLD采购国际设备和原材料——无需开立信用证，无需担忧本币汇率波动。</p>
+  </div>
+
+  <h3>6.2 市场用户如何改变协议的经济模型</h3>
+  <div class="box gold-border">
+    <p style="text-align:center;font-size:16px;font-weight:600;margin-bottom:12px;">旧模型（两方） vs 新模型（三方）</p>
+    <table>
+      <tr><th></th><th style="color:var(--red);">两方模型</th><th style="color:var(--green);">三方模型</th></tr>
+      <tr><td>年解锁供应</td><td class="num">$40.8M</td><td class="num">$40.8M</td></tr>
+      <tr><td>商家有机需求吸收</td><td class="num">—</td><td class="num blue">−$15.0M（Y5）</td></tr>
+      <tr><td style="font-weight:700;">协议净负担</td><td class="num red" style="font-weight:700;">$40.8M</td><td class="num green" style="font-weight:700;">$25.8M</td></tr>
+      <tr><td>手续费购金能力</td><td class="num">$132.6M</td><td class="num">$132.6M</td></tr>
+      <tr><td>回购覆盖率</td><td class="num gold">3.2x</td><td class="num gold" style="font-size:15px;">5.1x</td></tr>
+    </table>
+  </div>
+
+  <h3>6.3 商家的经济动机 —— 他们为什么愿意用pGOLD</h3>
+  <table>
+    <tr><th>传统跨境支付</th><th>pGOLD支付</th></tr>
+    <tr><td>SWIFT 3–5个工作日到账</td><td class="green">链上秒级确认，几分钟到账</td></tr>
+    <tr><td>中间行费用 $50–$200/笔</td><td class="green">Gas费 $0.01–$0.10</td></tr>
+    <tr><td>汇率损耗 1–3%（银行买卖差价）</td><td class="green">< 0.1%（DEX滑点）</td></tr>
+    <tr><td>需开立信用证（费用0.1%–0.5%）</td><td class="green">智能合约自动执行，无需信用证</td></tr>
+    <tr><td>受制裁国家/地区限制</td><td class="green">去中心化网络，无国界限制*</td></tr>
+  </table>
+  <p style="font-size:11px;color:var(--text-dim);">* 需遵守各司法管辖区KYC/AML要求。协议层面不与OFAC制裁地址交互。</p>
+
+  <h3>6.4 pGOLD流通速度与存量需求</h3>
+  <p>商家年结算量 ÷ pGOLD流速 = 实际需持有的pGOLD存量。</p>
+  <div class="insight-box">
+    <p><strong>示例：</strong>年结算$100M贸易，流速4x/年 → 需持有<strong>$25M等值pGOLD</strong>。</p>
+    <p>初期流速高（供应商收到pGOLD立刻兑换），存量需求小。随着接受pGOLD的供应商增多，流速下降 → 存量需求上升 → 更多pGOLD被"锁"在贸易链条中 → 进一步降低协议回购压力。</p>
+  </div>
+
+  <h3>6.5 三方正向飞轮</h3>
+  <div class="box" style="text-align:center;padding:20px;">
+    <div style="font-size:16px;font-weight:600;color:var(--gold);margin-bottom:12px;">🔄 三方经济闭环</div>
+    <p style="line-height:2.4;">
+      交易用户高频交易 → <span style="color:var(--gold);">$133M手续费/年</span> → 协议购买实物黄金 →<br>
+      黄金储备充足 → <span style="color:var(--green);">pGOLD信任度上升</span> → 更多商家愿意接受pGOLD →<br>
+      商家用pGOLD结算 → <span style="color:var(--blue);">有机需求吸收解锁供应</span> → 流通盘加深 →<br>
+      深度增加 → <span style="color:var(--gold);">交易体验更好</span> → 更多交易用户加入 → 回到起点
+    </p>
+  </div>
+  <p style="text-align:center;font-size:13px;color:var(--text-dim);">这个飞轮不依赖外部资金注入，是内生增长的。每一方都在贡献价值，每一方也都在获益。没有接盘侠。</p>
+</div>
+
+<!-- ===== CHAPTER 7 ===== -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">第七章</div>
+  <h2>资产置换：从Token到硬资产</h2>
+  <p>当pGOLD拥有了足够的流动性和定价权之后，它就不再是单纯的交易标的，而是<strong>支付工具</strong>。我们可以用pGOLD以<strong>折价</strong>收购被低估的实物资产。</p>
+  <div class="highlight-box">
+    <p style="text-align:center;font-size:16px;"><strong>项目方用pGOLD支付</strong> → 资产方获得可24h变现的数字黄金 → <strong>项目方获得资产控制权</strong> → 改造增值 → 再估值 → 利润</p>
+  </div>
+
+  <h3>7.1 目标资产池</h3>
+  <table>
+    <tr><th>资产类型</th><th>筛选标准</th><th>单笔规模</th><th>目标数量</th></tr>
+    <tr><td>矿山</td><td>证照齐全，缺资金停产；锂/金/铜/稀土优先</td><td>$50M–$500M</td><td>50–100座</td></tr>
+    <tr><td>能源设施</td><td>有并网收入或购电协议；水电/储能/地热优先</td><td>$100M–$300M</td><td>30–50个</td></tr>
+    <tr><td>商业地产</td><td>社区商业，稳定租金，产权清晰</td><td>$10M–$100M</td><td>100–200处</td></tr>
+    <tr><td>物流仓储</td><td>核心城市周边，有增值潜力</td><td>$50M–$150M</td><td>20–30个</td></tr>
+  </table>
+
+  <h3>7.2 置换操作流程</h3>
+  <div class="box">
+    <div class="flow" style="flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="flow-step"><div class="label">资产筛选</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">独立估值</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">SPV搭建</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">pGOLD支付</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">资产交付</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="flow-step"><div class="label">运营改造</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">价值恢复</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">RWA化</div></div><div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="label">上市退出</div></div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text-dim);">支付对价：资产独立估值的50%–70%，以pGOLD支付。目标：12–36个月内资产价值恢复至估值100%+。</p>
+</div>
+
+<!-- ===== CHAPTER 8 ===== -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">第八章</div>
+  <h2>资本市场之路：RWA证券化与纳斯达克</h2>
+
+  <h3>8.1 RWA化改造</h3>
+  <p>收购并改造完成的实体资产，进行资产收益权Token化，让全球投资者可以通过链上方式参与实体资产的投资回报。</p>
+  <table>
+    <tr><th>资产类型</th><th>RWA化方式</th><th>对标产品</th></tr>
+    <tr><td>锂矿/金矿</td><td>未来10年矿产产量收益权Token化</td><td>商品挂钩证券</td></tr>
+    <tr><td>储能电站</td><td>购电协议未来收益权打包</td><td>基础设施REITs</td></tr>
+    <tr><td>商业地产</td><td>租金收益权分割Token化</td><td>商业地产REITs</td></tr>
+    <tr><td>物流仓储</td><td>仓储费 + 物业增值收益权</td><td>物流REITs</td></tr>
+  </table>
+
+  <h3>8.2 纳斯达克上市路径</h3>
+  <div class="tier-grid">
+    <div class="tier-card">
+      <div class="tier-name">路径A：SPAC</div>
+      <div class="tier-mult" style="font-size:20px;color:var(--gold);">18–24个月</div>
+      <div class="tier-bar" style="text-align:left;font-size:12px;line-height:1.8;">1. 注册SPAC壳公司<br>2. SPAC IPO募资<br>3. 收购RWA资产包<br>4. 反向并购上市</div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name">路径B：传统IPO</div>
+      <div class="tier-mult" style="font-size:20px;color:var(--gold);">24–36个月</div>
+      <div class="tier-bar" style="text-align:left;font-size:12px;line-height:1.8;">1. 资产打包控股公司<br>2. 财务达标（连盈+规模）<br>3. 投行保荐 S-1<br>4. IPO定价发行</div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name">分拆上市</div>
+      <div class="tier-mult" style="font-size:20px;color:var(--gold);">按赛道分拆</div>
+      <div class="tier-bar" style="text-align:left;font-size:12px;line-height:1.8;">矿业公司：100–300亿<br>能源基建：50–150亿<br>黄金储备：200–500亿<br>地产信托：50–100亿</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 9 ===== -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">第九章</div>
+  <h2>价值飞轮：万亿市值的实现路径</h2>
+
+  <h3>9.1 三层价值叠加</h3>
+  <div class="box">
+    <div style="text-align:center;padding:16px;"><div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">底层 · 交易基础设施</div><div style="font-size:20px;font-weight:700;color:var(--gold);margin-bottom:16px;">pGOLD 交易平台</div><div style="font-size:12px;color:var(--text-dim);">年交易量 $3万亿+ · 金融基础设施 30x PE</div><div style="font-size:18px;font-weight:600;color:var(--gold-light);margin:8px 0;">→ 目标市值：$1000–2000亿</div></div>
+    <div style="text-align:center;padding:4px;color:var(--gold);">↓</div>
+    <div style="text-align:center;padding:16px;"><div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">中层 · 资产管理</div><div style="font-size:20px;font-weight:700;color:var(--gold);margin-bottom:16px;">全球硬资产组合</div><div style="font-size:12px;color:var(--text-dim);">管理资产 $3000亿+ · 资管公司 1–1.5x AUM</div><div style="font-size:18px;font-weight:600;color:var(--gold-light);margin:8px 0;">→ 目标市值：$3000–4500亿</div></div>
+    <div style="text-align:center;padding:4px;color:var(--gold);">↓</div>
+    <div style="text-align:center;padding:16px;"><div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">顶层 · 资本市场</div><div style="font-size:20px;font-weight:700;color:var(--gold);margin-bottom:16px;">纳斯达克上市公司矩阵</div><div style="font-size:12px;color:var(--text-dim);">20+上市公司 · 持有股权市价</div><div style="font-size:18px;font-weight:600;color:var(--gold-light);margin:8px 0;">→ 目标市值：$1600–2400亿</div></div>
+    <div style="text-align:center;padding:16px;border-top:2px solid rgba(212,168,67,0.3);margin-top:8px;"><div style="font-size:24px;font-weight:700;color:var(--gold-light);">合计：$5600–$8900亿</div><div style="font-size:13px;color:var(--text-dim);">+ 品牌溢价 + 生态协同效应 → <strong style="color:var(--gold-light);">1万亿美元</strong></div></div>
+  </div>
+
+  <h3>9.2 生态协同飞轮</h3>
+  <div class="highlight-box">
+    <p>🔁 pGOLD交易量越大 → 资产方越愿意接受pGOLD支付 → 越容易折价收购资产</p>
+    <p>🔁 收购的资产越多 → pGOLD的"隐形背书"越强 → 更多用户持有和交易pGOLD</p>
+    <p>🔁 商家用pGOLD结算越多 → 流通盘越深 → 交易体验越好 → 更多交易者加入</p>
+    <p>🔁 上市公司利润回流 → 购买更多实物黄金 → 扩大储备 → 可收购更多资产</p>
+  </div>
+
+  <h3>9.3 10年综合估值路径</h3>
+  <table>
+    <tr><th>年份</th><th>零售引擎</th><th>支付引擎</th><th>资产引擎</th><th>上市引擎</th><th>综合估值</th></tr>
+    <tr><td>第1年</td><td class="num">$1–2亿</td><td class="num">$0.5亿</td><td class="num">—</td><td class="num">—</td><td class="num gold">$2–3亿</td></tr>
+    <tr><td>第3年</td><td class="num">$10–20亿</td><td class="num">$5–10亿</td><td class="num">$5–10亿</td><td class="num">—</td><td class="num gold">$20–40亿</td></tr>
+    <tr><td>第5年</td><td class="num">$50–100亿</td><td class="num">$30–50亿</td><td class="num">$50–100亿</td><td class="num">$50–100亿</td><td class="num gold">$180–350亿</td></tr>
+    <tr><td>第8年</td><td class="num">$300–500亿</td><td class="num">$100–200亿</td><td class="num">$500–1000亿</td><td class="num">$300–500亿</td><td class="num gold">$1200–2200亿</td></tr>
+    <tr><td>第10年+</td><td class="num">$1000–2000亿</td><td class="num">$300–500亿</td><td class="num">$3000–5000亿</td><td class="num">$1000–2000亿</td><td class="num gold" style="font-size:15px;">$5300–9500亿</td></tr>
+  </table>
+</div>
+
+<!-- ===== CHAPTER 10 ===== -->
+<div class="chapter" id="ch10">
+  <div class="chapter-num">第十章</div>
+  <h2>治理、合规与安全</h2>
+
+  <h3>10.1 法律架构</h3>
+  <div class="box">
+    <p><strong>开曼群岛基金会</strong>（治理·投票·国库管理）</p>
+    <table style="margin:10px 0;">
+      <tr><td>└─ BVI Token发行主体</td><td>ERC-20合约部署 & 代币发行</td></tr>
+      <tr><td>└─ 瑞士 OTC交易主体</td><td>机构大宗交易合规</td></tr>
+      <tr><td>└─ BVI 资产并购主体</td><td>→ 矿业SPV / 能源SPV / 地产SPV</td></tr>
+      <tr style="background:rgba(212,168,67,0.05);"><td>└─ 纳斯达克上市公司（美国）</td><td>SEC监管 · 公众持股</td></tr>
+    </table>
+  </div>
+
+  <h3>10.2 合规策略</h3>
+  <table>
+    <tr><th>领域</th><th>策略</th></tr>
+    <tr><td>Token合规</td><td>pGOLD为实物黄金数字化权益凭证，非证券。初期不设实物赎回通道（需KYC后解锁），降低被认定为证券的风险</td></tr>
+    <tr><td>资产收购</td><td>通过BVI SPV操作，遵守各国外资审查法规</td></tr>
+    <tr><td>上市主体</td><td>纳斯达克上市主体为美国公司，接受SEC全面监管</td></tr>
+    <tr><td>反洗钱</td><td>链上地址实时监控，不与OFAC制裁地址交互。大额赎回触发KYC/AML</td></tr>
+  </table>
+
+  <h3>10.3 储备证明与审计</h3>
+  <ul style="margin:12px 0 12px 20px;color:#b0aca0;">
+    <li style="margin:6px 0;"><strong>链上Proof of Reserve：</strong>流通储备实时可查，每日自动更新</li>
+    <li style="margin:6px 0;"><strong>季度独立审计：</strong>由四大会计师事务所出具审计报告</li>
+    <li style="margin:6px 0;"><strong>持牌金库托管：</strong>Brink's / Loomis等国际持牌金库，全额保险覆盖</li>
+    <li style="margin:6px 0;"><strong>智能合约审计：</strong>Trail of Bits / OpenZeppelin双重审计</li>
+  </ul>
+</div>
+
+<!-- ===== CHAPTER 11 ===== -->
+<div class="chapter" id="ch11">
+  <div class="chapter-num">第十一章</div>
+  <h2>执行路线图</h2>
+  <div class="tier-grid">
+    <div class="tier-card">
+      <div class="tier-name">第一阶段</div>
+      <div class="tier-mult" style="font-size:16px;color:var(--gold);">第1–12个月</div>
+      <div class="tier-bar" style="text-align:left;font-size:12px;line-height:1.8;">
+        <strong>冷启动</strong><br>
+        • 合约开发+审计<br>
+        • 预言机集成<br>
+        • 初始黄金储备采购<br>
+        • Base主网部署+公测<br>
+        • 组队系统+排行榜<br>
+        <strong>目标：</strong>日交易量 $10M+
+      </div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name">第二阶段</div>
+      <div class="tier-mult" style="font-size:16px;color:var(--gold);">第13–36个月</div>
+      <div class="tier-bar" style="text-align:left;font-size:12px;line-height:1.8;">
+        <strong>商家生态启动</strong><br>
+        • 接入首批跨境贸易商户<br>
+        • 完成3–5个资产置换<br>
+        • 首个RWA项目启动<br>
+        • 商家结算量突破$100M/年<br>
+        <strong>目标：</strong>管理资产 $10亿+
+      </div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name">第三阶段</div>
+      <div class="tier-mult" style="font-size:16px;color:var(--gold);">第3–10年</div>
+      <div class="tier-bar" style="text-align:left;font-size:12px;line-height:1.8;">
+        <strong>规模扩张+上市</strong><br>
+        • 规模化资产收购<br>
+        • 商家结算量突破$10B/年<br>
+        • 3–5家纳斯达克上市公司<br>
+        • 年交易量突破万亿级<br>
+        <strong>目标：</strong>万亿美元市值
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTER 12 ===== -->
+<div class="chapter" id="ch12">
+  <div class="chapter-num">第十二章</div>
+  <h2>风险矩阵与应对</h2>
+  <table>
+    <tr><th>风险类型</th><th>具体风险</th><th>影响</th><th>应对措施</th></tr>
+    <tr><td>技术</td><td>智能合约被黑</td><td class="red">致命</td><td>多家顶级审计 + 百万美元漏洞赏金 + 多签治理 + 时间锁</td></tr>
+    <tr><td>技术</td><td>预言机被操控</td><td class="red">高</td><td>Chainlink + Pyth 双源 + 30分钟价格延迟 + 异常波动熔断</td></tr>
+    <tr><td>市场</td><td>金价单边暴跌</td><td>中</td><td>赎回费率临时上调 + Treasury保持30%稳定币储备</td></tr>
+    <tr><td>市场</td><td>商家需求不足</td><td>中</td><td>降低接入门槛 + 补贴早期商家Gas费 + 拓展跨境贸易合作伙伴</td></tr>
+    <tr><td>监管</td><td>Token被认定为证券</td><td class="red">高</td><td>不设实物赎回通道（前期）+ 法律意见书 + 离岸架构</td></tr>
+    <tr><td>监管</td><td>资产收购被否决</td><td>中</td><td>遵守当地外资审查 + 分散标的国别 + 备用方案</td></tr>
+    <tr><td>运营</td><td>金库托管风险</td><td class="red">高</td><td>持牌金库 + 全额保险 + 季度审计 + 多签控制</td></tr>
+    <tr><td>运营</td><td>存入标准失控</td><td>中</td><td>写入协议的硬性上限：年奖励铸造速度 ≤ 手续费购金速度</td></tr>
+    <tr><td>宏观</td><td>全球经济危机</td><td>低</td><td>黄金本身是避险资产，危机中 pGOLD 需求可能上升</td></tr>
+  </table>
+</div>
+
+<!-- ===== APPENDIX ===== -->
+<div class="chapter" id="ch13">
+  <div class="chapter-num">附录</div>
+  <h2>关键参数速查</h2>
+
+  <h3>A.1 pGOLD 基本信息</h3>
+  <table>
+    <tr><td>名称/代号</td><td>pGOLD / Protocol Gold</td></tr>
+    <tr><td>锚定</td><td>1 pGOLD = 1克实物黄金</td></tr>
+    <tr><td>参考价格</td><td>$85/g（参考2026年国际金价，实时浮动）</td></tr>
+    <tr><td>区块链</td><td>Base（首发），后续跨链 Arbitrum、Solana、Sui</td></tr>
+    <tr><td>标准</td><td>ERC-20</td></tr>
+  </table>
+
+  <h3>A.2 激励参数</h3>
+  <table>
+    <tr><th>轨道</th><th>倍率</th><th>锁仓期</th><th>等效年化</th></tr>
+    <tr><td>A. 持有分红</td><td>3.5%/年</td><td>无锁仓</td><td>3.5%</td></tr>
+    <tr><td>B. 月榜Top 100</td><td>300%</td><td>10年线性</td><td>~30%/年</td></tr>
+    <tr><td>B. 季榜Top 100</td><td>500%</td><td>10年线性</td><td>~50%/年</td></tr>
+    <tr><td>B. 年榜Top 100</td><td>1000%</td><td>10年线性</td><td>~100%/年</td></tr>
+    <tr><td>C. 燃烧挖矿</td><td>1000%</td><td>10年线性</td><td>100%/年</td></tr>
+    <tr><td colspan="4" style="font-size:12px;color:var(--text-dim);">Top 100 榜单内部：取消硬顶，月/季/年独立结算叠加（全年满额可达1800%）。燃烧挖矿为独立平行轨道，与榜单奖励可叠加。燃烧无需质押，上榜需质押。</td></tr>
+  </table>
+
+  <h3>A.3 上榜门槛</h3>
+  <table>
+    <tr><th>榜单</th><th>最低交易量</th><th>评选周期</th></tr>
+    <tr><td>月榜</td><td>$1M / 月</td><td>每月评选</td></tr>
+    <tr><td>季榜</td><td>$30M / 季</td><td>每季评选</td></tr>
+    <tr><td>年榜</td><td>$500M / 年</td><td>每年评选</td></tr>
+  </table>
+
+  <h3>A.4 费率</h3>
+  <table>
+    <tr><td>交易手续费</td><td><strong>0.5%</strong> / round-trip（改造后，原0.3%）</td></tr>
+    <tr><td>铸造溢价</td><td>0.1%–0.2%（随金价波动动态调整）</td></tr>
+    <tr><td>赎回收费</td><td>0.05%</td></tr>
+  </table>
+
+  <h3>A.5 代币经济关键比率</h3>
+  <table>
+    <tr><td>年均通胀率</td><td>~1–3%（与实物黄金开采率相当）</td></tr>
+    <tr><td>黄金储备覆盖率</td><td>始终 ≥ 100%</td></tr>
+    <tr><td>手续费回购覆盖率</td><td>3.2x（基准情景，0.25%费率）</td></tr>
+    <tr><td>奖励叠加规则</td><td>月/季/年独立结算，可叠加，无硬顶</td></tr>
+    <tr><td>存入锚定</td><td>排名是门票，存入量决定奖励基数</td></tr>
+  </table>
+
+  <h3>A.6 三方用户类型</h3>
+  <table>
+    <tr><th>用户类型</th><th>行为</th><th>贡献</th><th>获益</th></tr>
+    <tr><td>交易用户</td><td>高频链上交易</td><td>创造流动性 + 手续费收入</td><td>激励奖励 + 套利收益</td></tr>
+    <tr><td>市场用户</td><td>pGOLD结算实物贸易</td><td>吸收解锁供应 + 深度增长</td><td>省SWIFT费 + 省汇率损耗</td></tr>
+    <tr><td>协议</td><td>管理金库 + 分配激励</td><td>维护系统运转</td><td>手续费盈余 + 资产增值</td></tr>
+  </table>
+</div>
+
+</div><!-- .content -->
+
+<div class="footer">
+  <div class="gold-line"></div>
+  <p>pGOLD Protocol · 白皮书 V5.0</p>
+  <p>数字黄金驱动的全球资产炼金术</p>
+  <p style="margin-top:8px;">本白皮书仅供参考，不构成任何投资建议。pGOLD 为实物黄金数字化权益凭证。</p>
+</div>
+
+<script>
+// ── Token economics simulation V3.0 ──
+var GOLD_PRICE = 85;
+var FEE_RATE = 0.0025;
+var TOP_LOCK = 10;
+var BURN_LOCK = 10;
+
+function simulateData() {
+  var initialGoldTons = 10;
+  var initialGoldGrams = initialGoldTons * 1e6;
+  var initialSupply = initialGoldGrams;
+
+  var yearPeople = 100;
+  var yrDeposits = 0;
+  if (yearPeople >= 10) yrDeposits += Math.min(10, yearPeople) * 500000;
+  if (yearPeople > 10) yrDeposits += Math.min(40, yearPeople - 10) * 100000;
+  if (yearPeople > 50) yrDeposits += (yearPeople - 50) * 30000;
+  var yrRewardsGrams = (yrDeposits * 5.0) / GOLD_PRICE;
+
+  var burnMiners = 5000;
+  var burnTotalFees = burnMiners * 100000 * FEE_RATE;
+  var annualBurnLocked = (burnTotalFees * 10.0) / GOLD_PRICE;
+
+  var annualNewLocked = yrRewardsGrams + annualBurnLocked;
+
+  var yrVol = yearPeople * 500000000;
+  var burnVol = burnMiners * 100000;
+  var totalVol = yrVol + burnVol;
+  var casualVol = totalVol * 0.05;
+  var annualGoldPurchase = ((totalVol + casualVol) * FEE_RATE) / GOLD_PRICE;
+
+  var goldVault = initialGoldGrams;
+  var circulating = initialSupply;
+  var totalSupply = initialSupply;
+  var cumulativePurchases = 0;
+  var lockedBatches = [];
+
+  var years = [], circData = [], lockedData = [], totalSupplyData = [];
+  var inflationData = [], reserveData = [];
+
+  for (var y = 1; y <= 10; y++) {
+    lockedBatches.push({ year: y, amount: yrRewardsGrams, lockYears: TOP_LOCK });
+    lockedBatches.push({ year: y, amount: annualBurnLocked, lockYears: BURN_LOCK });
+    totalSupply += annualNewLocked;
+
+    var unlockThisYear = 0;
+    for (var i = 0; i < lockedBatches.length; i++) {
+      var batch = lockedBatches[i];
+      var elapsed = y - batch.year + 1;
+      if (elapsed > 0 && elapsed <= batch.lockYears) {
+        unlockThisYear += batch.amount / batch.lockYears;
+      }
+    }
+    circulating += unlockThisYear;
+
+    cumulativePurchases += annualGoldPurchase;
+    var totalRedemptions = 0;
+    for (var ry = 1; ry <= y; ry++) {
+      totalRedemptions += (initialSupply + (circulating - initialSupply) * (ry / y)) * 0.02;
+    }
+    goldVault = initialGoldGrams + cumulativePurchases - totalRedemptions;
+
+    var lockedAmount = totalSupply - circulating;
+    var inflation = y > 1
+      ? ((circulating - circData[y-2]) / circData[y-2] * 100)
+      : ((circulating - initialSupply) / initialSupply * 100);
+    var reserveRatio = circulating > 0 ? (goldVault / circulating * 100) : 100;
+
+    years.push(y);
+    circData.push(circulating);
+    lockedData.push(lockedAmount);
+    totalSupplyData.push(totalSupply);
+    inflationData.push(parseFloat(inflation.toFixed(2)));
+    reserveData.push(parseFloat(reserveRatio.toFixed(1)));
+  }
+
+  return {
+    years: years, circData: circData, lockedData: lockedData, totalSupplyData: totalSupplyData,
+    inflationData: inflationData, reserveData: reserveData,
+    initialSupply: initialSupply
+  };
+}
+
+function renderCharts() {
+  var d = simulateData();
+
+  // Hide all loaders
+  var loaders = document.querySelectorAll('.chart-loader');
+  for (var i = 0; i < loaders.length; i++) { loaders[i].style.display = 'none'; }
+  // Mark containers as loaded
+  var wraps = document.querySelectorAll('.chart-container');
+  for (var i = 0; i < wraps.length; i++) { wraps[i].classList.add('chart-loaded'); }
+
+  // Metric cards
+  document.getElementById('mInitialSupply').textContent = (d.initialSupply/1e6).toFixed(1) + 'M';
+  document.getElementById('mY10Circ').textContent = (d.circData[9]/1e6).toFixed(1) + 'M';
+  document.getElementById('m5yrGrowth').textContent = ((d.circData[4]-d.initialSupply)/d.initialSupply*100).toFixed(0) + '%';
+  document.getElementById('m10yrGrowth').textContent = ((d.circData[9]-d.initialSupply)/d.initialSupply*100).toFixed(0) + '%';
+
+  // Supply chart
+  var supplyCtx = document.getElementById('supplyChart').getContext('2d');
+  new Chart(supplyCtx, {
+    type: 'bar',
+    data: {
+      labels: d.years.map(function(y) { return 'Y' + y; }),
+      datasets: [
+        { label: '流通量', data: d.circData.map(function(v) { return v/1e6; }), backgroundColor: '#4ECB71', borderRadius: 4, order: 2 },
+        { label: '锁仓量', data: d.lockedData.map(function(v) { return v/1e6; }), backgroundColor: '#d4a843', borderRadius: 4, order: 2 },
+        { label: '总发行量', data: d.totalSupplyData.map(function(v) { return v/1e6; }), type: 'line', borderColor: '#b0aca0', borderWidth: 1.5, borderDash: [5,3], pointRadius: 0, fill: false, order: 1 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#aaa', font: { size: 11 }, usePointStyle: true, pointStyle: 'rectRounded' } } },
+      scales: {
+        x: { ticks: { color: '#6b6560' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+        y: { title: { text: '百万 pGOLD', display: true, color: '#6b6560' }, ticks: { color: '#6b6560', callback: function(v) { return v.toFixed(1)+'M'; } }, grid: { color: 'rgba(255,255,255,0.03)' }, stacked: true }
+      }
+    }
+  });
+
+  // Inflation chart
+  var inflCtx = document.getElementById('inflationChart').getContext('2d');
+  new Chart(inflCtx, {
+    type: 'line',
+    data: {
+      labels: d.years.map(function(y) { return 'Y' + y; }),
+      datasets: [
+        { label: 'pGOLD 年通胀率', data: d.inflationData, borderColor: '#d4a843', backgroundColor: 'rgba(212,168,67,0.08)', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#d4a843', fill: true, tension: 0.3 },
+        { label: '实物黄金年开采增量 (~1.7%)', data: Array(10).fill(1.7), borderColor: '#6b6560', borderWidth: 1, borderDash: [6,4], pointRadius: 0, fill: false },
+        { label: 'USD M2 年均增速 (~6%)', data: Array(10).fill(6.0), borderColor: '#E05555', borderWidth: 1, borderDash: [3,5], pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#aaa', font: { size: 11 }, usePointStyle: true } } },
+      scales: {
+        x: { ticks: { color: '#6b6560' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+        y: { title: { text: '年通胀率 %', display: true, color: '#6b6560' }, ticks: { color: '#6b6560', callback: function(v) { return v+'%'; } }, grid: { color: 'rgba(255,255,255,0.03)' }, min: 0 }
+      }
+    }
+  });
+
+  // Reserve chart
+  var reserveCtx = document.getElementById('reserveChart').getContext('2d');
+  new Chart(reserveCtx, {
+    type: 'line',
+    data: {
+      labels: d.years.map(function(y) { return 'Y' + y; }),
+      datasets: [
+        { label: '黄金储备覆盖率', data: d.reserveData, borderColor: '#4ECB71', borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#4ECB71', fill: false, tension: 0.3 },
+        { label: '100% 全额储备线', data: Array(10).fill(100), borderColor: '#6b6560', borderWidth: 1, borderDash: [8,4], pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#aaa', font: { size: 11 }, usePointStyle: true } } },
+      scales: {
+        x: { ticks: { color: '#6b6560' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+        y: { title: { text: '储备覆盖率 %', display: true, color: '#6b6560' }, ticks: { color: '#6b6560', callback: function(v) { return v+'%'; } }, grid: { color: 'rgba(255,255,255,0.03)' }, min: 90 }
+      }
+    }
+  });
+}
+
+function showStaticFallback() {
+  // Hide loaders, update text with fallback message
+  var loaders = document.querySelectorAll('.chart-loader');
+  for (var i = 0; i < loaders.length; i++) {
+    loaders[i].innerHTML = '图表未能加载，以下为静态估算数据';
+    loaders[i].style.color = '#6b6560';
+  }
+  var wraps = document.querySelectorAll('.chart-container');
+  for (var i = 0; i < wraps.length; i++) { wraps[i].classList.add('chart-loaded'); }
+
+  document.getElementById('mInitialSupply').textContent = '10.0M';
+  document.getElementById('mY10Circ').textContent = '~12.5M';
+  document.getElementById('m5yrGrowth').textContent = '~12%';
+  document.getElementById('m10yrGrowth').textContent = '~25%';
+}
+
+// ── Dynamic Chart.js loader ──
+(function() {
+  var script = document.createElement('script');
+  var loaded = false;
+  var CDNS = [
+    'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
+    'https://unpkg.com/chart.js@4.4.1/dist/chart.umd.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js'
+  ];
+  var cdnIdx = 0;
+  var timeoutId = null;
+
+  function tryNext() {
+    if (loaded) return;
+    cdnIdx++;
+    if (cdnIdx < CDNS.length) {
+      script.src = CDNS[cdnIdx];
+      document.head.appendChild(script);
+    } else {
+      showStaticFallback();
+    }
+  }
+
+  function onLoad() {
+    if (loaded) return;
+    loaded = true;
+    if (timeoutId) clearTimeout(timeoutId);
+    try {
+      if (typeof Chart !== 'undefined') {
+        renderCharts();
+      } else {
+        showStaticFallback();
+      }
+    } catch(e) {
+      showStaticFallback();
+    }
+  }
+
+  script.onload = onLoad;
+  script.onerror = tryNext;
+  script.src = CDNS[0];
+  document.head.appendChild(script);
+
+  // Timeout: if no CDN responds in 8 seconds, show static
+  timeoutId = setTimeout(function() {
+    if (!loaded) {
+      loaded = true;
+      showStaticFallback();
+    }
+  }, 8000);
+})();
+</script>
+</body>
+</html>

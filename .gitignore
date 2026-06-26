@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# 工作目录
+.workbuddy/
+
+# 临时文件
+*.tmp
+*.log
+NUL
+
+# 旧版本文件（可选，如果不想上传旧版本）
+frontend/index_v2.html
+frontend/index_v3.html
+frontend/index_v4.html
+frontend/swap_v4.html
+frontend/test.txt
+
+# Node modules (如果有)
+node_modules/

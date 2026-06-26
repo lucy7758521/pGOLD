@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>pGOLD Swap</title>
+<style>
+:root {
+  --gold:#d4a843; --gold-dim:#b8922e; --gold-bright:#f0c050; --gold-glow:rgba(212,168,67,0.25);
+  --bg:#060608; --bg2:#0a0a0f; --card:#0d0d16; --card2:#111118;
+  --border:rgba(212,168,67,0.12); --border2:rgba(212,168,67,0.22);
+  --text:#f0eee6; --text2:#c8c4b8; --muted:#7a7868;
+  --green:#10b981; --green-glow:rgba(16,185,129,0.2); --red:#ef4444; --red-glow:rgba(239,68,68,0.2); --orange:#f59e0b;
+  --radius:18px; --safe-bottom:env(safe-area-inset-bottom,0px);
+  --shadow-gold:0 8px 32px rgba(212,168,67,0.15), 0 2px 8px rgba(212,168,67,0.08);
+  --shadow-card:0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ══ Ambient glow ══ */
+body::before {
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 5%, rgba(212,168,67,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 85% 90%, rgba(212,168,67,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 30% 25% at 50% 50%, rgba(212,168,67,0.02) 0%, transparent 60%);
+}
+/* ══ Noise texture ══ */
+body::after {
+  content:'';position:fixed;inset:0;z-index:0;opacity:.018;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:256px 256px;
+}
+
+body {
+  font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 16px calc(48px + var(--safe-bottom));
+  -webkit-tap-highlight-color:transparent;position:relative;z-index:1;
+}
+body > * { position:relative; z-index:1; }
+
+/* ══ Header ══ */
+.header{width:100%;max-width:460px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.15em;font-weight:800;color:var(--text);letter-spacing:-.4px;}
+.logo svg{width:30px;height:30px;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(212,168,67,0.5));}
+.logo span{color:var(--gold);text-shadow:0 0 20px rgba(212,168,67,0.4);}
+.logo-home{display:flex;align-items:center;gap:5px;color:var(--muted);text-decoration:none;font-size:.74em;font-weight:600;padding:5px 10px;border-radius:8px;transition:all .2s;border:1px solid transparent;}
+.logo-home:hover{color:var(--gold);border-color:var(--border);background:rgba(212,168,67,.05);}
+.header-right{display:flex;align-items:center;gap:8px;}
+.dapp-link{color:var(--gold);text-decoration:none;font-size:.74em;font-weight:700;padding:6px 12px;border:1px solid rgba(212,168,67,.2);border-radius:8px;transition:all .2s;background:rgba(212,168,67,.04);}
+.dapp-link:hover{background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);box-shadow:0 0 12px rgba(212,168,67,.1);}
+.lang-switch{display:flex;gap:1px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:9px;padding:3px;}
+.lang-btn{padding:5px 13px;border:none;border-radius:7px;cursor:pointer;font-size:.73em;font-weight:700;background:transparent;color:var(--muted);transition:all .2s;min-height:30px;}
+.lang-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;box-shadow:0 2px 8px rgba(212,168,67,.3);}
+
+/* ══ Wallet Bar ══ */
+.wallet-bar{width:100%;max-width:460px;display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:14px;}
+.wallet-addr{font-size:.7em;color:var(--muted);background:var(--card);border:1px solid rgba(255,255,255,.05);padding:7px 12px;border-radius:9px;font-family:'SF Mono','Cascadia Code',monospace;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wallet-btn{padding:8px 18px;border:1px solid rgba(212,168,67,.3);border-radius:9px;background:rgba(212,168,67,.04);color:var(--gold);font-size:.75em;font-weight:700;cursor:pointer;transition:all .2s;min-height:36px;}
+.wallet-btn:hover{background:rgba(212,168,67,.1);box-shadow:0 0 16px rgba(212,168,67,.2);border-color:rgba(212,168,67,.5);}
+.wallet-btn:active{transform:scale(.97);}
+
+/* ══ Swap Card ══ */
+.swap-card{
+  width:100%;max-width:460px;
+  background:linear-gradient(150deg,rgba(18,16,26,0.97),rgba(13,13,20,0.99));
+  border:1px solid rgba(212,168,67,0.14);
+  border-radius:var(--radius);padding:26px;position:relative;
+  box-shadow:0 16px 64px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.025) inset;
+  backdrop-filter:blur(20px);
+}
+/* Top shimmer */
+.swap-card::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,0.5),transparent);
+  border-radius:0 0 1px 1px;
+}
+/* Corner accent */
+.swap-card::after{
+  content:'';position:absolute;top:0;left:0;width:80px;height:80px;
+  background:radial-gradient(ellipse at top left, rgba(212,168,67,0.07), transparent 70%);
+  border-radius:var(--radius) 0 0 0;pointer-events:none;
+}
+
+.swap-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.swap-mode{display:flex;gap:3px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,.04);border-radius:11px;padding:4px;flex:1;margin-right:10px;}
+.swap-mode button{flex:1;padding:10px;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.84em;transition:all .2s;color:var(--muted);background:transparent;min-height:42px;}
+.swap-mode button.active-buy{background:rgba(16,185,129,.14);color:var(--green);box-shadow:0 2px 10px rgba(16,185,129,.1);}
+.swap-mode button.active-sell{background:rgba(239,68,68,.14);color:var(--red);box-shadow:0 2px 10px rgba(239,68,68,.1);}
+.settings-btn{
+  width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);color:var(--muted);font-size:1em;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.settings-btn:hover,.settings-btn.active{border-color:rgba(212,168,67,.3);color:var(--gold);background:rgba(212,168,67,.06);}
+
+/* ══ Slippage Panel ══ */
+.slippage-panel{display:none;background:rgba(0,0,0,.25);border:1px solid rgba(212,168,67,.08);border-radius:12px;padding:14px;margin-bottom:16px;}
+.slippage-panel.show{display:block;animation:fadeIn .15s;}
+.sl-title{font-size:.72em;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px;}
+.slippage-options{display:flex;gap:6px;flex-wrap:wrap;}
+.slippage-opt{padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);color:var(--muted);font-size:.75em;font-weight:600;cursor:pointer;transition:all .15s;min-height:34px;}
+.slippage-opt:hover{border-color:rgba(212,168,67,.2);color:var(--text);}
+.slippage-opt.active{border-color:rgba(212,168,67,.4);color:var(--gold);background:rgba(212,168,67,.08);}
+.slippage-custom{width:80px;padding:7px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);color:var(--text);font-size:.75em;text-align:center;font-family:inherit;}
+.slippage-custom:focus{outline:none;border-color:rgba(212,168,67,.4);box-shadow:0 0 0 3px rgba(212,168,67,.06);}
+
+/* ══ Input Groups ══ */
+.input-group{margin-bottom:4px;}
+.input-group label{display:flex;justify-content:space-between;align-items:center;font-size:.72em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.6px;gap:8px;}
+.input-group label .balance-display{color:var(--text2);font-weight:600;font-size:1.1em;margin-left:auto;text-transform:none;letter-spacing:0;}
+.input-group label .max-btn{color:var(--gold);cursor:pointer;font-weight:700;padding:4px 12px;border-radius:6px;transition:all .15s;font-size:1em;text-transform:none;letter-spacing:0;border:1px solid rgba(212,168,67,.3);background:rgba(212,168,67,.1);}
+.input-group label .max-btn:hover{background:rgba(212,168,67,.2);box-shadow:0 0 12px rgba(212,168,67,.25);border-color:rgba(212,168,67,.5);transform:scale(1.05);}
+.input-row{
+  display:flex;align-items:center;
+  background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;overflow:hidden;transition:all .2s;
+}
+.input-row:focus-within{border-color:rgba(212,168,67,.35);box-shadow:0 0 0 3px rgba(212,168,67,.07), 0 0 20px rgba(212,168,67,.05);}
+.input-row.warn{border-color:rgba(239,68,68,.5);box-shadow:0 0 0 3px rgba(239,68,68,.08);}
+.input-row input{
+  flex:1;padding:16px 16px;background:transparent;border:none;
+  color:var(--text);font-size:1.35em;font-weight:600;font-family:inherit;
+  outline:none;min-width:0;-moz-appearance:textfield;
+}
+.input-row input::-webkit-outer-spin-button,.input-row input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.input-row input::placeholder{color:rgba(255,255,255,.1);}
+.token-tag{
+  padding:7px 14px;font-size:.78em;font-weight:800;white-space:nowrap;
+  margin-right:12px;background:linear-gradient(135deg,rgba(212,168,67,.14),rgba(212,168,67,.08));
+  color:var(--gold);border-radius:9px;border:1px solid rgba(212,168,67,.15);
+  letter-spacing:.3px;
+}
+
+/* ══ Swap Arrow ══ */
+.swap-arrow{
+  display:flex;justify-content:center;align-items:center;padding:6px 0;margin:2px 0;
+  cursor:pointer;user-select:none;transition:all .2s;
+}
+.swap-arrow svg{width:30px;height:30px;transition:transform .35s cubic-bezier(.34,1.56,.64,1);color:var(--gold);filter:drop-shadow(0 0 6px rgba(212,168,67,.3));}
+.swap-arrow:hover svg{transform:rotate(180deg);}
+.swap-arrow:active svg{transform:rotate(180deg) scale(.88);}
+
+/* ══ Quote Rows ══ */
+.quote-row{display:flex;justify-content:space-between;font-size:.75em;padding:5px 0;color:var(--muted);}
+.quote-row .val{color:var(--text2);font-weight:600;}
+.quote-row .impact{font-weight:700;}
+.quote-row .impact.warn{color:var(--orange);}
+.quote-row .impact.high{color:var(--red);}
+
+/* ══ Swap Button ══ */
+.swap-btn{
+  width:100%;padding:17px;border:none;border-radius:13px;cursor:pointer;
+  font-weight:800;font-size:1em;min-height:56px;margin-top:18px;
+  transition:all .2s;position:relative;display:flex;align-items:center;
+  justify-content:center;gap:8px;letter-spacing:.1px;
+}
+.swap-btn:active{transform:scale(.98);}
+.swap-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-buy{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 4px 24px rgba(16,185,129,.25), 0 2px 8px rgba(16,185,129,.15);}
+.btn-buy:hover:not(:disabled){box-shadow:0 6px 32px rgba(16,185,129,.35), 0 2px 12px rgba(16,185,129,.2);}
+.btn-sell{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 4px 24px rgba(239,68,68,.25), 0 2px 8px rgba(239,68,68,.15);}
+.btn-sell:hover:not(:disabled){box-shadow:0 6px 32px rgba(239,68,68,.35), 0 2px 12px rgba(239,68,68,.2);}
+.btn-connect{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;font-weight:900;box-shadow:0 4px 24px rgba(212,168,67,.3), 0 2px 8px rgba(212,168,67,.2);}
+.btn-connect:hover:not(:disabled){box-shadow:0 6px 32px rgba(212,168,67,.4), 0 2px 12px rgba(212,168,67,.25);}
+.btn-enter{background:rgba(255,255,255,.03);color:var(--muted);border:1px dashed rgba(212,168,67,.15);}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;}
+
+/* ══ Price Banner ══ */
+.price-banner{
+  width:100%;max-width:460px;display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;margin-top:14px;
+  background:linear-gradient(135deg,rgba(20,18,28,0.95),rgba(13,13,20,0.98));
+  border:1px solid rgba(212,168,67,.1);border-radius:13px;gap:12px;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.price-banner .pair{font-size:.77em;color:var(--muted);}
+.price-banner .price{font-size:1.1em;font-weight:800;color:var(--gold);text-shadow:0 0 12px rgba(212,168,67,.3);}
+.price-banner .change{font-size:.78em;font-weight:700;}
+
+/* ══ Recent Trades ══ */
+.trades-card{
+  width:100%;max-width:460px;
+  background:linear-gradient(150deg,rgba(18,16,26,0.95),rgba(13,13,20,0.98));
+  border:1px solid rgba(212,168,67,.1);border-radius:var(--radius);padding:20px;margin-top:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.trades-card h3{font-size:.84em;color:var(--gold);margin-bottom:14px;font-weight:800;letter-spacing:.2px;display:flex;align-items:center;gap:8px;}
+.trades-card h3::before{content:'';display:inline-block;width:3px;height:14px;background:linear-gradient(180deg,var(--gold),var(--gold-dim));border-radius:2px;}
+.trade-row{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.025);font-size:.76em;gap:8px;}
+.trade-row:last-child{border:none;}
+.trade-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.trade-dot.buy{background:var(--green);box-shadow:0 0 7px rgba(16,185,129,.5);}
+.trade-dot.sell{background:var(--red);box-shadow:0 0 7px rgba(239,68,68,.5);}
+.trade-price{color:var(--text);font-weight:700;min-width:72px;font-variant-numeric:tabular-nums;}
+.trade-amt{color:var(--muted);flex:1;text-align:right;}
+.trade-time{color:rgba(255,255,255,.2);font-size:.72em;min-width:48px;text-align:right;font-family:'SF Mono',monospace;}
+.empty-state{text-align:center;color:var(--muted);padding:28px 0;font-size:.8em;}
+
+/* ══ Modal ══ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);z-index:200;justify-content:center;align-items:flex-end;}
+.modal-overlay.show{display:flex;animation:fadeIn .15s;}
+.modal-box{
+  background:linear-gradient(150deg,rgba(18,16,26,0.99),rgba(13,13,20,1));
+  border:1px solid rgba(212,168,67,.15);border-bottom:none;
+  border-radius:22px 22px 0 0;padding:28px 24px 36px;
+  width:100%;max-width:460px;max-height:85dvh;overflow-y:auto;
+  box-shadow:0 -8px 48px rgba(0,0,0,.6);
+}
+/* Modal top shimmer */
+.modal-box::before{content:'';display:block;width:40px;height:4px;background:rgba(212,168,67,.3);border-radius:2px;margin:0 auto 20px;}
+.modal-box h3{font-size:.95em;color:var(--gold);margin-bottom:16px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.modal-row{display:flex;justify-content:space-between;padding:10px 0;font-size:.82em;border-bottom:1px solid rgba(255,255,255,.03);}
+.modal-row .lbl{color:var(--muted);}
+.modal-row .val{font-weight:700;}
+.modal-actions{display:flex;gap:10px;margin-top:22px;}
+.modal-actions button{flex:1;padding:15px;border:none;border-radius:11px;font-weight:800;font-size:.88em;cursor:pointer;min-height:50px;transition:all .2s;}
+.modal-actions .btn-cancel{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.07);}
+.modal-actions .btn-cancel:hover{background:rgba(255,255,255,.08);}
+.modal-actions .btn-confirm{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;box-shadow:0 4px 20px rgba(212,168,67,.25);}
+.modal-actions .btn-confirm:hover{box-shadow:0 6px 28px rgba(212,168,67,.35);}
+.modal-actions button:active{transform:scale(.97);}
+
+/* ══ Toast ══ */
+.toast-area{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
+.toast{
+  padding:12px 24px;border-radius:12px;font-weight:700;font-size:.84em;
+  opacity:0;transform:translateY(-14px) scale(.95);transition:all .3s cubic-bezier(.34,1.56,.64,1);max-width:90vw;
+  text-align:center;pointer-events:auto;backdrop-filter:blur(12px);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.toast.show{opacity:1;transform:translateY(0) scale(1);}
+.toast-success{background:rgba(16,185,129,.92);color:#fff;border:1px solid rgba(16,185,129,.4);}
+.toast-error{background:rgba(239,68,68,.92);color:#fff;border:1px solid rgba(239,68,68,.4);}
+.toast-warning{background:rgba(245,158,11,.92);color:#000;border:1px solid rgba(245,158,11,.4);}
+
+/* ══ Order Book / Depth ══ */
+.depth-card,.kline-card{
+  width:100%;max-width:460px;
+  background:linear-gradient(150deg,rgba(18,16,26,0.95),rgba(13,13,20,0.98));
+  border:1px solid rgba(212,168,67,.1);border-radius:var(--radius);padding:20px;margin-top:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.depth-card h3,.kline-card h3{font-size:.84em;color:var(--gold);margin-bottom:14px;font-weight:800;letter-spacing:.2px;display:flex;align-items:center;gap:8px;}
+.depth-card h3::before,.kline-card h3::before{content:'';display:inline-block;width:3px;height:14px;background:linear-gradient(180deg,var(--gold),var(--gold-dim));border-radius:2px;}
+
+/* ══ Leaderboard ══ */
+.lb-card{
+  width:100%;max-width:460px;
+  background:linear-gradient(150deg,rgba(18,16,26,0.95),rgba(13,13,20,0.98));
+  border:1px solid rgba(212,168,67,.1);border-radius:var(--radius);padding:20px;margin-top:14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.lb-card h3{font-size:.84em;color:var(--gold);margin-bottom:14px;font-weight:800;letter-spacing:.2px;display:flex;align-items:center;gap:8px;}
+.lb-card h3::before{content:'';display:inline-block;width:3px;height:14px;background:linear-gradient(180deg,var(--gold),var(--gold-dim));border-radius:2px;}
+.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.025);}
+.lb-item:last-child{border:none;}
+.lb-rank{width:22px;text-align:center;font-size:.74em;font-weight:800;color:var(--muted);}
+.lb-rank.top{color:var(--gold);text-shadow:0 0 8px rgba(212,168,67,.4);}
+.lb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(212,168,67,.1));display:flex;align-items:center;justify-content:center;font-size:.62em;font-weight:800;color:var(--gold);flex-shrink:0;border:1px solid rgba(212,168,67,.15);}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:.74em;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-vol{font-size:.66em;color:var(--muted);}
+.lb-reward{font-size:.78em;font-weight:800;color:var(--green);white-space:nowrap;}
+
+/* ══ Animations ══ */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══ Mobile ══ */
+@media (max-width:480px){
+  body{padding:14px 10px calc(24px + var(--safe-bottom));}
+  .swap-card{padding:18px;border-radius:16px;}
+  .input-row input{font-size:1.18em;padding:14px 14px;}
+  .swap-btn{padding:15px;font-size:.92em;min-height:50px;}
+  .modal-box{padding:24px 16px 30px;border-radius:18px 18px 0 0;}
+}
+
+/* ══ Desktop touches ══ */
+@media (min-width:769px){
+  .swap-card{transition:border-color .3s, box-shadow .3s;}
+  .swap-card:hover{border-color:rgba(212,168,67,.18);box-shadow:0 20px 80px rgba(0,0,0,.65), 0 0 40px rgba(212,168,67,.06);}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">
+    <a href="index.html" class="logo-home">← 首页</a>
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" fill="url(#glogo)" stroke="var(--gold)" stroke-width="1.5"/><circle cx="16" cy="16" r="10" fill="none" stroke="var(--gold)" stroke-width=".8" stroke-dasharray="3 2"/><circle cx="16" cy="16" r="4" fill="var(--gold)"/><defs><radialGradient id="glogo"><stop offset="0%" stop-color="rgba(212,168,67,0.6)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs></svg>
+    <span>pGOLD</span> Swap
+  </div>
+  <div class="header-right">
+    <a href="dapp_v3.html" class="dapp-link">DApp →</a>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="zh">中</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+  </div>
+</div>
+
+<!-- Wallet Bar -->
+<div class="wallet-bar">
+  <span class="wallet-addr" id="walletAddr">—</span>
+  <button class="wallet-btn" id="walletBtn" onclick="toggleWallet()">Connect</button>
+</div>
+
+<!-- Swap Card -->
+<div class="swap-card">
+  <div class="swap-header">
+    <div class="swap-mode">
+      <button id="btnBuy" onclick="setMode('buy')">买入 pGOLD</button>
+      <button id="btnSell" onclick="setMode('sell')">卖出 pGOLD</button>
+    </div>
+    <button class="settings-btn" id="settingsBtn" onclick="toggleSlippage()" title="滑点">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" fill="currentColor"/><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+  </div>
+
+  <!-- Slippage Panel -->
+  <div class="slippage-panel" id="slippagePanel">
+    <div class="sl-title" id="slTitle">滑点容忍度</div>
+    <div class="slippage-options">
+      <button class="slippage-opt" data-sl="0.1" onclick="setSlippage(0.1)">0.1%</button>
+      <button class="slippage-opt active" data-sl="0.5" onclick="setSlippage(0.5)">0.5%</button>
+      <button class="slippage-opt" data-sl="1.0" onclick="setSlippage(1.0)">1.0%</button>
+      <input type="number" class="slippage-custom" id="slCustom" placeholder="自定义" min="0.1" max="50" step="0.1" onchange="setSlippage(parseFloat(this.value)||0.5)">
+    </div>
+  </div>
+
+  <!-- Pay -->
+  <div class="input-group">
+    <label>
+      <span id="labelPay">支付</span>
+      <span class="balance-display" id="balanceDisplay">余额: $0</span>
+      <span class="max-btn" id="maxPay" onclick="setMax()">最大</span>
+    </label>
+    <div class="input-row" id="rowPay">
+      <input type="number" id="inputPay" placeholder="0.00" oninput="onInput()" inputmode="decimal">
+      <span class="token-tag" id="tagPay">USDC</span>
+    </div>
+  </div>
+
+  <div class="swap-arrow" onclick="flipMode()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 16l-4-4 4-4"/><path d="M3 12h18"/><path d="M17 8l4 4-4 4"/></svg>
+  </div>
+
+  <!-- Receive -->
+  <div class="input-group">
+    <label><span id="labelReceive">获得</span></label>
+    <div class="input-row">
+      <input type="text" id="inputReceive" placeholder="0.00" readonly>
+      <span class="token-tag" id="tagReceive">pGOLD</span>
+    </div>
+  </div>
+
+  <!-- Quotes -->
+  <div class="quote-row"><span id="labelPrice">价格</span><span class="val" id="valPrice">$85.00</span></div>
+  <div class="quote-row" id="rowFee"><span id="labelFee">手续费 (0.25%)</span><span class="val" id="valFee">$0.00</span></div>
+  <div class="quote-row" id="rowImpact" style="display:none"><span id="labelImpact">价格影响</span><span class="val impact" id="valImpact">0.00%</span></div>
+  <div class="quote-row"><span id="labelMin">最少获得</span><span class="val" id="valMin">0.00</span></div>
+
+  <!-- Button -->
+  <button class="swap-btn btn-enter" id="swapBtn" disabled onclick="onSwapClick()">
+    <span id="swapBtnText">请输入金额</span>
+  </button>
+</div>
+
+<!-- Price Banner -->
+<div class="price-banner">
+  <span class="pair">pGOLD / USDC</span>
+  <span class="price" id="bannerPrice">$85.00</span>
+  <span class="change" style="color:var(--muted)" id="bannerChange">&mdash;</span>
+</div>
+
+<!-- Recent Trades -->
+<div class="trades-card">
+  <h3 id="labelRecent">最近交易</h3>
+  <div id="tradeList"><div class="empty-state" id="emptyTrades">暂无交易</div></div>
+</div>
+
+<!-- Navigation Links -->
+<div style="width:100%;max-width:460px;margin-top:18px;border-top:1px solid rgba(212,168,67,.08);padding-top:18px;">
+  <div style="display:flex;gap:10px;margin-bottom:12px;">
+    <a href="dapp_v3.html" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--gold);text-decoration:none;padding:11px;border:1px solid rgba(212,168,67,.2);border-radius:11px;font-size:.8em;font-weight:700;background:rgba(212,168,67,.04);transition:all .2s;" onmouseover="this.style.background='rgba(212,168,67,.1)'" onmouseout="this.style.background='rgba(212,168,67,.04)'">⬡ 进入 DApp</a>
+    <a href="index.html" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--muted);text-decoration:none;padding:11px;border:1px solid rgba(255,255,255,.06);border-radius:11px;font-size:.8em;font-weight:600;background:rgba(255,255,255,.02);transition:all .2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">← 返回官网</a>
+  </div>
+  <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+    <a href="../pGOLD_whitepaper.html" target="_blank" style="color:var(--muted);text-decoration:none;font-size:.74em;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📖 白皮书</a>
+    <a href="../pGOLD_Roadshow_V3.pptx" download style="color:var(--muted);text-decoration:none;font-size:.74em;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📑 PPT</a>
+    <a href="../trade_simulation_v5.html" target="_blank" style="color:var(--muted);text-decoration:none;font-size:.74em;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📊 测算器</a>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <h3 id="modalTitle">确认交易</h3>
+    <div class="modal-row"><span class="lbl" id="modalLabelPay">支付</span><span class="val" id="modalPay">-</span></div>
+    <div class="modal-row"><span class="lbl" id="modalLabelReceive">获得</span><span class="val" id="modalReceive">-</span></div>
+    <div class="modal-row"><span class="lbl">汇率</span><span class="val" id="modalRate">-</span></div>
+    <div class="modal-row"><span class="lbl">手续费 (0.25%)</span><span class="val" id="modalFee">-</span></div>
+    <div class="modal-row"><span class="lbl" id="modalLabelMin">最少获得</span><span class="val" id="modalMin">-</span></div>
+    <div class="modal-row" id="modalImpactRow" style="display:none"><span class="lbl">价格影响</span><span class="val" style="color:var(--orange)" id="modalImpact">-</span></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeConfirm()" id="btnCancel">取消</button>
+      <button class="btn-confirm" onclick="doSwap()" id="btnConfirm">确认交易</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-area"><div class="toast" id="toast"></div></div>
+
+<script>
+'use strict';
+
+/* ════════ I18N (inline, no external dependency) ════════ */
+const I18N = {
+  zh: {
+    'swap.buy':'买入 pGOLD','swap.sell':'卖出 pGOLD',
+    'swap.pay':'支付','swap.receive':'获得',
+    'swap.balance':'余额','swap.max':'最大',
+    'swap.price':'价格','swap.fee':'手续费','swap.priceImpact':'价格影响',
+    'swap.minReceived':'最少获得','swap.recent':'最近交易',
+    'swap.slippageTolerance':'滑点容忍度',
+    'swap.enterAmountHint':'请输入金额','swap.exceedsBalance':'余额不足',
+    'swap.walletRequired':'请先连接钱包','swap.review':'预览交易',
+    'swap.swapping':'交易处理中...','swap.youPay':'支付','swap.youReceive':'获得',
+    'swap.noTrades':'暂无交易','swap.success':'交易成功',
+    'common.connect':'连接钱包','common.cancel':'取消','common.confirm':'确认交易',
+    'common.notConnected':'未连接',
+  },
+  en: {
+    'swap.buy':'Buy pGOLD','swap.sell':'Sell pGOLD',
+    'swap.pay':'You Pay','swap.receive':'You Receive',
+    'swap.balance':'Balance','swap.max':'MAX',
+    'swap.price':'Price','swap.fee':'Fee','swap.priceImpact':'Price Impact',
+    'swap.minReceived':'Min Received','swap.recent':'Recent Trades',
+    'swap.slippageTolerance':'Slippage Tolerance',
+    'swap.enterAmountHint':'Enter Amount','swap.exceedsBalance':'Exceeds Balance',
+    'swap.walletRequired':'Connect Wallet','swap.review':'Review Swap',
+    'swap.swapping':'Swapping...','swap.youPay':'You Pay','swap.youReceive':'You Receive',
+    'swap.noTrades':'No trades yet','swap.success':'Swap Successful',
+    'common.connect':'Connect Wallet','common.cancel':'Cancel','common.confirm':'Confirm Swap',
+    'common.notConnected':'Not connected',
+  },
+  _lang:'zh',
+  t(key){ return (this[this._lang]||this.zh)[key] || key; },
+  getLang(){ return this._lang; },
+  setLang(l){ this._lang=l; }
+};
+
+const t=k=>I18N.t(k);
+
+let mode='buy',slippage=.5,currentQuote=null,swapping=false,connected=false;
+let pool={usdc:1000000,pgold:11765};
+let balances={usdc:50000,pgold:200};
+let trades=[];
+const FEE_BPS=25;
+
+function render(){
+  const lang=I18N.getLang();
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+
+  const btnB=document.getElementById('btnBuy'),btnS=document.getElementById('btnSell');
+  btnB.classList.toggle('active-buy',mode==='buy');
+  btnS.classList.toggle('active-sell',mode==='sell');
+  btnB.textContent=t('swap.buy');btnS.textContent=t('swap.sell');
+
+  const isBuy=mode==='buy';
+  el('labelPay',t('swap.pay'));el('labelReceive',t('swap.receive'));
+  el('tagPay',isBuy?'USDC':'pGOLD');el('tagReceive',isBuy?'pGOLD':'USDC');
+  const balanceText=isBuy?`${t('swap.balance')}: $${balances.usdc.toLocaleString()}`:`${t('swap.balance')}: ${balances.pgold.toLocaleString()} pGOLD`;
+  el('balanceDisplay',balanceText);
+  el('maxPay',t('swap.max')||'最大');
+
+  el('labelPrice',t('swap.price'));el('labelFee',t('swap.fee')+' (0.25%)');
+  el('labelImpact',t('swap.priceImpact'));el('labelMin',t('swap.minReceived'));
+  el('labelRecent',t('swap.recent'));el('slTitle',t('swap.slippageTolerance'));
+
+  updateSwapButton();
+  el('walletBtn',connected?'0xAbCd...Ef01':t('common.connect'));
+  el('walletAddr',connected?'0xAbCd...Ef01':t('common.notConnected'));
+
+  if(pool.pgold>0){
+    const price=pool.usdc/pool.pgold;
+    el('bannerPrice','$'+price.toFixed(2));
+    el('valPrice','$'+price.toFixed(2));
+  }
+  renderTrades();
+  document.querySelectorAll('.slippage-opt').forEach(b=>{
+    b.classList.toggle('active',Math.abs(parseFloat(b.dataset.sl)-slippage)<.001);
+  });
+  el('slCustom',[.1,.5,1].includes(slippage)?'':String(slippage));
+}
+
+function el(id,v){
+  const elem=document.getElementById(id);
+  if(!elem)return null;
+  if(v!==undefined){
+    if(elem.tagName==='INPUT'||elem.tagName==='TEXTAREA')elem.value=v;
+    else elem.textContent=v;
+  }
+  return elem;
+}
+
+function updateSwapButton(){
+  const btn=el('swapBtn'),txt=el('swapBtnText');
+  const val=parseFloat(el('inputPay').value)||0;
+  if(swapping){btn.className='swap-btn btn-buy';btn.disabled=true;txt.innerHTML='<span class="spinner"></span> '+t('swap.swapping');return;}
+  if(!connected){btn.className='swap-btn btn-connect';btn.disabled=false;txt.textContent=t('swap.walletRequired');return;}
+  if(val<=0){btn.className='swap-btn btn-enter';btn.disabled=true;txt.textContent=t('swap.enterAmountHint');return;}
+  const maxBal=mode==='buy'?balances.usdc:balances.pgold;
+  if(val>maxBal+.0001){btn.className=mode==='buy'?'swap-btn btn-buy':'swap-btn btn-sell';btn.disabled=true;txt.textContent=t('swap.exceedsBalance');return;}
+  btn.className=mode==='buy'?'swap-btn btn-buy':'swap-btn btn-sell';btn.disabled=false;txt.textContent=t('swap.review');
+}
+
+function renderTrades(){
+  const list=el('tradeList');
+  if(!trades.length){list.innerHTML='<div class="empty-state">'+t('swap.noTrades')+'</div>';return;}
+  list.innerHTML=trades.slice(-10).reverse().map(tr=>{
+    const cls=tr.type==='BUY'?'buy':'sell';
+    return `<div class="trade-row"><span class="trade-dot ${cls}"></span><span class="trade-price">$${tr.price.toFixed(2)}</span><span class="trade-amt">${tr.pgold.toFixed(2)} pGOLD</span><span class="trade-time">${tr.time}</span></div>`;
+  }).join('');
+}
+
+function getQuote(inputVal){
+  if(!inputVal||inputVal<=0)return null;
+  if(mode==='buy'){
+    const fee=(inputVal*FEE_BPS)/10000,net=inputVal-fee;
+    const out=(net*pool.pgold)/(pool.usdc+net);
+    const price=pool.usdc>0?pool.usdc/pool.pgold:85;
+    const impact=price>0?(net/(pool.usdc+net))*100:0;
+    return{out,fee,price,impact,inputVal,outUnit:'pGOLD',inUnit:'USDC'};
+  }else{
+    const gross=(inputVal*pool.usdc)/(pool.pgold+inputVal);
+    const fee=(gross*FEE_BPS)/10000,out=gross-fee;
+    const price=pool.usdc>0?pool.usdc/pool.pgold:85;
+    const impact=pool.pgold>0?(inputVal/(pool.pgold+inputVal))*100:0;
+    return{out,fee,price,impact,inputVal,outUnit:'USDC',inUnit:'pGOLD'};
+  }
+}
+
+function onInput(){
+  const val=parseFloat(el('inputPay').value)||0;
+  const row=el('rowPay'),maxBal=mode==='buy'?balances.usdc:balances.pgold;
+  row.classList.toggle('warn',val>maxBal+.0001);
+  if(val<=0){
+    el('inputReceive','');el('valFee','$0.00');el('valMin','0.00');
+    el('rowImpact').style.display='none';currentQuote=null;
+  }else{
+    currentQuote=getQuote(val);
+    if(currentQuote){
+      const q=currentQuote,dec=mode==='buy'?4:2;
+      el('inputReceive',q.out.toFixed(dec));
+      el('valFee','$'+q.fee.toFixed(2));
+      el('valMin',(q.out*(1-slippage/100)).toFixed(dec));
+      const impEl=el('valImpact');impEl.textContent=q.impact.toFixed(2)+'%';
+      el('rowImpact').style.display='';
+      impEl.className='val impact'+(q.impact>5?' high':q.impact>2?' warn':'');
+    }
+  }
+  updateSwapButton();
+}
+
+function setMax(){el('inputPay',String(mode==='buy'?balances.usdc:balances.pgold));onInput();}
+function setMode(m){mode=m;el('inputPay','');el('inputReceive','');el('rowPay').classList.remove('warn');el('rowImpact').style.display='none';currentQuote=null;el('valFee','$0.00');el('valMin','0.00');updateSwapButton();render();}
+function flipMode(){setMode(mode==='buy'?'sell':'buy');}
+
+function toggleSlippage(){
+  const panel=el('slippagePanel'),btn=el('settingsBtn');
+  panel.classList.toggle('show');btn.classList.toggle('active');
+}
+function setSlippage(val){slippage=val;onInput();render();}
+
+function onSwapClick(){
+  if(!connected){toggleWallet();return;}
+  const val=parseFloat(el('inputPay').value)||0;
+  if(val<=0)return;
+  const maxBal=mode==='buy'?balances.usdc:balances.pgold;
+  if(val>maxBal)return;
+  if(!currentQuote)return;
+  openConfirm();
+}
+
+function openConfirm(){
+  const q=currentQuote,isBuy=mode==='buy',dec=isBuy?4:2;
+  el('modalLabelPay',t('swap.youPay'));el('modalLabelReceive',t('swap.youReceive'));
+  el('modalLabelMin',t('swap.minReceived'));
+  el('modalPay',q.inputVal.toLocaleString()+' '+q.inUnit);
+  el('modalReceive',q.out.toFixed(dec)+' '+q.outUnit);
+  el('modalRate','1 '+q.inUnit+' = '+(q.out/q.inputVal).toFixed(dec)+' '+q.outUnit);
+  el('modalFee','$'+q.fee.toFixed(2));
+  el('modalMin',(q.out*(1-slippage/100)).toFixed(dec)+' '+q.outUnit);
+  if(q.impact>2){el('modalImpactRow').style.display='';el('modalImpact',q.impact.toFixed(2)+'%');}
+  else{el('modalImpactRow').style.display='none';}
+  el('confirmModal').classList.add('show');el('confirmModal').scrollTop=0;
+}
+
+function closeConfirm(){el('confirmModal').classList.remove('show');}
+function doSwap(){
+  closeConfirm();if(!currentQuote)return;
+  const q=currentQuote;swapping=true;updateSwapButton();
+  setTimeout(()=>{
+    if(mode==='buy'){balances.usdc-=q.inputVal;balances.pgold+=q.out;pool.usdc+=(q.inputVal-q.fee);pool.pgold-=q.out;trades.push({type:'BUY',pgold:q.out,price:q.price,time:new Date().toLocaleTimeString()});}
+    else{balances.pgold-=q.inputVal;balances.usdc+=q.out;pool.pgold+=q.inputVal;pool.usdc-=(q.out+q.fee);trades.push({type:'SELL',pgold:q.inputVal,price:q.price,time:new Date().toLocaleTimeString()});}
+    el('inputPay','');el('inputReceive','');el('rowPay').classList.remove('warn');el('rowImpact').style.display='none';
+    currentQuote=null;swapping=false;showToast(t('swap.success'),'success');render();
+  },600);
+}
+
+function toggleWallet(){connected=!connected;render();}
+
+let toastTimer;
+function showToast(msg,type){
+  const toastEl=el('toast');
+  clearTimeout(toastTimer);
+  toastEl.textContent=msg;toastEl.className='toast toast-'+(type||'success');
+  void toastEl.offsetWidth;toastEl.classList.add('show');
+  toastTimer=setTimeout(()=>toastEl.classList.remove('show'),2500);
+}
+
+// Lang
+document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{I18N.setLang(b.dataset.lang);render();});});
+
+// Close slippage on outside click
+document.addEventListener('click',e=>{
+  const panel=el('slippagePanel'),btn=el('settingsBtn');
+  if(panel.classList.contains('show')&&!panel.contains(e.target)&&e.target!==btn&&!btn.contains(e.target)){
+    panel.classList.remove('show');btn.classList.remove('active');
+  }
+});
+
+// Close modal on overlay click
+el('confirmModal').addEventListener('click',function(e){if(e.target===this)closeConfirm();});
+
+// Init
+render();
+</script>
+</body>
+</html>
