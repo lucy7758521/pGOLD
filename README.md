@@ -10,11 +10,11 @@ pGOLD是一个由PAXG储备支撑的数字黄金代币生态系统，提供：
 
 ## 在线访问
 
-- 🏠 [官网首页](https://你的用户名.github.io/pGOLD/frontend/index.html)
-- 🔄 [Swap交易](https://你的用户名.github.io/pGOLD/frontend/swap_v3.html)
-- 📱 [DApp应用](https://你的用户名.github.io/pGOLD/frontend/dapp_v3.html)
-- 📖 [白皮书](https://你的用户名.github.io/pGOLD/pGOLD_whitepaper.html)
-- 📊 [收益测算器](https://你的用户名.github.io/pGOLD/trade_simulation_v5.html)
+- 🏠 [官网首页](https://lucy7758521.github.io/pGOLD/frontend/index.html)
+- 🔄 [Swap交易](https://lucy7758521.github.io/pGOLD/frontend/swap_v3.html)
+- 📱 [DApp应用](https://lucy7758521.github.io/pGOLD/frontend/dapp_v3.html)
+- 📖 [白皮书](https://lucy7758521.github.io/pGOLD/pGOLD_whitepaper.html)
+- 📊 [收益测算器](https://lucy7758521.github.io/pGOLD/trade_simulation_v5.html)
 
 ## 技术栈
 
