@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -8,1005 +8,938 @@
 <meta http-equiv="Expires" content="0">
 <title>pGOLD DApp</title>
 <style>
-:root {
-  --gold:#d4a843; --gold-dim:#b8922e; --gold-bright:#f0c050; --gold-glow:rgba(212,168,67,0.22);
-  --bg:#060608; --card:#0d0d16; --card2:#111119;
-  --border:rgba(212,168,67,0.1); --border2:rgba(212,168,67,0.18);
-  --text:#f0eee6; --text2:#c8c4b8; --muted:#7a7868;
-  --green:#10b981; --red:#ef4444; --blue:#3b82f6; --orange:#f59e0b;
-  --purple:#8b5cf6; --sidebar-w:200px; --safe-bottom:env(safe-area-inset-bottom,0px);
-  --shadow-card:0 4px 24px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.3);
-  --shadow-gold:0 4px 20px rgba(212,168,67,0.18);
-  /* Track accent colours */
-  --track-a:var(--green); --track-b:var(--blue); --track-c:var(--red);
-  --track-d:var(--purple); --track-e:var(--gold);
+:root{
+  --gold:#d4a843;--gold-dim:#b8922e;
+  --bg:#0a0a0f;--surface:#0f0f18;--surface2:#13131e;
+  --border:rgba(255,255,255,.06);
+  --text:#ededeb;--text2:#8a8994;--muted:#4e4d56;
+  --green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--orange:#f59e0b;
+  --safe-bottom:env(safe-area-inset-bottom,0px);--nav-h:56px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;}
 
-/* ══ Noise ══ */
-body::before{content:'';position:fixed;inset:0;z-index:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");background-size:256px 256px;pointer-events:none;}
-body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;position:relative;z-index:1;}
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);
+  background:rgba(10,10,15,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:20px;}
+.nav-brand{font-size:.9em;font-weight:800;color:var(--text);letter-spacing:-.4px;
+  display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+.nav-links{display:flex;gap:2px;flex:1;}
+.nav-link{padding:7px 13px;border-radius:8px;font-size:.8em;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all .15s;border:none;background:none;white-space:nowrap;font-family:inherit;}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.nav-link.active{color:var(--text);background:rgba(255,255,255,.07);}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;}
+.wallet-badge{font-size:.7em;color:var(--text2);font-family:'SF Mono',monospace;
+  padding:5px 12px;border:1px solid var(--border);border-radius:20px;}
+.lang-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.lang-toggle button{padding:5px 9px;border:none;background:none;color:var(--muted);
+  font-size:.7em;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
+.lang-toggle button.active{background:rgba(212,168,67,.12);color:var(--gold);}
+.menu-btn{display:none;flex-direction:column;gap:5px;padding:8px;
+  background:none;border:none;cursor:pointer;border-radius:8px;margin-left:auto;}
+.menu-btn span{display:block;width:18px;height:1.5px;background:var(--text2);border-radius:2px;transition:all .25s;}
 
-/* ══ APP SHELL ══ */
-.app{display:flex;min-height:100dvh;}
+/* DRAWER */
+.drawer-backdrop{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);}
+.drawer-backdrop.show{display:block;}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:201;width:260px;
+  background:var(--surface2);border-left:1px solid var(--border);
+  transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.drawer.open{transform:translateX(0);}
+.drawer-header{padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
+.drawer-close{background:none;border:none;color:var(--text2);cursor:pointer;padding:4px 8px;font-size:1em;}
+.drawer-nav{display:flex;flex-direction:column;gap:2px;padding:12px;flex:1;overflow-y:auto;}
+.drawer-link{padding:12px 14px;border-radius:10px;font-size:.86em;color:var(--text2);
+  cursor:pointer;transition:all .15s;border:none;background:none;text-align:left;font-family:inherit;width:100%;}
+.drawer-link:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.drawer-link.active{color:var(--gold);background:rgba(212,168,67,.08);}
+.drawer-footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;}
+.drawer-wallet{font-size:.68em;color:var(--text2);font-family:monospace;word-break:break-all;}
 
-/* ══ SIDEBAR — fixed on desktop, hidden on mobile ══ */
-.sidebar{
-  width:var(--sidebar-w);flex-shrink:0;
-  background:linear-gradient(180deg,rgba(12,11,20,.98),rgba(8,8,16,.99));
-  border-right:1px solid rgba(212,168,67,.1);
-  display:flex;flex-direction:column;padding:0;
-  position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;
-}
-.sidebar-brand{
-  display:flex;align-items:center;gap:9px;padding:18px 16px 16px;
-  border-bottom:1px solid rgba(212,168,67,.07);
-  font-size:1em;font-weight:800;color:var(--text);letter-spacing:-.3px;
-}
-.sidebar-brand span{color:var(--gold);}
-.sidebar-brand svg{width:24px;height:24px;flex-shrink:0;}
-.nav-section{padding:10px 0;}
-.nav-label{font-size:.62em;color:var(--muted);padding:8px 16px 4px;letter-spacing:.8px;text-transform:uppercase;}
-.nav-item{
-  display:flex;align-items:center;gap:9px;padding:10px 16px;
-  cursor:pointer;font-size:.81em;color:var(--muted);
-  transition:all .15s;border-left:3px solid transparent;min-height:42px;
-}
-.nav-item:hover{color:var(--text2);background:rgba(255,255,255,.025);}
-.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:linear-gradient(90deg,rgba(212,168,67,.08),transparent);}
-.nav-icon{font-size:1em;width:20px;text-align:center;flex-shrink:0;}
-.sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(212,168,67,.08);display:flex;flex-direction:column;gap:8px;}
-.lang-row{display:flex;gap:1px;border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,.05);}
-.lang-row button{flex:1;padding:6px 0;border:none;cursor:pointer;font-size:.7em;font-weight:700;background:rgba(255,255,255,.02);color:var(--muted);transition:all .15s;min-height:30px;}
-.lang-row button.active{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;}
-.wallet-info{font-size:.65em;color:var(--muted);word-break:break-all;font-family:'SF Mono',monospace;}
-.sidebar-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
-.sidebar-links a{font-size:.68em;color:var(--muted);text-decoration:none;transition:color .15s;}
-.sidebar-links a:hover{color:var(--gold);}
+/* MAIN */
+.main{padding-top:var(--nav-h);}
+.page{display:none;max-width:860px;margin:0 auto;padding:44px 28px 80px;}
+.page.active{display:block;animation:fadeUp .18s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 
-/* ══ MOBILE TOPBAR ══ */
-.topbar{
-  display:none;position:sticky;top:0;z-index:40;
-  align-items:center;justify-content:space-between;
-  padding:0 16px;height:50px;
-  background:rgba(6,6,8,.95);backdrop-filter:blur(16px);
-  border-bottom:1px solid rgba(212,168,67,.07);
-}
-.topbar-left{display:flex;align-items:center;gap:10px;}
-.topbar-title{font-size:.86em;font-weight:700;color:var(--text2);}
-.topbar-logo{font-size:.92em;font-weight:800;color:var(--gold);text-decoration:none;}
-.hamburger{display:flex;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:8px;background:none;border:none;width:36px;height:36px;border-radius:8px;}
-.hamburger span{display:block;width:18px;height:1.5px;background:var(--text2);border-radius:1px;transition:all .25s;}
+/* DASHBOARD */
+.nw-block{padding:52px 0 40px;border-bottom:1px solid var(--border);}
+.nw-label{font-size:.68em;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;}
+.nw-value{font-size:3.2em;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1;}
+.nw-sub{font-size:.78em;color:var(--text2);margin-top:10px;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:28px;}
+.stat-cell{padding:20px 22px;border-right:1px solid var(--border);transition:background .15s;}
+.stat-cell:last-child{border-right:none;}
+.stat-cell:hover{background:var(--surface);}
+.sc-l{font-size:.67em;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
+.sc-v{font-size:1.05em;font-weight:700;}
+.sc-h{font-size:.67em;color:var(--muted);margin-top:3px;}
 
-/* ══ MOBILE DRAWER (overlay) ══ */
-.nav-backdrop{display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);}
-.nav-backdrop.show{display:block;}
-.sidebar-drawer{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 32px rgba(0,0,0,.7);}
-.sidebar-drawer.open{transform:translateX(0);}
+/* SECTION HEADER */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:32px 0 14px;}
+.sec-hd h2{font-size:.67em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+.sec-hd a,.sec-hd button{font-size:.72em;color:var(--text2);text-decoration:none;
+  background:none;border:none;cursor:pointer;font-family:inherit;transition:color .15s;padding:0;}
+.sec-hd a:hover,.sec-hd button:hover{color:var(--gold);}
 
-/* ══ MAIN ══ */
-.main{flex:1;margin-left:var(--sidebar-w);padding:0;overflow-y:auto;min-width:0;}
-.page{display:none;padding:28px 32px;max-width:1040px;}
-.page.active{display:block;animation:fadeIn .2s;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+/* TRACK LIST */
+.track-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.track-row{display:flex;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .15s;gap:16px;position:relative;}
+.track-row:last-child{border-bottom:none;}
+.track-row:hover{background:var(--surface);}
+.tr-badge{font-size:.62em;font-weight:700;letter-spacing:.8px;padding:3px 8px;
+  border-radius:5px;background:rgba(255,255,255,.05);color:var(--text2);flex-shrink:0;width:44px;text-align:center;}
+.tr-name{font-size:.86em;color:var(--text);font-weight:500;flex:1;}
+.tr-meta{font-size:.75em;color:var(--text2);}
+.tr-value{font-size:.95em;font-weight:700;color:var(--text);text-align:right;}
+.tr-hint{font-size:.67em;color:var(--muted);text-align:right;margin-top:2px;}
+.tr-chevron{color:var(--muted);font-size:.75em;flex-shrink:0;transition:transform .2s;}
+.track-row.open .tr-chevron{transform:rotate(90deg);}
+.track-detail{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;}
+.track-detail.show{display:block;}
+.td-inner{padding:16px 0;border-top:1px solid var(--border);}
+.td-row{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;font-size:.82em;border-bottom:1px solid rgba(255,255,255,.03);}
+.td-row:last-child{border-bottom:none;}
+.td-row .k{color:var(--text2);}
+.td-row .v{font-weight:600;color:var(--text);}
+.td-actions{display:flex;gap:8px;padding-top:14px;}
 
-/* ══ PRICE BAR ══ */
-.price-bar{
-  display:flex;align-items:center;gap:0;
-  background:rgba(212,168,67,.04);border-bottom:1px solid rgba(212,168,67,.1);
-  padding:10px 32px;flex-wrap:wrap;gap:24px;
-}
-.price-bar-item{display:flex;align-items:center;gap:8px;font-size:.78em;}
-.price-bar-item .pb-label{color:var(--muted);}
-.price-bar-item .pb-val{font-weight:700;color:var(--text);}
-.price-bar-item .pb-change{font-size:.85em;}
+/* PORTFOLIO TABLE */
+.port-table{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.port-row{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);}
+.port-row:last-child{border-bottom:none;}
+.port-row.header{background:var(--surface2);}
+.port-row .pr-name{flex:1;font-size:.82em;}
+.port-row.header .pr-name{font-size:.67em;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.port-row .pr-amt{font-size:.88em;font-weight:600;min-width:100px;text-align:right;}
+.port-row .pr-usd{font-size:.78em;color:var(--text2);min-width:90px;text-align:right;}
+.port-row .pr-pct{font-size:.78em;color:var(--text2);min-width:60px;text-align:right;}
+.port-row .pr-bar{height:3px;border-radius:2px;margin-top:4px;}
+.port-total{display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border-top:1px solid var(--border);}
 
-/* ══ PAGE HEADER ══ */
-.page-title{font-size:1.1em;font-weight:700;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
-.page-title .pt-badge{font-size:.65em;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(212,168,67,.1);color:var(--gold);}
+/* PAGES — shared */
+.page-title{font-size:1.3em;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-.3px;}
+.page-sub{font-size:.8em;color:var(--text2);margin-bottom:32px;line-height:1.5;}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
+.info-cell{padding:18px 16px;border-right:1px solid var(--border);}
+.info-cell:last-child{border-right:none;}
+.ic-l{font-size:.67em;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.ic-v{font-size:1em;font-weight:700;}
+.ic-v.gold{color:var(--gold);}
+.ic-v.green{color:var(--green);}
+.ic-v.purple{color:var(--purple);}
+.ic-v.blue{color:var(--blue);}
+.ic-v.red{color:var(--red);}
 
-/* ══ STAT ROW ══ */
-.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold));}
-.stat-card .sc-label{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-.stat-card .sc-val{font-size:1.6em;font-weight:800;color:var(--text);line-height:1;}
-.stat-card .sc-sub{font-size:.72em;color:var(--muted);margin-top:6px;}
+/* FORM */
+.form-block{border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+.form-block h3{font-size:.82em;font-weight:600;color:var(--text2);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:20px;}
+.f-row{margin-bottom:16px;}
+.f-row label{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:7px;}
+.f-row input,.f-row select{width:100%;padding:12px 14px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:9px;
+  color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .15s;}
+.f-row input:focus,.f-row select:focus{outline:none;border-color:rgba(212,168,67,.4);}
+.f-hint{font-size:.67em;color:var(--muted);margin-top:5px;}
+.f-error{font-size:.67em;color:var(--red);margin-top:5px;display:none;}
+.f-error.show{display:block;}
 
-/* ══ TRACK CARDS ══ */
-.track-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
-.tcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s;}
-.tcard:hover{transform:translateY(-2px);}
-.tcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--tc,var(--gold));opacity:.7;}
-.tcard .tc-track{font-size:.62em;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tc,var(--gold));margin-bottom:6px;}
-.tcard .tc-name{font-size:.78em;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1.3;}
-.tcard .tc-val{font-size:1.25em;font-weight:800;color:var(--tc,var(--gold));}
-.tcard .tc-label{font-size:.65em;color:var(--muted);margin-top:3px;}
-.tcard .tc-btn{margin-top:14px;width:100%;padding:8px;border:1px solid var(--tc,var(--gold));border-radius:8px;background:transparent;color:var(--tc,var(--gold));font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s;}
-.tcard .tc-btn:hover{background:rgba(255,255,255,.05);}
-.tcard-a{--tc:var(--track-a);} .tcard-b{--tc:var(--track-b);} .tcard-c{--tc:var(--track-c);}
-.tcard-d{--tc:var(--track-d);} .tcard-e{--tc:var(--track-e);}
-
-/* ══ GRID LAYOUT ══ */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-.grid2-3{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-
-/* ══ CARDS ══ */
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;}
-.card h3{font-size:.88em;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-weight:700;}
-.card h3 .ch-accent{color:var(--gold);}
-.card-accent{border-top:2px solid var(--accent,var(--gold));}
-
-/* ══ KPI ══ */
-.kpi{text-align:center;padding:16px 10px;background:rgba(255,255,255,.015);border-radius:10px;border:1px solid rgba(255,255,255,.03);}
-.kpi .l{font-size:.7em;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
-.kpi .v{font-size:1.2em;font-weight:700;}
-.kpi .v.pos{color:var(--green);}.kpi .v.pur{color:var(--purple);}.kpi .v.gold{color:var(--gold);}.kpi .v.red{color:var(--red);}.kpi .v.blue{color:var(--blue);}
-
-/* ══ BUTTONS ══ */
-.btn{padding:10px 20px;border:none;border-radius:9px;cursor:pointer;font-weight:600;font-size:.82em;transition:all .15s;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
-.btn:active{transform:scale(.97);}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
-.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;box-shadow:0 4px 16px rgba(212,168,67,.12);}
-.btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold);}
-.btn-purple{background:var(--purple);color:#fff;}.btn-green{background:var(--green);color:#fff;}.btn-red{background:var(--red);color:#fff;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
-.btn-sm{padding:6px 12px;font-size:.72em;min-height:30px;border-radius:7px;}
+/* BUTTONS */
+.btn{padding:11px 22px;border:none;border-radius:9px;cursor:pointer;font-weight:600;
+  font-size:.82em;transition:all .15s;min-height:40px;display:inline-flex;align-items:center;
+  justify-content:center;gap:6px;font-family:inherit;}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-primary{background:var(--gold);color:#000;}
+.btn-primary:hover{background:var(--gold-dim);}
+.btn-secondary{background:rgba(212,168,67,.1);color:var(--gold);border:1px solid rgba(212,168,67,.2);}
+.btn-secondary:hover{background:rgba(212,168,67,.15);}
+.btn-ghost{background:rgba(255,255,255,.04);color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{background:rgba(255,255,255,.07);color:var(--text);}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.btn-sm{padding:7px 14px;font-size:.75em;min-height:32px;border-radius:7px;}
 .btn-full{width:100%;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.btn-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.25);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;display:none;}
-.btn.loading .btn-spinner{display:inline-block;}.btn.loading .btn-label{opacity:.5;}.btn.loading{pointer-events:none;}
+.btn-spinner{width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:currentColor;
+  border-radius:50%;animation:spin .6s linear infinite;display:none;}
+.btn.loading .btn-spinner{display:inline-block;}
+.btn.loading .btn-label{opacity:.5;}
+.btn.loading{pointer-events:none;}
 
-/* ══ FORM ══ */
-.form-row{margin-bottom:14px;}
-.form-row label{display:block;font-size:.72em;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
-.form-row input,.form-row select{width:100%;padding:11px 13px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px;color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .15s;}
-.form-row input:focus,.form-row select:focus{outline:none;border-color:rgba(212,168,67,.4);box-shadow:0 0 0 3px rgba(212,168,67,.04);}
-.form-hint{font-size:.68em;color:var(--muted);margin-top:4px;}
-.form-error{font-size:.68em;color:var(--red);margin-top:4px;display:none;}
-.form-error.show{display:block;}
+/* TABS */
+.tab-bar{display:flex;gap:2px;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:20px;}
+.tab-btn{flex:1;padding:9px 12px;border:none;border-radius:7px;cursor:pointer;font-size:.78em;
+  font-weight:600;background:transparent;color:var(--text2);transition:all .15s;font-family:inherit;}
+.tab-btn.active{background:rgba(255,255,255,.08);color:var(--text);}
 
-/* ══ TABS ══ */
-.tab-bar{display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.02);border-radius:10px;padding:4px;}
-.tab-btn{flex:1;padding:9px 12px;border:none;border-radius:7px;cursor:pointer;font-size:.78em;font-weight:600;background:transparent;color:var(--muted);transition:all .15s;min-height:36px;}
-.tab-btn.active{background:var(--gold);color:#000;}
-
-/* ══ TABLE ══ */
+/* TABLE */
 table{width:100%;border-collapse:collapse;font-size:.8em;}
-th{text-align:left;color:var(--muted);font-weight:600;padding:10px 10px;border-bottom:1px solid var(--border);font-size:.74em;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
-td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.02);white-space:nowrap;}
+th{text-align:left;color:var(--muted);font-weight:600;padding:12px 14px;
+  border-bottom:1px solid var(--border);font-size:.72em;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
+td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.025);white-space:nowrap;}
 tr:hover td{background:rgba(255,255,255,.015);}
+.tbl-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.tbl-wrap table th:first-child,.tbl-wrap table td:first-child{padding-left:20px;}
+.tbl-wrap table th:last-child,.tbl-wrap table td:last-child{padding-right:20px;}
+.tbl-note{font-size:.72em;color:var(--muted);padding:14px 20px;border-top:1px solid var(--border);}
 
-/* ══ VESTING ══ */
-.vest-item{padding:12px 14px;border-radius:9px;background:rgba(255,255,255,.015);margin-bottom:8px;border:1px solid rgba(255,255,255,.03);}
-.vest-item .top{display:flex;justify-content:space-between;font-size:.8em;font-weight:600;margin-bottom:8px;}
-.vest-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;}
-.vest-fill{height:100%;border-radius:2px;transition:width .6s ease;}
-.vest-info{display:flex;justify-content:space-between;font-size:.68em;color:var(--muted);margin-top:6px;}
-.vest-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+/* VEST */
+.vest-block{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.vest-row{display:flex;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border);}
+.vest-row:last-child{border-bottom:none;}
+.vr-name{flex:1;font-size:.84em;font-weight:500;color:var(--text);}
+.vr-amt{font-size:.88em;font-weight:600;margin-right:20px;}
+.vr-progress{width:80px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-right:16px;}
+.vr-fill{height:100%;border-radius:2px;}
+.vr-pct{font-size:.7em;color:var(--muted);width:36px;text-align:right;}
+.vest-actions-row{display:flex;gap:8px;padding:16px 20px;border-top:1px solid var(--border);}
 
-/* ══ BOTTOM TABS (mobile) ══ */
-.bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,14,.97);border-top:1px solid rgba(212,168,67,.08);padding-bottom:var(--safe-bottom);}
-.bottom-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;font-size:.58em;color:var(--muted);gap:3px;transition:color .15s;min-height:52px;}
-.bottom-tab.active{color:var(--gold);}
-.bottom-tab .icon{font-size:1.5em;}
-.more-panel{display:none;position:fixed;bottom:60px;left:0;right:0;z-index:39;background:rgba(8,8,14,.97);border-top:1px solid rgba(212,168,67,.08);padding:12px 16px;flex-wrap:wrap;gap:8px;}
-.more-panel.show{display:flex;}
-.more-item{padding:9px 14px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.76em;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;}
-.more-item:active{border-color:var(--gold);}
-
-/* ══ MODAL ══ */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);z-index:100;justify-content:center;align-items:flex-end;}
-.modal-overlay.show{display:flex;animation:fadeIn .15s;}
-.modal-box{background:var(--card);border:1px solid rgba(212,168,67,.12);border-radius:20px 20px 0 0;padding:26px 22px 34px;width:100%;max-width:460px;max-height:80dvh;overflow-y:auto;}
-.modal-box h3{font-size:.95em;color:var(--gold);margin-bottom:14px;font-weight:700;}
-.modal-actions{display:flex;gap:10px;margin-top:18px;}
-.modal-actions button{flex:1;}
-
-/* ══ TOAST ══ */
-.toast-area{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
-.toast{padding:11px 20px;border-radius:10px;font-weight:600;font-size:.82em;opacity:0;transform:translateY(-12px);transition:all .3s;max-width:90vw;text-align:center;}
-.toast.show{opacity:1;transform:translateY(0);}
-.toast-success{background:rgba(16,185,129,.9);color:#fff;}.toast-error{background:rgba(239,68,68,.9);color:#fff;}
-.toast-warning{background:rgba(245,158,11,.9);color:#000;}.toast-info{background:rgba(59,130,246,.9);color:#fff;}
-
-/* ══ BADGES ══ */
-.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.68em;font-weight:700;}
+/* BADGE */
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.68em;font-weight:700;}
 .badge-green{background:rgba(16,185,129,.1);color:var(--green);}
 .badge-red{background:rgba(239,68,68,.1);color:var(--red);}
 .badge-blue{background:rgba(59,130,246,.1);color:var(--blue);}
+.badge-purple{background:rgba(139,92,246,.1);color:var(--purple);}
+.badge-gold{background:rgba(212,168,67,.1);color:var(--gold);}
 
-/* ══ RESPONSIVE ══ */
-@media (max-width:960px){
-  .track-row{grid-template-columns:repeat(3,1fr);}
-  .stat-row{grid-template-columns:repeat(3,1fr);}
-}
-@media (max-width:768px){
-  .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);}
-  .sidebar.open{transform:translateX(0);}
-  .topbar{display:flex;}
-  .main{margin-left:0;}
-  .page{padding:14px 16px 80px;}
-  .track-row{grid-template-columns:1fr 1fr;}
-  .stat-row{grid-template-columns:1fr 1fr;}
-  .grid2,.grid3,.grid4{grid-template-columns:1fr;}
-  .grid2-3{grid-template-columns:1fr;}
-  .price-bar{padding:8px 16px;gap:14px;}
-  .bottom-tabs{display:flex;}
-}
-@media (max-width:480px){
-  .track-row{grid-template-columns:1fr 1fr;}
-  .stat-row{grid-template-columns:1fr;}
-}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
+  z-index:300;justify-content:center;align-items:flex-end;}
+.modal-overlay.show{display:flex;animation:fadeUp .15s;}
+.modal-box{background:var(--surface2);border:1px solid var(--border);border-top:1px solid rgba(212,168,67,.15);
+  border-radius:16px 16px 0 0;padding:28px 24px calc(24px + var(--safe-bottom));width:100%;max-width:480px;max-height:80dvh;overflow-y:auto;}
+.modal-box h3{font-size:.9em;font-weight:700;color:var(--text);margin-bottom:10px;}
+.modal-box p{font-size:.82em;color:var(--text2);line-height:1.6;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.modal-actions button{flex:1;}
 
-/* ══ UTILS ══ */
-.flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;}
-.gap8{gap:8px;}.mt12{margin-top:12px;}.mb12{margin-bottom:12px;}
-.empty{text-align:center;color:var(--muted);padding:32px 0;font-size:.82em;}
-.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+/* TOAST */
+.toast-area{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:400;
+  display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
+.toast{padding:11px 20px;border-radius:9px;font-weight:600;font-size:.8em;opacity:0;
+  transform:translateY(-8px);transition:all .25s;max-width:90vw;text-align:center;pointer-events:auto;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast-success{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.25);}
+.toast-error{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.toast-warning{background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.25);}
+.toast-info{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.25);}
+
+/* UTILS */
+.flex-between{display:flex;justify-content:space-between;align-items:center;}
+.mt16{margin-top:16px;}.mt8{margin-top:8px;}.mb16{margin-bottom:16px;}.gap8{gap:8px;}
+.text-gold{color:var(--gold);}.text-green{color:var(--green);}.text-red{color:var(--red);}
+.text-muted{color:var(--muted);}.text-2{color:var(--text2);}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.empty{text-align:center;color:var(--muted);padding:40px 0;font-size:.82em;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .nav-links,.nav-right{display:none;}
+  .menu-btn{display:flex;}
+  .page{padding:28px 18px 80px;}
+  .info-grid{grid-template-columns:repeat(2,1fr);}
+  .info-cell:nth-child(2){border-right:none;}
+  .info-cell:nth-child(1),.info-cell:nth-child(2){border-bottom:1px solid var(--border);}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .stat-cell:nth-child(2){border-right:none;}
+  .stat-cell:nth-child(3){border-top:1px solid var(--border);grid-column:span 2;}
+  .nw-value{font-size:2.4em;}
+  .topnav{padding:0 16px;}
+}
 </style>
 </head>
 <body>
+<!-- DRAWER BACKDROP -->
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
 
-<div class="app">
-  <!-- ═══════════ NAV BACKDROP ═══════════ -->
-  <div class="nav-backdrop" id="navBackdrop" onclick="closeSidebar()"></div>
-
-  <!-- ═══════════ SIDEBAR ═══════════ -->
-  <nav class="sidebar sidebar-drawer" id="sidebar">
-    <div class="sidebar-brand">
-      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="url(#gd2)" stroke="var(--gold)" stroke-width="1.2"/><circle cx="12" cy="12" r="3" fill="var(--gold)"/><defs><radialGradient id="gd2"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs></svg>
-      <span>pGOLD</span> DApp
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <a class="nav-brand" href="index.html"><span class="nav-dot"></span>pGOLD</a>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-nav" id="drawerNav">
+    <button class="drawer-link active" data-page="dashboard" onclick="switchPage('dashboard');closeDrawer()" data-i18n="nav.dashboard">总览</button>
+    <button class="drawer-link" data-page="ico" onclick="switchPage('ico');closeDrawer()" data-i18n="nav.ico">创世池 ICO</button>
+    <button class="drawer-link" data-page="staking" onclick="switchPage('staking');closeDrawer()" data-i18n="nav.staking">质押中心</button>
+    <button class="drawer-link" data-page="vesting" onclick="switchPage('vesting');closeDrawer()" data-i18n="nav.vesting">释放计划</button>
+    <button class="drawer-link" data-page="ranking" onclick="switchPage('ranking');closeDrawer()" data-i18n="nav.ranking">Top 100</button>
+    <button class="drawer-link" data-page="team" onclick="switchPage('team');closeDrawer()" data-i18n="nav.team">战队中心</button>
+    <button class="drawer-link" data-page="history" onclick="switchPage('history');closeDrawer()" data-i18n="nav.history">交易记录</button>
+  </div>
+  <div class="drawer-footer">
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="zh">中</button>
+      <button class="lang-btn" data-lang="en">EN</button>
     </div>
-    <div class="nav-section">
-      <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard');closeSidebar()"><span class="nav-icon">📊</span><span data-i18n="nav.dashboard">总览</span></div>
-      <div class="nav-item" data-page="ico" onclick="switchPage('ico');closeSidebar()"><span class="nav-icon">🚀</span><span data-i18n="nav.ico">创世池 ICO</span></div>
-      <div class="nav-item" data-page="staking" onclick="switchPage('staking');closeSidebar()"><span class="nav-icon">💎</span><span data-i18n="nav.staking">质押中心</span></div>
-      <div class="nav-item" data-page="vesting" onclick="switchPage('vesting');closeSidebar()"><span class="nav-icon">🔓</span><span data-i18n="nav.vesting">释放计划</span></div>
-      <div class="nav-item" data-page="ranking" onclick="switchPage('ranking');closeSidebar()"><span class="nav-icon">🏆</span><span data-i18n="nav.ranking">Top 100</span></div>
-      <div class="nav-item" data-page="team" onclick="switchPage('team');closeSidebar()"><span class="nav-icon">👥</span><span data-i18n="nav.team">战队中心</span></div>
-      <div class="nav-item" data-page="history" onclick="switchPage('history');closeSidebar()"><span class="nav-icon">📜</span><span data-i18n="nav.history">交易记录</span></div>
+    <div class="drawer-wallet" id="drawerWallet">0x0000...0000</div>
+    <a href="swap_v3.html" style="font-size:.78em;color:var(--gold);text-decoration:none;">⇄ Swap</a>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="nav-brand" href="index.html"><span class="nav-dot"></span>pGOLD</a>
+  <div class="nav-links" id="navLinks">
+    <button class="nav-link active" data-page="dashboard" onclick="switchPage('dashboard')" data-i18n="nav.dashboard">总览</button>
+    <button class="nav-link" data-page="ico" onclick="switchPage('ico')" data-i18n="nav.ico">创世池 ICO</button>
+    <button class="nav-link" data-page="staking" onclick="switchPage('staking')" data-i18n="nav.staking">质押中心</button>
+    <button class="nav-link" data-page="vesting" onclick="switchPage('vesting')" data-i18n="nav.vesting">释放计划</button>
+    <button class="nav-link" data-page="ranking" onclick="switchPage('ranking')" data-i18n="nav.ranking">Top 100</button>
+    <button class="nav-link" data-page="team" onclick="switchPage('team')" data-i18n="nav.team">战队中心</button>
+    <button class="nav-link" data-page="history" onclick="switchPage('history')" data-i18n="nav.history">交易记录</button>
+  </div>
+  <div class="nav-right">
+    <a href="swap_v3.html" class="btn btn-gold btn-sm" style="text-decoration:none">⇄ Swap</a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="zh">中</button>
+      <button class="lang-btn" data-lang="en">EN</button>
     </div>
-    <div class="sidebar-footer">
-      <div class="lang-row">
-        <button class="lang-btn active" data-lang="zh">中</button>
-        <button class="lang-btn" data-lang="en">EN</button>
-      </div>
-      <div class="wallet-info" id="walletInfo">0x0000...0000</div>
-      <div class="sidebar-links">
-        <a href="swap_v3.html">⇄ Swap</a>
-        <a href="index.html">← Home</a>
-        <a href="../pGOLD_whitepaper.html" target="_blank">📖 WP</a>
-      </div>
+    <div class="wallet-badge" id="walletBadge">0x0000...0000</div>
+  </div>
+  <button class="menu-btn" id="menuBtn" onclick="openDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ══ DASHBOARD ══ -->
+<div class="page active" id="page-dashboard">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="dash.netWorth">净资产</div>
+    <div class="nw-value" id="nw-total">$348,075</div>
+    <div class="nw-sub" id="nw-price-sub">pGOLD <span id="nw-price">$85.00</span> <span id="nw-change" style="color:var(--muted)">—</span></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="dash.pgoldBalance">余额</div>
+      <div class="sc-v">1,400 pGOLD</div>
+      <div class="sc-h" id="stat-balance-usd">≈ $119,000</div>
     </div>
-  </nav>
-
-  <!-- ═══════════ MAIN ═══════════ -->
-  <div class="main" id="mainContent">
-    <!-- ── MOBILE TOPBAR ── -->
-    <div class="topbar" id="topbar">
-      <div class="topbar-left">
-        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-          <span></span><span></span><span></span>
-        </button>
-        <span class="topbar-title" id="topbarTitle">总览</span>
-      </div>
-      <a class="topbar-logo" href="index.html">◆ pGOLD</a>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="dash.vestedBalance">待释放</div>
+      <div class="sc-v" style="color:var(--purple)">2,455 pGOLD</div>
+      <div class="sc-h">10yr vesting</div>
     </div>
-
-    <!-- ── PRICE BAR ── -->
-    <div class="price-bar" id="priceBar">
-      <div class="price-bar-item">
-        <span class="pb-label">pGOLD</span>
-        <span class="pb-val" id="dapp-pgold-price">$—</span>
-        <span class="pb-change" id="dapp-pgold-change" style="color:var(--muted)">—</span>
-      </div>
-      <div class="price-bar-item">
-        <span class="pb-label" data-i18n="dash.netWorth">净资产</span>
-        <span class="pb-val" id="bar-net-worth">$348,075</span>
-      </div>
-      <div class="price-bar-item">
-        <span class="pb-label" data-i18n="dash.totalRewards">累计奖励</span>
-        <span class="pb-val" style="color:var(--green)">1,245 pGOLD</span>
-      </div>
-      <div style="margin-left:auto">
-        <a href="swap_v3.html" class="btn btn-gold btn-sm">⇄ Swap</a>
-      </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="dash.pendingDiv">待领分红</div>
+      <div class="sc-v" style="color:var(--green)">12.5 pGOLD</div>
+      <div class="sc-h">A轨 · 3.5% APY</div>
     </div>
+  </div>
 
-    <!-- ── DASHBOARD ── -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-title" data-i18n="nav.dashboard">总览 <span class="pt-badge">DEMO</span></div>
-
-      <!-- Stat row -->
-      <div class="stat-row">
-        <div class="stat-card" style="--accent:var(--gold)">
-          <div class="sc-label" data-i18n="dash.pgoldBalance">pGOLD 余额</div>
-          <div class="sc-val">1,400</div>
-          <div class="sc-sub" id="dash-balance-usd">≈ $119,000</div>
-        </div>
-        <div class="stat-card" style="--accent:var(--purple)">
-          <div class="sc-label" data-i18n="dash.vestedBalance">待释放</div>
-          <div class="sc-val" style="color:var(--purple)">2,455</div>
-          <div class="sc-sub">pGOLD · 10yr vesting</div>
-        </div>
-        <div class="stat-card" style="--accent:var(--green)">
-          <div class="sc-label" data-i18n="dash.pendingDiv">待领分红</div>
-          <div class="sc-val" style="color:var(--green)">12.5</div>
-          <div class="sc-sub">pGOLD · A轨</div>
-        </div>
+  <div class="sec-hd">
+    <h2 data-i18n="dash.tracks">五轨概览</h2>
+  </div>
+  <div class="track-list">
+    <!-- Track A -->
+    <div class="track-row" onclick="toggleTrack('tA')">
+      <div class="tr-badge" style="background:rgba(16,185,129,.1);color:var(--green)">A</div>
+      <div class="tr-main">
+        <div class="tr-name" data-i18n="dash.trackA">持币分红</div>
+        <div class="tr-desc" data-i18n="stake.trackADesc">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</div>
       </div>
-
-      <!-- Five-track cards -->
-      <div class="track-row">
-        <div class="tcard tcard-a">
-          <div class="tc-track">A TRACK</div>
-          <div class="tc-name" data-i18n="dash.trackA">持币分红</div>
-          <div class="tc-val">800</div>
-          <div class="tc-label">pGOLD staked · 3.5% APY</div>
-          <button class="tc-btn" onclick="switchPage('staking')" data-i18n="dash.goStake">去质押</button>
-        </div>
-        <div class="tcard tcard-b">
-          <div class="tc-track">B TRACK</div>
-          <div class="tc-name" data-i18n="dash.trackB">Top 100</div>
-          <div class="tc-val">#12</div>
-          <div class="tc-label" data-i18n="dash.monthRank">月榜排名</div>
-          <button class="tc-btn" onclick="switchPage('ranking')">查看榜单</button>
-        </div>
-        <div class="tcard tcard-c">
-          <div class="tc-track">C TRACK</div>
-          <div class="tc-name" data-i18n="dash.trackC">燃烧挖矿</div>
-          <div class="tc-val">150</div>
-          <div class="tc-label">pGOLD · <span data-i18n="dash.totalComp">累计补偿</span></div>
-          <button class="tc-btn" onclick="switchPage('history')">查看记录</button>
-        </div>
-        <div class="tcard tcard-d">
-          <div class="tc-track">D TRACK</div>
-          <div class="tc-name" data-i18n="dash.trackD">战队返佣</div>
-          <div class="tc-val">$340</div>
-          <div class="tc-label">8 直邀 · 23 间邀</div>
-          <button class="tc-btn" onclick="switchPage('team')" data-i18n="nav.team">战队中心</button>
-        </div>
-        <div class="tcard tcard-e">
-          <div class="tc-track">E TRACK</div>
-          <div class="tc-name" data-i18n="ico.title">创世池 ICO</div>
-          <div class="tc-val">420</div>
-          <div class="tc-label">pGOLD · <span data-i18n="ico.poolAlloc">池分配</span></div>
-          <button class="tc-btn" onclick="switchPage('ico')">去认购</button>
-        </div>
+      <div class="tr-val" style="color:var(--green)">800 pGOLD</div>
+      <div class="tr-chevron" id="chev-tA">›</div>
+    </div>
+    <div class="track-detail" id="tA">
+      <div class="td-grid">
+        <div class="td-item"><div class="td-l" data-i18n="stake.staked">已质押</div><div class="td-v">800 pGOLD</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="stake.pending">待领分红</div><div class="td-v" style="color:var(--green)">12.5 pGOLD</div></div>
+        <div class="td-item"><div class="td-l">APY</div><div class="td-v" style="color:var(--green)">3.5%</div></div>
       </div>
-
-      <!-- Portfolio + recent trades -->
-      <div class="grid2">
-        <div class="card">
-          <h3>💼 <span class="ch-accent" data-i18n="port.assets">资产明细</span></h3>
-          <div class="flex-between gap8" style="font-size:.82em;padding-bottom:12px;border-bottom:1px solid var(--border)">
-            <span data-i18n="port.price">当前 pGOLD 价格</span>
-            <b style="color:var(--gold)" id="dash-price-inline">$—</b>
-          </div>
-          <div class="mt12">
-            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0">
-              <span data-i18n="port.liquid">流通 pGOLD</span><b>600</b>
-              <span style="color:var(--muted);font-size:.85em" id="port-liquid-usd">$51,000</span>
-            </div>
-            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0;border-top:1px solid rgba(255,255,255,.03)">
-              <span data-i18n="port.staked">质押中 pGOLD</span><b>800</b>
-              <span style="color:var(--muted);font-size:.85em" id="port-staked-usd">$68,000</span>
-            </div>
-            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0;border-top:1px solid rgba(255,255,255,.03)">
-              <span data-i18n="port.vesting">待释放 pGOLD</span><b style="color:var(--purple)">2,455</b>
-              <span style="color:var(--muted);font-size:.85em" id="port-vesting-usd">$208,675</span>
-            </div>
-            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0;border-top:1px solid rgba(255,255,255,.03)">
-              <span data-i18n="port.vpBalance">vPGOLD 余额</span><b>240</b>
-              <span style="color:var(--muted);font-size:.85em" id="port-vp-usd">$20,400</span>
-            </div>
-            <div class="flex-between gap8" style="font-size:.86em;padding:12px 0 0;border-top:1px solid var(--border);font-weight:700">
-              <span data-i18n="port.totalValue">持仓总价值</span>
-              <b style="color:var(--gold);font-size:1.1em" id="port-total-usd">$348,075</b>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <h3>📜 <span class="ch-accent" data-i18n="nav.history">近期交易</span></h3>
-          <table>
-            <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th></tr></thead>
-            <tbody id="hist-tbody">
-              <tr><td>06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50</td><td class="hist-price">$85.20</td></tr>
-              <tr><td>06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20</td><td class="hist-price">$84.80</td></tr>
-              <tr><td>06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100</td><td class="hist-price">$85.00</td></tr>
-              <tr><td>06-24 16:45</td><td><span class="badge badge-blue">STAKE</span></td><td>200</td><td>—</td></tr>
-            </tbody>
-          </table>
-          <button class="btn btn-ghost btn-sm btn-full mt12" onclick="switchPage('history')" data-i18n="nav.history">全部记录</button>
-        </div>
+      <div class="td-actions">
+        <button class="btn btn-outline btn-sm" onclick="switchPage('staking')" data-i18n="dash.goStake">去质押</button>
       </div>
     </div>
-
-    <!-- ── ICO ── -->
-    <div class="page" id="page-ico">
-      <div class="grid2">
-        <div class="card">
-          <h3>🚀 <span data-i18n="ico.title">E轨 · 创世池 ICO</span></h3>
-          <div class="grid2">
-            <div class="kpi"><div class="l" data-i18n="ico.poolTotal">池子总量</div><div class="v gold">200,000 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="ico.remaining">剩余</div><div class="v">168,500</div></div>
-            <div class="kpi"><div class="l" data-i18n="ico.subscribed">已认购</div><div class="v pos">31,500</div></div>
-            <div class="kpi"><div class="l" data-i18n="ico.backingRate">背书率</div><div class="v pur">23.5%</div></div>
-          </div>
-          <div class="flex-between gap8 mt12" style="font-size:.8em;color:var(--muted)"><span data-i18n="ico.currentPhase">当前阶段</span><b style="color:var(--gold)" data-i18n="ico.phase2">第2档 · D31-60 · 7x 权重</b></div>
-        </div>
-        <div class="card">
-          <h3>🎯 <span data-i18n="ico.yourSub">你的认购</span></h3>
-          <div class="grid2">
-            <div class="kpi"><div class="l" data-i18n="ico.yourPts">你的积分</div><div class="v gold">8,400</div></div>
-            <div class="kpi"><div class="l" data-i18n="ico.poolAlloc">池分配</div><div class="v">420 pGOLD</div></div>
-          </div>
-          <div class="form-row mt12">
-            <label data-i18n="ico.amountLabel">认购金额 (USDC)</label>
-            <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO()">
-            <div class="form-error" id="icoError"></div>
-            <div class="form-hint" id="ico-hint-text" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
-          </div>
-          <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()"><span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span></button>
-        </div>
+    <!-- Track B -->
+    <div class="track-row" onclick="toggleTrack('tB')">
+      <div class="tr-badge" style="background:rgba(59,130,246,.1);color:var(--blue)">B</div>
+      <div class="tr-main">
+        <div class="tr-name" data-i18n="dash.trackB">Top 100</div>
+        <div class="tr-desc" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</div>
+      </div>
+      <div class="tr-val" style="color:var(--blue)">#12</div>
+      <div class="tr-chevron" id="chev-tB">›</div>
+    </div>
+    <div class="track-detail" id="tB">
+      <div class="td-grid">
+        <div class="td-item"><div class="td-l" data-i18n="dash.monthRank">月榜排名</div><div class="td-v" style="color:var(--gold)">#12</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="stake.deposited">已存入</div><div class="td-v">800 pGOLD</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="dash.monthReward">月榜奖励</div><div class="td-v" style="color:var(--blue)">240 pGOLD</div></div>
+      </div>
+      <div class="td-actions">
+        <button class="btn btn-outline btn-sm" onclick="switchPage('ranking')" data-i18n="nav.ranking">查看榜单</button>
       </div>
     </div>
-
-    <!-- ── VESTING ── -->
-    <div class="page" id="page-vesting">
-      <div class="grid2">
-        <div class="card">
-          <h3>🔓 <span data-i18n="vest.overview">释放总览</span></h3>
-          <div class="grid2">
-            <div class="kpi"><div class="l" data-i18n="vest.released">已释放</div><div class="v pos">245 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="vest.pending">待释放</div><div class="v pur">2,455 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="vest.nextRelease">下次释放</div><div class="v">+68 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="vest.annualRelease">年化释放</div><div class="v">~820 pGOLD</div></div>
-          </div>
-          <button class="btn btn-gold btn-full mt12" onclick="withConfirm('claimAll')" data-i18n="vest.claimAll">一键领取全部</button>
-        </div>
-        <div class="card">
-          <h3>📅 <span data-i18n="vest.progress">各轨释放进度</span></h3>
-          <div class="vest-item" style="border-left:3px solid var(--purple)">
-            <div class="top"><span data-i18n="vest.trackE">E轨 · 创世池</span><span>2,400 pGOLD</span></div>
-            <div class="vest-bar"><div class="vest-fill" style="width:5.8%;background:var(--purple)"></div></div>
-            <div class="vest-info"><span data-i18n="vest.linear3y">3年线性</span><span data-i18n="vest.remain3y">剩余 35/36 期</span></div>
-            <div class="vest-actions">
-              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','E')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
-              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
-            </div>
-          </div>
-          <div class="vest-item" style="border-left:3px solid var(--blue)">
-            <div class="top"><span data-i18n="vest.trackB">B轨 · 月榜奖励</span><span>180 pGOLD</span></div>
-            <div class="vest-bar"><div class="vest-fill" style="width:2.5%;background:var(--blue)"></div></div>
-            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span data-i18n="vest.remain10y">剩余 118/120 期</span></div>
-            <div class="vest-actions">
-              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
-              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','B')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
-            </div>
-          </div>
-          <div class="vest-item" style="border-left:3px solid var(--orange)">
-            <div class="top"><span data-i18n="vest.trackC">C轨 · 燃烧补偿</span><span>120 pGOLD</span></div>
-            <div class="vest-bar"><div class="vest-fill" style="width:1.7%;background:var(--orange)"></div></div>
-            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span data-i18n="vest.remain10y">剩余 118/120 期</span></div>
-            <div class="vest-actions">
-              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','C')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
-              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','C')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
-            </div>
-          </div>
-        </div>
+    <!-- Track C -->
+    <div class="track-row" onclick="toggleTrack('tC')">
+      <div class="tr-badge" style="background:rgba(239,68,68,.1);color:var(--red)">C</div>
+      <div class="tr-main">
+        <div class="tr-name" data-i18n="dash.trackC">燃烧挖矿</div>
+        <div class="tr-desc">手续费 × 10 补偿，C 轨奖励</div>
       </div>
-      <!-- vPGOLD -->
-      <div class="card">
-        <h3>💠 <span data-i18n="vest.vpCenter">vPGOLD 转让中心</span></h3>
-        <div class="grid2">
-          <div>
-            <div class="kpi"><div class="l" data-i18n="vest.vpBalance">vPGOLD 余额</div><div class="v">240 vPGOLD</div></div>
-            <div class="form-row"><label data-i18n="vest.toAddr">接收地址</label><input type="text" id="vpTo" placeholder="0x..."></div>
-            <div class="form-row"><label data-i18n="vest.amount">数量</label><input type="number" id="vpAmount" placeholder="0" min="1"></div>
-            <button class="btn btn-gold btn-full" onclick="withConfirm('transferVp')"><span class="btn-label" data-i18n="vest.send">发送</span><span class="btn-spinner"></span></button>
-          </div>
-          <div>
-            <p style="color:var(--muted);font-size:.78em;margin-bottom:12px;line-height:1.5" data-i18n="vest.vpDesc">vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。</p>
-            <button class="btn btn-purple btn-full mb12" onclick="withConfirm('claimVp')"><span class="btn-label" data-i18n="vest.redeem">赎回底层 pGOLD</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-outline btn-full" onclick="withConfirm('unwrapVp')"><span class="btn-label" data-i18n="vest.unwrap">解包恢复释放计划</span><span class="btn-spinner"></span></button>
-          </div>
-        </div>
+      <div class="tr-val" style="color:var(--red)">$1,250</div>
+      <div class="tr-chevron" id="chev-tC">›</div>
+    </div>
+    <div class="track-detail" id="tC">
+      <div class="td-grid">
+        <div class="td-item"><div class="td-l" data-i18n="dash.totalFee">累计手续费</div><div class="td-v">$1,250</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="dash.totalComp">累计补偿</div><div class="td-v" style="color:var(--orange)">150 pGOLD</div></div>
+      </div>
+      <div class="td-actions">
+        <button class="btn btn-outline btn-sm" onclick="switchPage('history')" data-i18n="nav.history">查看记录</button>
       </div>
     </div>
-
-    <!-- ── RANKING ── -->
-    <div class="page" id="page-ranking">
-      <div class="tab-bar">
-        <button class="tab-btn active" data-rank="monthly" onclick="switchRankTab('monthly')" data-i18n="rank.monthly">月榜</button>
-        <button class="tab-btn" data-rank="quarterly" onclick="switchRankTab('quarterly')" data-i18n="rank.quarterly">季榜</button>
-        <button class="tab-btn" data-rank="annual" onclick="switchRankTab('annual')" data-i18n="rank.annual">年榜</button>
+    <!-- Track D -->
+    <div class="track-row" onclick="toggleTrack('tD')">
+      <div class="tr-badge" style="background:rgba(139,92,246,.1);color:var(--purple)">D</div>
+      <div class="tr-main">
+        <div class="tr-name" data-i18n="dash.trackD">战队返佣</div>
+        <div class="tr-desc">直邀 20% · 间邀 5%</div>
       </div>
-      <div class="card">
-        <table>
-          <thead><tr><th data-i18n="rank.thRank">排名</th><th data-i18n="rank.thTrader">交易者</th><th data-i18n="rank.thVol">交易量</th><th data-i18n="rank.thDeposit">存入量</th><th data-i18n="rank.thReward">奖励</th><th data-i18n="rank.thMult">倍数</th></tr></thead>
-          <tbody>
-            <tr><td>🥇 #1</td><td>0xAb...Ef01</td><td>$2.4M</td><td>5,000</td><td style="color:var(--green)">15,000 pGOLD</td><td>300%</td></tr>
-            <tr><td>🥈 #2</td><td>0xBc...Fg23</td><td>$1.8M</td><td>3,200</td><td style="color:var(--green)">9,600 pGOLD</td><td>300%</td></tr>
-            <tr><td>🥉 #3</td><td>0xCd...Gh45</td><td>$1.2M</td><td>2,100</td><td style="color:var(--green)">6,300 pGOLD</td><td>300%</td></tr>
-            <tr style="background:rgba(212,168,67,.04)"><td>#12</td><td>0xDe...Hi67 (You)</td><td>$450K</td><td>800</td><td style="color:var(--green)">2,400 pGOLD</td><td>300%</td></tr>
-          </tbody>
-        </table>
-        <p style="font-size:.7em;color:var(--muted);margin-top:14px" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
+      <div class="tr-val" style="color:var(--purple)">$340</div>
+      <div class="tr-chevron" id="chev-tD">›</div>
+    </div>
+    <div class="track-detail" id="tD">
+      <div class="td-grid">
+        <div class="td-item"><div class="td-l" data-i18n="team.direct">直邀人数</div><div class="td-v">8</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="team.indirect">间邀人数</div><div class="td-v">23</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="dash.pendingComm">待领返佣</div><div class="td-v" style="color:var(--purple)">$340</div></div>
+      </div>
+      <div class="td-actions">
+        <button class="btn btn-outline btn-sm" onclick="switchPage('team')" data-i18n="nav.team">战队中心</button>
+        <button class="btn btn-gold btn-sm" onclick="withConfirm('claimCommission')" data-i18n="team.claimComm">领取返佣</button>
       </div>
     </div>
-
-    <!-- ── STAKING ── -->
-    <div class="page" id="page-staking">
-      <div class="grid2">
-        <div class="card">
-          <h3>💎 <span data-i18n="stake.trackA">A轨 · 持币分红</span></h3>
-          <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5" data-i18n="stake.trackADesc">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</p>
-          <div class="grid2">
-            <div class="kpi"><div class="l" data-i18n="stake.staked">已质押</div><div class="v gold">800 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="stake.pending">待领分红</div><div class="v pos">12.5 pGOLD</div></div>
-          </div>
-          <div class="form-row"><label data-i18n="stake.stakeAmt">质押数量</label><input type="number" id="stakeAmount" placeholder="100" min="1" oninput="validateStake()"><div class="form-error" id="stakeError"></div></div>
-          <div class="flex-between gap8">
-            <button class="btn btn-gold" onclick="withConfirm('stake','A')" style="flex:1"><span class="btn-label" data-i18n="stake.stakeBtn">质押</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-outline" onclick="withConfirm('unstake')" style="flex:1"><span class="btn-label" data-i18n="stake.unstakeBtn">解质押</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-green" onclick="withConfirm('claimReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimDiv">领取分红</span><span class="btn-spinner"></span></button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>🏆 <span data-i18n="stake.trackB">B轨 · Top100 存入锚定</span></h3>
-          <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</p>
-          <div class="grid2">
-            <div class="kpi"><div class="l" data-i18n="stake.deposited">已存入</div><div class="v gold">800 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="stake.formula">奖励公式</div><div class="v" style="font-size:.68em;color:var(--blue)" data-i18n="stake.formulaVal">存入×倍数</div></div>
-          </div>
-          <div class="form-row"><label data-i18n="stake.depositAmt">存入数量</label><input type="number" id="rankStakeAmount" placeholder="100" min="1" oninput="validateRankStake()"><div class="form-error" id="rankStakeError"></div></div>
-          <div class="flex-between gap8">
-            <button class="btn btn-gold" onclick="withConfirm('deposit')" style="flex:1"><span class="btn-label" data-i18n="stake.depositBtn">存入锚定</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-outline" onclick="withConfirm('withdraw')" style="flex:1"><span class="btn-label" data-i18n="stake.withdrawBtn">取出</span><span class="btn-spinner"></span></button>
-          </div>
-        </div>
+    <!-- Track E -->
+    <div class="track-row" onclick="toggleTrack('tE')">
+      <div class="tr-badge" style="background:rgba(212,168,67,.1);color:var(--gold)">E</div>
+      <div class="tr-main">
+        <div class="tr-name" data-i18n="ico.title">创世池 ICO</div>
+        <div class="tr-desc">E 轨 · 创世池，10 年线性释放</div>
       </div>
+      <div class="tr-val" style="color:var(--gold)">420 pGOLD</div>
+      <div class="tr-chevron" id="chev-tE">›</div>
     </div>
-
-    <!-- ── TEAM ── -->
-    <div class="page" id="page-team">
-      <div class="tab-bar">
-        <button class="tab-btn active" data-ttab="myTeam" onclick="switchTeamTab('myTeam')" data-i18n="team.myTeam">我的战队</button>
-        <button class="tab-btn" data-ttab="invite" onclick="switchTeamTab('invite')" data-i18n="team.invite">邀请返佣</button>
-        <button class="tab-btn" data-ttab="leaderboard" onclick="switchTeamTab('leaderboard')" data-i18n="team.leaderboard">战队竞赛榜</button>
+    <div class="track-detail" id="tE">
+      <div class="td-grid">
+        <div class="td-item"><div class="td-l" data-i18n="ico.yourSub">你的认购</div><div class="td-v">420 pGOLD</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="ico.yourPts">积分</div><div class="td-v" style="color:var(--gold)">8,400</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="vest.released">已释放</div><div class="td-v" style="color:var(--green)">20 pGOLD</div></div>
       </div>
-      <div id="teamTab-myTeam" class="card">
-        <div class="grid2">
-          <div class="kpi"><div class="l" data-i18n="team.name">战队名称</div><div class="v gold">TIGER_TEAM</div></div>
-          <div class="kpi"><div class="l" data-i18n="team.members">成员</div><div class="v">12</div></div>
-          <div class="kpi"><div class="l" data-i18n="team.volume">战队交易量</div><div class="v">$3.4M</div></div>
-          <div class="kpi"><div class="l" data-i18n="team.reward">竞赛奖励</div><div class="v pos">2,400 pGOLD</div></div>
-        </div>
-        <div class="flex-between gap8 mt12">
-          <button class="btn btn-purple" onclick="withConfirm('createTeam')" style="flex:1"><span class="btn-label" data-i18n="team.createBtn">创建战队</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-outline" onclick="withConfirm('joinTeam')" style="flex:1"><span class="btn-label" data-i18n="team.joinBtn">加入战队</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-gold" onclick="withConfirm('claimTeamReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
-        </div>
-      </div>
-      <div id="teamTab-invite" class="card" style="display:none">
-        <div class="form-row"><label data-i18n="team.inviteLink">你的邀请链接</label><input type="text" value="https://pgold.io/r/0xAbCd" readonly onclick="this.select()"></div>
-        <div class="grid3">
-          <div class="kpi"><div class="l" data-i18n="team.direct">直邀人数</div><div class="v">8</div></div>
-          <div class="kpi"><div class="l" data-i18n="team.indirect">间邀人数</div><div class="v">23</div></div>
-          <div class="kpi"><div class="l" data-i18n="team.pendingComm">待领返佣</div><div class="v pos">$340</div></div>
-        </div>
-        <div class="flex-between gap8 mt12">
-          <button class="btn btn-gold" onclick="withConfirm('claimCommission')" style="flex:1"><span class="btn-label" data-i18n="team.claimComm">领取返佣</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-outline" onclick="openBindInviter()" style="flex:1"><span class="btn-label" data-i18n="team.bindInviter">绑定邀请人</span><span class="btn-spinner"></span></button>
-        </div>
-      </div>
-      <div id="teamTab-leaderboard" class="card" style="display:none">
-        <table>
-          <thead><tr><th>#</th><th data-i18n="team.thTeam">战队</th><th data-i18n="team.thLeader">队长</th><th data-i18n="team.thMembers">成员</th><th data-i18n="team.thVol">交易量</th><th data-i18n="team.thReward">奖励</th></tr></thead>
-          <tbody>
-            <tr><td>🥇 1</td><td>DRAGON</td><td>0xAA...BB</td><td>48</td><td>$12M</td><td style="color:var(--green)">6,000 pGOLD</td></tr>
-            <tr><td>🥈 2</td><td>PHOENIX</td><td>0xCC...DD</td><td>35</td><td>$8.2M</td><td style="color:var(--green)">4,800 pGOLD</td></tr>
-            <tr style="background:rgba(212,168,67,.04)"><td>🥉 3</td><td>TIGER_TEAM</td><td>0xAbCd (You)</td><td>12</td><td>$3.4M</td><td style="color:var(--green)">2,400 pGOLD</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ── HISTORY ── -->
-    <div class="page" id="page-history">
-      <div class="tab-bar">
-        <button class="tab-btn active" data-hfilter="all" onclick="switchHistFilter('all')" data-i18n="hist.all">全部</button>
-        <button class="tab-btn" data-hfilter="buy" onclick="switchHistFilter('buy')" data-i18n="hist.buy">买入</button>
-        <button class="tab-btn" data-hfilter="sell" onclick="switchHistFilter('sell')" data-i18n="hist.sell">卖出</button>
-        <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
-        <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
-      </div>
-      <div class="card">
-        <table>
-          <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th><th data-i18n="hist.thFee">手续费</th></tr></thead>
-          <tbody id="hist-tbody">
-            <tr><td>2026-06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50 pGOLD</td><td class="hist-price">$85.20</td><td>$10.65</td></tr>
-            <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20 pGOLD</td><td class="hist-price">$84.80</td><td>$4.24</td></tr>
-            <tr><td>2026-06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100 pGOLD</td><td class="hist-price">$85.00</td><td>$21.25</td></tr>
-            <tr><td>2026-06-24 16:45</td><td><span class="badge badge-blue">STAKE</span></td><td>200 pGOLD</td><td>—</td><td>—</td></tr>
-            <tr><td>2026-06-24 08:00</td><td><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple)">CLAIM</span></td><td>12.5 pGOLD</td><td>—</td><td>—</td></tr>
-          </tbody>
-        </table>
+      <div class="td-actions">
+        <button class="btn btn-outline btn-sm" onclick="switchPage('ico')" data-i18n="nav.ico">去认购</button>
+        <button class="btn btn-outline btn-sm" onclick="switchPage('vesting')" data-i18n="nav.vesting">释放详情</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ BOTTOM TABS (MOBILE) ═══════════ -->
-  <nav class="bottom-tabs" id="bottomTabs">
-    <div class="bottom-tab active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="icon">📊</span><span data-i18n="tab.dash">总览</span></div>
-    <div class="bottom-tab" data-page="ico" onclick="switchPage('ico')"><span class="icon">🚀</span><span data-i18n="tab.ico">ICO</span></div>
-    <div class="bottom-tab" data-page="staking" onclick="switchPage('staking')"><span class="icon">💎</span><span data-i18n="tab.staking">质押</span></div>
-    <div class="bottom-tab" data-page="vesting" onclick="switchPage('vesting')"><span class="icon">🔓</span><span data-i18n="tab.vesting">释放</span></div>
-    <div class="bottom-tab" data-page="ranking" onclick="switchPage('ranking')"><span class="icon">🏆</span><span data-i18n="tab.ranking">排名</span></div>
-    <div class="bottom-tab" data-page="team" onclick="switchPage('team')"><span class="icon">👥</span><span data-i18n="tab.team">战队</span></div>
-  </nav>
+  <!-- Asset breakdown -->
+  <div class="sec-hd">
+    <h2 data-i18n="port.assets">资产明细</h2>
+    <a onclick="switchPage('history')" style="cursor:pointer" data-i18n="nav.history">全部记录 →</a>
+  </div>
+  <div class="asset-list">
+    <div class="asset-row">
+      <span class="asset-label" data-i18n="port.liquid">流通 pGOLD</span>
+      <span class="asset-amt">600</span>
+      <span class="asset-usd" id="port-liquid-usd">$51,000</span>
+    </div>
+    <div class="asset-row">
+      <span class="asset-label" data-i18n="port.staked">质押中 pGOLD</span>
+      <span class="asset-amt">800</span>
+      <span class="asset-usd" id="port-staked-usd">$68,000</span>
+    </div>
+    <div class="asset-row">
+      <span class="asset-label" data-i18n="port.vesting">待释放 pGOLD</span>
+      <span class="asset-amt" style="color:var(--purple)">2,455</span>
+      <span class="asset-usd" id="port-vesting-usd">$208,675</span>
+    </div>
+    <div class="asset-row">
+      <span class="asset-label" data-i18n="port.vpBalance">vPGOLD</span>
+      <span class="asset-amt">240</span>
+      <span class="asset-usd" id="port-vp-usd">$20,400</span>
+    </div>
+    <div class="asset-row asset-total">
+      <span class="asset-label" data-i18n="port.totalValue">持仓总价值</span>
+      <span></span>
+      <span class="asset-usd" id="port-total-usd" style="color:var(--gold);font-size:1.05em">$348,075</span>
+    </div>
+  </div>
+</div>
+<!-- ══ ICO ══ -->
+<div class="page" id="page-ico">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="ico.title">E轨 · 创世池 ICO</div>
+    <div class="nw-value">168,500 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
+    <div class="nw-sub" data-i18n="ico.remaining">剩余可认购</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="ico.poolTotal">池子总量</div>
+      <div class="sc-v">200,000 pGOLD</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="ico.subscribed">已认购</div>
+      <div class="sc-v" style="color:var(--green)">31,500</div>
+      <div class="sc-h">15.75%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="ico.backingRate">背书率</div>
+      <div class="sc-v" style="color:var(--gold)">23.5%</div>
+    </div>
+  </div>
+  <div class="sec-hd"><h2 data-i18n="ico.currentPhase">当前阶段</h2></div>
+  <div class="info-card">
+    <div class="info-row">
+      <span class="info-label" data-i18n="ico.phase2">第2档 · D31-60 · 7x 权重</span>
+      <span class="info-val" style="color:var(--gold)">Active</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:15.75%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.68em;color:var(--muted);margin-top:8px">
+      <span>0</span><span>200,000 pGOLD</span>
+    </div>
+  </div>
+  <div class="sec-hd"><h2 data-i18n="ico.yourSub">你的认购</h2></div>
+  <div class="info-card">
+    <div class="info-row"><span class="info-label" data-i18n="ico.yourPts">你的积分</span><span class="info-val" style="color:var(--gold)">8,400</span></div>
+    <div class="divider"></div>
+    <div class="info-row"><span class="info-label" data-i18n="ico.poolAlloc">池分配估算</span><span class="info-val">420 pGOLD</span></div>
+  </div>
+  <div class="sec-hd"><h2 data-i18n="ico.subscribBtn">立即认购</h2></div>
+  <div class="info-card">
+    <div class="form-row">
+      <label data-i18n="ico.amountLabel">认购金额 (USDC)</label>
+      <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO()">
+      <div class="form-error" id="icoError"></div>
+      <div class="form-hint" id="ico-hint-text" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
+    </div>
+    <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()">
+      <span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span>
+    </button>
+  </div>
 </div>
 
-<!-- ═══════════ CONFIRM MODAL ═══════════ -->
+<!-- ══ STAKING ══ -->
+<div class="page" id="page-staking">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="nav.staking">质押中心</div>
+    <div class="nw-value">800 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
+    <div class="nw-sub" data-i18n="stake.staked">已质押 · A轨</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="stake.pending">待领分红</div>
+      <div class="sc-v" style="color:var(--green)">12.5 pGOLD</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l">APY</div>
+      <div class="sc-v" style="color:var(--green)">3.5%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="stake.deposited">B轨存入</div>
+      <div class="sc-v" style="color:var(--blue)">800 pGOLD</div>
+    </div>
+  </div>
+
+  <div class="sec-hd"><h2 data-i18n="stake.trackA">A轨 · 持币分红</h2></div>
+  <div class="info-card">
+    <p class="card-desc" data-i18n="stake.trackADesc">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</p>
+    <div class="form-row">
+      <label data-i18n="stake.stakeAmt">质押数量</label>
+      <input type="number" id="stakeAmount" placeholder="100" min="1" oninput="validateStake()">
+      <div class="form-error" id="stakeError"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="withConfirm('stake','A')" style="flex:1"><span class="btn-label" data-i18n="stake.stakeBtn">质押</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline" onclick="withConfirm('unstake')" style="flex:1"><span class="btn-label" data-i18n="stake.unstakeBtn">解质押</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-ghost" onclick="withConfirm('claimReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimDiv">领取分红</span><span class="btn-spinner"></span></button>
+    </div>
+  </div>
+
+  <div class="sec-hd"><h2 data-i18n="stake.trackB">B轨 · Top100 存入锚定</h2></div>
+  <div class="info-card">
+    <p class="card-desc" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</p>
+    <div class="info-row" style="margin-bottom:14px">
+      <span class="info-label" data-i18n="stake.deposited">已存入</span>
+      <span class="info-val" style="color:var(--blue)">800 pGOLD</span>
+    </div>
+    <div class="form-row">
+      <label data-i18n="stake.depositAmt">存入数量</label>
+      <input type="number" id="depositAmount" placeholder="100" min="1">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-blue" onclick="withConfirm('deposit','B')" style="flex:1"><span class="btn-label" data-i18n="stake.depositBtn">存入锚定</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline" onclick="withConfirm('withdraw')" style="flex:1"><span class="btn-label" data-i18n="stake.withdrawBtn">取出</span><span class="btn-spinner"></span></button>
+    </div>
+  </div>
+</div>
+<!-- ══ VESTING ══ -->
+<div class="page" id="page-vesting">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="nav.vesting">释放计划</div>
+    <div class="nw-value">2,455 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
+    <div class="nw-sub" data-i18n="vest.pending">待释放总量</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="vest.released">已释放</div>
+      <div class="sc-v" style="color:var(--green)">245 pGOLD</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="vest.nextRelease">下次释放</div>
+      <div class="sc-v">+68 pGOLD</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="vest.annualRelease">年化释放</div>
+      <div class="sc-v">~820 pGOLD</div>
+    </div>
+  </div>
+
+  <div class="sec-hd">
+    <h2 data-i18n="vest.progress">各轨释放进度</h2>
+    <button onclick="withConfirm('claimAll')" data-i18n="vest.claimAll">一键领取全部</button>
+  </div>
+
+  <div class="vest-list">
+    <div class="vest-item">
+      <div class="vest-head">
+        <div>
+          <div class="vest-name" data-i18n="vest.trackE">E轨 · 创世池</div>
+          <div class="vest-meta">2,400 pGOLD · <span data-i18n="vest.linear3y">3年线性</span></div>
+        </div>
+        <span class="vest-pct">5.8%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:5.8%;background:var(--purple)"></div></div>
+      <div class="vest-foot">
+        <span data-i18n="vest.remain3y">剩余 35/36 期</span>
+        <div class="btn-row-sm">
+          <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','E')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
+        </div>
+      </div>
+    </div>
+    <div class="vest-item">
+      <div class="vest-head">
+        <div>
+          <div class="vest-name" data-i18n="vest.trackB">B轨 · 月榜奖励</div>
+          <div class="vest-meta">180 pGOLD · <span data-i18n="vest.linear">10年线性</span></div>
+        </div>
+        <span class="vest-pct">2.5%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:2.5%;background:var(--blue)"></div></div>
+      <div class="vest-foot">
+        <span data-i18n="vest.remain10y">剩余 118/120 期</span>
+        <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+      </div>
+    </div>
+    <div class="vest-item">
+      <div class="vest-head">
+        <div>
+          <div class="vest-name" data-i18n="vest.trackC">C轨 · 燃烧补偿</div>
+          <div class="vest-meta">150 pGOLD · <span data-i18n="vest.linear">10年线性</span></div>
+        </div>
+        <span class="vest-pct">1.8%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:1.8%;background:var(--red)"></div></div>
+      <div class="vest-foot">
+        <span data-i18n="vest.remain10y">剩余 118/120 期</span>
+        <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','C')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-hd"><h2 data-i18n="vest.vpCenter">vPGOLD 转让中心</h2></div>
+  <div class="info-card">
+    <p class="card-desc" data-i18n="vest.vpDesc">vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。</p>
+    <div class="info-row" style="margin-bottom:16px">
+      <span class="info-label" data-i18n="vest.vpBalance">vPGOLD 余额</span>
+      <span class="info-val" style="color:var(--purple)">240 vPGOLD</span>
+    </div>
+    <div class="form-row">
+      <label data-i18n="vest.toAddr">接收地址</label>
+      <input type="text" id="vpAddr" placeholder="0x...">
+    </div>
+    <div class="form-row">
+      <label data-i18n="vest.amount">数量</label>
+      <input type="number" id="vpAmount" placeholder="10">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-purple" onclick="withConfirm('transferVp')" style="flex:1"><span class="btn-label" data-i18n="vest.send">发送</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline" onclick="withConfirm('claimVp')" style="flex:1"><span class="btn-label" data-i18n="vest.redeem">赎回底层 pGOLD</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-ghost" onclick="withConfirm('unwrapVp')" style="flex:1"><span class="btn-label" data-i18n="vest.unwrap">解包</span><span class="btn-spinner"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RANKING ══ -->
+<div class="page" id="page-ranking">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="nav.ranking">Top 100</div>
+    <div class="nw-value">#12</div>
+    <div class="nw-sub" data-i18n="dash.monthRank">当前月榜排名</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="rank.monthly">月榜奖励</div>
+      <div class="sc-v" style="color:var(--blue)">2,400 pGOLD</div>
+      <div class="sc-h">300%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="rank.quarterly">季榜奖励</div>
+      <div class="sc-v" style="color:var(--blue)">4,000 pGOLD</div>
+      <div class="sc-h">500%</div>
+    </div>
+    <div class="stat-cell">
+      <div class="sc-l" data-i18n="rank.annual">年榜奖励</div>
+      <div class="sc-v" style="color:var(--blue)">8,000 pGOLD</div>
+      <div class="sc-h">1000%</div>
+    </div>
+  </div>
+  <div class="tab-bar" style="margin-top:28px">
+    <button class="tab-btn active" data-rank="monthly" onclick="switchRankTab('monthly')" data-i18n="rank.monthly">月榜</button>
+    <button class="tab-btn" data-rank="quarterly" onclick="switchRankTab('quarterly')" data-i18n="rank.quarterly">季榜</button>
+    <button class="tab-btn" data-rank="annual" onclick="switchRankTab('annual')" data-i18n="rank.annual">年榜</button>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th data-i18n="rank.thRank">排名</th><th data-i18n="rank.thTrader">交易者</th><th data-i18n="rank.thVol">交易量</th><th data-i18n="rank.thDeposit">存入量</th><th data-i18n="rank.thReward">奖励</th><th data-i18n="rank.thMult">倍数</th></tr></thead>
+      <tbody>
+        <tr><td>🥇 #1</td><td>0xAb...Ef01</td><td>$2.4M</td><td>5,000</td><td style="color:var(--green)">15,000</td><td>300%</td></tr>
+        <tr><td>🥈 #2</td><td>0xBc...Fg23</td><td>$1.8M</td><td>3,200</td><td style="color:var(--green)">9,600</td><td>300%</td></tr>
+        <tr><td>🥉 #3</td><td>0xCd...Gh45</td><td>$1.2M</td><td>2,100</td><td style="color:var(--green)">6,300</td><td>300%</td></tr>
+        <tr style="background:rgba(212,168,67,.04)"><td>#12</td><td style="color:var(--gold)">You</td><td>$450K</td><td>800</td><td style="color:var(--green)">2,400</td><td>300%</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.68em;color:var(--muted);margin-top:12px;line-height:1.5" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
+  </div>
+</div>
+<!-- ══ TEAM ══ -->
+<div class="page" id="page-team">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="nav.team">战队中心</div>
+    <div class="nw-value">TIGER_TEAM</div>
+    <div class="nw-sub">#3 · 12 <span data-i18n="team.members">成员</span></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-cell"><div class="sc-l" data-i18n="team.volume">战队交易量</div><div class="sc-v">$3.4M</div></div>
+    <div class="stat-cell"><div class="sc-l" data-i18n="team.direct">直邀人数</div><div class="sc-v">8</div></div>
+    <div class="stat-cell"><div class="sc-l" data-i18n="team.pendingComm">待领返佣</div><div class="sc-v" style="color:var(--purple)">$340</div></div>
+  </div>
+  <div class="tab-bar" style="margin-top:28px">
+    <button class="tab-btn active" data-team="myTeam" onclick="switchTeamTab('myTeam')" data-i18n="team.myTeam">我的战队</button>
+    <button class="tab-btn" data-team="invite" onclick="switchTeamTab('invite')" data-i18n="team.invite">邀请返佣</button>
+    <button class="tab-btn" data-team="leaderboard" onclick="switchTeamTab('leaderboard')" data-i18n="team.leaderboard">战队竞赛榜</button>
+  </div>
+  <div id="teamTab-myTeam" class="info-card">
+    <div class="info-row"><span class="info-label" data-i18n="team.name">战队名称</span><span class="info-val">TIGER_TEAM</span></div>
+    <div class="divider"></div>
+    <div class="info-row"><span class="info-label" data-i18n="team.members">成员</span><span class="info-val">12</span></div>
+    <div class="divider"></div>
+    <div class="info-row"><span class="info-label" data-i18n="team.reward">竞赛奖励</span><span class="info-val" style="color:var(--green)">2,400 pGOLD</span></div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="withConfirm('joinTeam')" style="flex:1"><span class="btn-label" data-i18n="team.joinBtn">加入战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-gold" onclick="withConfirm('claimTeamReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
+    </div>
+  </div>
+  <div id="teamTab-invite" class="info-card" style="display:none">
+    <div class="form-row"><label data-i18n="team.inviteLink">你的邀请链接</label><input type="text" value="https://pgold.io/r/0xAbCd" readonly onclick="this.select()"></div>
+    <div class="info-row"><span class="info-label" data-i18n="team.indirect">间邀人数</span><span class="info-val">23</span></div>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-gold" onclick="withConfirm('claimCommission')" style="flex:1"><span class="btn-label" data-i18n="team.claimComm">领取返佣</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline" onclick="openBindInviter()" style="flex:1"><span class="btn-label" data-i18n="team.bindInviter">绑定邀请人</span><span class="btn-spinner"></span></button>
+    </div>
+  </div>
+  <div id="teamTab-leaderboard" style="display:none">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th data-i18n="team.thTeam">战队</th><th data-i18n="team.thLeader">队长</th><th data-i18n="team.thMembers">成员</th><th data-i18n="team.thVol">交易量</th><th data-i18n="team.thReward">奖励</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>DRAGON</td><td>0xAA...BB</td><td>48</td><td>$12M</td><td style="color:var(--green)">6,000 pGOLD</td></tr>
+          <tr><td>2</td><td>PHOENIX</td><td>0xCC...DD</td><td>35</td><td>$8.2M</td><td style="color:var(--green)">4,800 pGOLD</td></tr>
+          <tr class="row-highlight"><td>3</td><td>TIGER_TEAM</td><td>0xAbCd (You)</td><td>12</td><td>$3.4M</td><td style="color:var(--green)">2,400 pGOLD</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HISTORY ══ -->
+<div class="page" id="page-history">
+  <div class="nw-block">
+    <div class="nw-label" data-i18n="nav.history">交易记录</div>
+    <div class="nw-value">170 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
+    <div class="nw-sub">净买入 · 本月</div>
+  </div>
+  <div class="tab-bar" style="margin-top:28px">
+    <button class="tab-btn active" data-hfilter="all" onclick="switchHistFilter('all')" data-i18n="hist.all">全部</button>
+    <button class="tab-btn" data-hfilter="buy" onclick="switchHistFilter('buy')" data-i18n="hist.buy">买入</button>
+    <button class="tab-btn" data-hfilter="sell" onclick="switchHistFilter('sell')" data-i18n="hist.sell">卖出</button>
+    <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
+    <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th><th data-i18n="hist.thFee">手续费</th></tr></thead>
+      <tbody id="hist-tbody">
+        <tr><td>2026-06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50 pGOLD</td><td class="hist-price">$85.20</td><td>$10.65</td></tr>
+        <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20 pGOLD</td><td class="hist-price">$84.80</td><td>$4.24</td></tr>
+        <tr><td>2026-06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100 pGOLD</td><td class="hist-price">$85.00</td><td>$21.25</td></tr>
+        <tr><td>2026-06-24 16:45</td><td><span class="badge badge-blue">STAKE</span></td><td>200 pGOLD</td><td>—</td><td>—</td></tr>
+        <tr><td>2026-06-24 08:00</td><td><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple)">CLAIM</span></td><td>12.5 pGOLD</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ══ CONFIRM MODAL ══ -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-box">
-    <h3 id="modalTitle" data-i18n="modal.confirm">确认操作</h3>
-    <p id="modalMsg" style="color:var(--muted);font-size:.86em;line-height:1.5"></p>
+    <h3 id="modalTitle" data-i18n="modal.default">确认操作</h3>
+    <p id="modalMsg" style="color:var(--text2);font-size:.86em;line-height:1.6;margin-top:8px"></p>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeConfirmModal()" data-i18n="modal.cancel">取消</button>
-      <button class="btn btn-gold" id="modalConfirmBtn" onclick="executeConfirmed()"><span class="btn-label" data-i18n="modal.ok">确认</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal()"><span data-i18n="modal.cancel">取消</span></button>
+      <button class="btn btn-gold" style="flex:1" id="modalOkBtn" onclick="execAction()"><span data-i18n="modal.ok">确认</span></button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ TOAST ═══════════ -->
-<div class="toast-area"><div class="toast" id="toast"></div></div>
+<!-- ══ TOAST ══ -->
+<div class="toast-area" id="toastArea">
+  <div class="toast" id="toast"></div>
+</div>
 
 <script>
-'use strict';
-
-/* ════════ I18N (inline) ════════ */
+/* ════ I18N ════ */
 const I18N = {
   zh:{
-    'nav.dashboard':'仪表盘',
-    'nav.ico':'创世池 ICO',
-    'nav.portfolio':'我的持仓',
-    'nav.vesting':'释放计划',
-    'nav.ranking':'Top 100',
-    'nav.staking':'质押中心',
-    'nav.team':'战队中心',
-    'nav.history':'交易记录',
-    'common.cancel':'取消',
-    'common.confirm':'确认',
-    'common.copied':'已复制',
-    'common.claim':'领取',
-    'dash.pgoldBalance':'pGOLD 余额',
-    'dash.netWorth':'净资产',
-    'dash.totalRewards':'累计奖励',
-    'dash.vestedBalance':'待释放',
-    'dash.trackA':'A轨·持币分红',
-    'dash.trackB':'B轨·Top 100',
-    'dash.trackC':'C轨·燃烧挖矿',
-    'dash.trackD':'D轨·战队返佣',
-    'dash.staked':'质押量',
-    'dash.pendingDiv':'待领分红',
-    'dash.goStake':'去质押',
-    'dash.monthRank':'月榜排名',
-    'dash.monthReward':'月榜奖励',
-    'dash.totalFee':'累计手续费',
-    'dash.totalComp':'累计补偿',
-    'dash.referrals':'直邀/间邀',
-    'dash.pendingComm':'待领返佣',
-    'dash.apy35':'年化 3.5%',
-    'dash.fee10x':'手续费×10',
-    'ico.title':'E轨 · 创世池 ICO',
-    'ico.poolTotal':'池子总量',
-    'ico.remaining':'剩余',
-    'ico.subscribed':'已认购',
-    'ico.backingRate':'背书率',
-    'ico.currentPhase':'当前阶段',
-    'ico.phase2':'第2档 · D31-60 · 7x 权重',
-    'ico.yourSub':'你的认购',
-    'ico.yourPts':'你的积分',
-    'ico.poolAlloc':'池分配',
-    'ico.amountLabel':'认购金额 (USDC)',
-    'ico.hint':'个人上限 1,000 pGOLD',
-    'ico.subscribBtn':'立即认购',
-    'ico.errMin':'最低 100 USDC',
-    'ico.errMax':'超过个人上限',
-    'ico.errInvalid':'请输入有效金额',
-    'ico.success':'认购成功！',
-    'port.assets':'资产明细',
-    'port.price':'当前 pGOLD 价格',
-    'port.liquid':'流通 pGOLD',
-    'port.staked':'质押中 pGOLD',
-    'port.vesting':'待释放 pGOLD',
-    'port.vpBalance':'vPGOLD 余额',
-    'port.totalValue':'持仓总价值',
-    'port.allocation':'资产占比',
-    'port.stakedLabel':'质押中',
-    'port.vestingLabel':'待释放',
-    'vest.overview':'释放总览',
-    'vest.released':'已释放',
-    'vest.pending':'待释放',
-    'vest.nextRelease':'下次释放',
-    'vest.annualRelease':'年化释放',
-    'vest.progress':'各轨释放进度',
-    'vest.trackE':'E轨 · 创世池',
-    'vest.trackB':'B轨 · 月榜奖励',
-    'vest.trackC':'C轨 · 燃烧补偿',
-    'vest.linear':'10年线性',
-    'vest.linear3y':'3年线性',
-    'vest.wrap':'包装为 vPGOLD',
-    'vest.vpCenter':'vPGOLD 转让中心',
-    'vest.vpBalance':'vPGOLD 余额',
-    'vest.toAddr':'接收地址',
-    'vest.amount':'数量',
-    'vest.send':'发送',
-    'vest.redeem':'赎回底层 pGOLD',
-    'vest.unwrap':'解包恢复释放计划',
-    'vest.claimAll':'一键领取全部',
+    'nav.dashboard':'总览','nav.ico':'创世池 ICO','nav.vesting':'释放计划',
+    'nav.ranking':'Top 100','nav.staking':'质押中心','nav.team':'战队中心','nav.history':'交易记录',
+    'common.cancel':'取消','common.confirm':'确认','common.copied':'已复制','common.claim':'领取',
+    'dash.netWorth':'净资产','dash.pgoldBalance':'余额','dash.vestedBalance':'待释放','dash.pendingDiv':'待领分红',
+    'dash.trackA':'持币分红','dash.trackB':'Top 100','dash.trackC':'燃烧挖矿',
+    'dash.trackD':'战队返佣','dash.trackE':'创世池 ICO',
+    'dash.tracks':'五轨概览','dash.goStake':'去质押','dash.monthRank':'当前月榜排名',
+    'dash.assets':'资产明细',
+    'ico.title':'E轨 · 创世池 ICO','ico.poolTotal':'池子总量','ico.remaining':'剩余可认购',
+    'ico.subscribed':'已认购','ico.backingRate':'背书率','ico.currentPhase':'当前阶段',
+    'ico.phase2':'第2档 · D31-60 · 7x 权重','ico.yourSub':'你的认购',
+    'ico.yourPts':'你的积分','ico.poolAlloc':'池分配估算',
+    'ico.amountLabel':'认购金额 (USDC)','ico.hint':'个人上限 1,000 pGOLD',
+    'ico.subscribBtn':'立即认购','ico.errMin':'最低 100 USDC','ico.errMax':'超过个人上限',
+    'ico.errInvalid':'请输入有效金额','ico.success':'认购成功！',
+    'vest.overview':'释放总览','vest.released':'已释放','vest.pending':'待释放总量',
+    'vest.nextRelease':'下次释放','vest.annualRelease':'年化释放','vest.progress':'各轨释放进度',
+    'vest.trackE':'E轨 · 创世池','vest.trackB':'B轨 · 月榜奖励','vest.trackC':'C轨 · 燃烧补偿',
+    'vest.linear':'10年线性','vest.linear3y':'3年线性','vest.wrap':'包装为 vPGOLD',
+    'vest.vpCenter':'vPGOLD 转让中心','vest.vpBalance':'vPGOLD 余额',
+    'vest.toAddr':'接收地址','vest.amount':'数量','vest.send':'发送',
+    'vest.redeem':'赎回底层 pGOLD','vest.unwrap':'解包恢复释放计划','vest.claimAll':'一键领取全部',
     'vest.vpDesc':'vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。',
-    'rank.monthly':'月榜',
-    'rank.quarterly':'季榜',
-    'rank.annual':'年榜',
-    'rank.thRank':'排名',
-    'rank.thTrader':'交易者',
-    'rank.thVol':'交易量',
-    'rank.thDeposit':'存入量',
-    'rank.thReward':'奖励',
-    'rank.thMult':'倍数',
+    'vest.remain3y':'剩余 35/36 期','vest.remain10y':'剩余 118/120 期',
+    'rank.monthly':'月榜','rank.quarterly':'季榜','rank.annual':'年榜',
+    'rank.thRank':'排名','rank.thTrader':'交易者','rank.thVol':'交易量',
+    'rank.thDeposit':'存入量','rank.thReward':'奖励','rank.thMult':'倍数',
     'rank.note':'奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。',
-    'stake.trackA':'A轨 · 持币分红',
-    'stake.trackB':'B轨 · Top100 存入锚定',
+    'stake.trackA':'A轨 · 持币分红','stake.trackB':'B轨 · Top100 存入锚定',
     'stake.trackADesc':'质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取',
     'stake.trackBDesc':'存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小',
-    'stake.staked':'已质押',
-    'stake.pending':'待领分红',
-    'stake.deposited':'已存入',
-    'stake.formula':'奖励公式',
-    'stake.stakeAmt':'质押数量',
-    'stake.depositAmt':'存入数量',
-    'stake.stakeBtn':'质押',
-    'stake.unstakeBtn':'解质押',
-    'stake.claimDiv':'领取分红',
-    'stake.depositBtn':'存入锚定',
-    'stake.withdrawBtn':'取出',
-    'stake.claimAll':'领取奖励',
-    'stake.formulaVal':'存入×倍数',
-    'dash.trackBBadge':'月300% 季500% 年1000%','dash.trackDBadge':'直20% 间5%',
-    'vest.remain3y':'剩余 35/36 期','vest.remain10y':'剩余 118/120 期',
-    'stake.errZero':'请输入大于 0 的数量',
-    'team.myTeam':'我的战队',
-    'team.invite':'邀请返佣',
-    'team.leaderboard':'战队竞赛榜',
-    'team.name':'战队名称',
-    'team.members':'成员',
-    'team.volume':'战队交易量',
-    'team.reward':'竞赛奖励',
-    'team.createBtn':'创建战队',
-    'team.joinBtn':'加入战队',
-    'team.inviteLink':'你的邀请链接',
-    'team.direct':'直邀人数',
-    'team.indirect':'间邀人数',
-    'team.pendingComm':'待领返佣',
-    'team.claimComm':'领取返佣',
-    'team.bindInviter':'绑定邀请人',
-    'team.thTeam':'战队',
-    'team.thLeader':'队长',
-    'team.thMembers':'成员',
-    'team.thVol':'交易量',
-    'team.thReward':'奖励',
-    'team.promptAddr':'请输入邀请人以太坊地址',
-    'team.bound':'已绑定',
-    'team.invalidAddr':'请输入有效的以太坊地址',
-    'hist.all':'全部',
-    'hist.buy':'买入',
-    'hist.sell':'卖出',
-    'hist.stake':'质押',
-    'hist.claim':'领取',
-    'hist.thTime':'时间',
-    'hist.thType':'类型',
-    'hist.thAmt':'数量',
-    'hist.thPrice':'价格',
-    'hist.thFee':'手续费',
-    'modal.default':'确认操作',
-    'modal.cancel':'取消',
-    'modal.ok':'确认',
-    'modal.stake':'确认质押',
-    'modal.unstake':'确认解质押',
-    'modal.deposit':'确认存入',
-    'modal.withdraw':'确认取出',
-    'modal.claim':'确认领取',
-    'modal.wrap':'确认包装',
-    'modal.claimAll':'确认一键领取',
-    'modal.claimReward':'确认领取分红',
-    'modal.transferVp':'确认发送 vPGOLD',
-    'modal.claimVp':'确认赎回',
-    'modal.unwrapVp':'确认解包',
-    'modal.createTeam':'确认创建战队',
-    'modal.joinTeam':'确认加入战队',
-    'modal.claimTeamReward':'确认领取',
-    'modal.claimCommission':'确认领取返佣',
-    'tab.dash':'总览',
-    'tab.ico':'ICO',
-    'tab.staking':'质押',
-    'tab.vesting':'释放',
-    'tab.ranking':'排名',
-    'tab.team':'战队',
+    'stake.staked':'已质押','stake.pending':'待领分红','stake.deposited':'B轨存入',
+    'stake.stakeAmt':'质押数量','stake.depositAmt':'存入数量',
+    'stake.stakeBtn':'质押','stake.unstakeBtn':'解质押','stake.claimDiv':'领取分红',
+    'stake.depositBtn':'存入锚定','stake.withdrawBtn':'取出','stake.claimAll':'领取奖励',
+    'stake.formulaVal':'存入×倍数','stake.errZero':'请输入大于 0 的数量',
+    'team.myTeam':'我的战队','team.invite':'邀请返佣','team.leaderboard':'战队竞赛榜',
+    'team.name':'战队名称','team.members':'成员','team.volume':'战队交易量',
+    'team.reward':'竞赛奖励','team.createBtn':'创建战队','team.joinBtn':'加入战队',
+    'team.inviteLink':'你的邀请链接','team.direct':'直邀人数','team.indirect':'间邀人数',
+    'team.pendingComm':'待领返佣','team.claimComm':'领取返佣','team.bindInviter':'绑定邀请人',
+    'team.thTeam':'战队','team.thLeader':'队长','team.thMembers':'成员',
+    'team.thVol':'交易量','team.thReward':'奖励',
+    'team.promptAddr':'请输入邀请人以太坊地址','team.bound':'已绑定','team.invalidAddr':'请输入有效的以太坊地址',
+    'hist.all':'全部','hist.buy':'买入','hist.sell':'卖出','hist.stake':'质押','hist.claim':'领取',
+    'hist.thTime':'时间','hist.thType':'类型','hist.thAmt':'数量','hist.thPrice':'价格','hist.thFee':'手续费',
+    'modal.default':'确认操作','modal.cancel':'取消','modal.ok':'确认',
+    'modal.stake':'确认质押','modal.unstake':'确认解质押','modal.deposit':'确认存入',
+    'modal.withdraw':'确认取出','modal.claim':'确认领取','modal.wrap':'确认包装',
+    'modal.claimAll':'确认一键领取','modal.claimReward':'确认领取分红',
+    'modal.transferVp':'确认发送 vPGOLD','modal.claimVp':'确认赎回','modal.unwrapVp':'确认解包',
+    'modal.createTeam':'确认创建战队','modal.joinTeam':'确认加入战队',
+    'modal.claimTeamReward':'确认领取','modal.claimCommission':'确认领取返佣',
+    'modal.subscribe':'确认认购',
   },
   en:{
-    'nav.dashboard':'Dashboard',
-    'nav.ico':'Genesis ICO',
-    'nav.portfolio':'Portfolio',
-    'nav.vesting':'Vesting',
-    'nav.ranking':'Top 100',
-    'nav.staking':'Staking',
-    'nav.team':'Team',
-    'nav.history':'History',
-    'common.cancel':'Cancel',
-    'common.confirm':'Confirm',
-    'common.copied':'Copied',
-    'common.claim':'Claim',
-    'dash.pgoldBalance':'pGOLD Balance',
-    'dash.netWorth':'Net Worth',
-    'dash.totalRewards':'Total Rewards',
-    'dash.vestedBalance':'Pending Release',
-    'dash.trackA':'Track A · Hold & Earn',
-    'dash.trackB':'Track B · Top 100',
-    'dash.trackC':'Track C · Burn Mining',
-    'dash.trackD':'Track D · Referral',
-    'dash.staked':'Staked',
-    'dash.pendingDiv':'Pending Dividend',
-    'dash.goStake':'Go Stake',
-    'dash.monthRank':'Monthly Rank',
-    'dash.monthReward':'Monthly Reward',
-    'dash.totalFee':'Total Fees',
-    'dash.totalComp':'Total Compensation',
-    'dash.referrals':'Direct/Indirect',
-    'dash.pendingComm':'Pending Commission',
-    'dash.apy35':'3.5% APR',
-    'dash.fee10x':'Fee × 10',
-    'ico.title':'Track E · Genesis Pool ICO',
-    'ico.poolTotal':'Pool Total',
-    'ico.remaining':'Remaining',
-    'ico.subscribed':'Subscribed',
-    'ico.backingRate':'Backing Rate',
-    'ico.currentPhase':'Current Phase',
-    'ico.phase2':'Tier 2 · D31-60 · 7x Weight',
-    'ico.yourSub':'Your Subscription',
-    'ico.yourPts':'Your Points',
-    'ico.poolAlloc':'Pool Allocation',
-    'ico.amountLabel':'Amount (USDC)',
-    'ico.hint':'Personal cap: 1,000 pGOLD',
-    'ico.subscribBtn':'Subscribe Now',
-    'ico.errMin':'Minimum 100 USDC',
-    'ico.errMax':'Exceeds personal cap',
-    'ico.errInvalid':'Enter a valid amount',
-    'ico.success':'Subscription successful!',
-    'port.assets':'Asset Overview',
-    'port.price':'Current pGOLD Price',
-    'port.liquid':'Liquid pGOLD',
-    'port.staked':'Staked pGOLD',
-    'port.vesting':'Vesting pGOLD',
-    'port.vpBalance':'vPGOLD Balance',
-    'port.totalValue':'Total Portfolio Value',
-    'port.allocation':'Allocation',
-    'port.stakedLabel':'Staked',
-    'port.vestingLabel':'Vesting',
-    'vest.overview':'Vesting Overview',
-    'vest.released':'Released',
-    'vest.pending':'Pending',
-    'vest.nextRelease':'Next Release',
-    'vest.annualRelease':'Annual Release',
-    'vest.progress':'Track Progress',
-    'vest.trackE':'Track E · Genesis Pool',
-    'vest.trackB':'Track B · Monthly Reward',
-    'vest.trackC':'Track C · Burn Compensation',
-    'vest.linear':'10yr Linear',
-    'vest.linear3y':'3yr Linear',
-    'vest.wrap':'Wrap to vPGOLD',
-    'vest.vpCenter':'vPGOLD Transfer Center',
-    'vest.vpBalance':'vPGOLD Balance',
-    'vest.toAddr':'Recipient Address',
-    'vest.amount':'Amount',
-    'vest.send':'Send',
-    'vest.redeem':'Redeem underlying pGOLD',
-    'vest.unwrap':'Unwrap to resume vesting',
-    'vest.claimAll':'Claim All',
-    'vest.vpDesc':'vPGOLD is a tokenized certificate of your locked vesting rights. Transferable and tradeable.',
-    'rank.monthly':'Monthly',
-    'rank.quarterly':'Quarterly',
-    'rank.annual':'Annual',
-    'rank.thRank':'Rank',
-    'rank.thTrader':'Trader',
-    'rank.thVol':'Volume',
-    'rank.thDeposit':'Deposit',
-    'rank.thReward':'Reward',
-    'rank.thMult':'Multiplier',
-    'rank.note':'Reward = Deposit × Multiplier, 10yr vesting. Rank is your ticket; deposit size determines reward.',
-    'stake.trackA':'Track A · Hold & Earn',
-    'stake.trackB':'Track B · Top100 Deposit Anchor',
-    'stake.trackADesc':'Stake pGOLD to earn 3.5% APR dividend, accrued by the second, withdraw anytime.',
-    'stake.trackBDesc':'Deposit pGOLD to lock reward base. Rank determines eligibility; deposit size determines reward.',
-    'stake.staked':'Staked',
-    'stake.pending':'Pending Dividend',
-    'stake.deposited':'Deposited',
-    'stake.formula':'Reward Formula',
-    'stake.stakeAmt':'Stake Amount',
-    'stake.depositAmt':'Deposit Amount',
-    'stake.stakeBtn':'Stake',
-    'stake.unstakeBtn':'Unstake',
-    'stake.claimDiv':'Claim Dividend',
-    'stake.depositBtn':'Deposit',
-    'stake.withdrawBtn':'Withdraw',
-    'stake.claimAll':'Claim Rewards',
-    'stake.formulaVal':'Deposit × Multiplier',
-    'dash.trackBBadge':'M300% Q500% Y1000%','dash.trackDBadge':'Direct 20% Indirect 5%',
+    'nav.dashboard':'Overview','nav.ico':'Genesis ICO','nav.vesting':'Vesting',
+    'nav.ranking':'Top 100','nav.staking':'Staking','nav.team':'Team','nav.history':'History',
+    'common.cancel':'Cancel','common.confirm':'Confirm','common.copied':'Copied','common.claim':'Claim',
+    'dash.netWorth':'Net Worth','dash.pgoldBalance':'Balance','dash.vestedBalance':'Pending Release','dash.pendingDiv':'Pending Dividend',
+    'dash.trackA':'Hold & Earn','dash.trackB':'Top 100','dash.trackC':'Burn Mining',
+    'dash.trackD':'Referral','dash.trackE':'Genesis ICO',
+    'dash.tracks':'Five Tracks','dash.goStake':'Stake','dash.monthRank':'Monthly Rank',
+    'dash.assets':'Assets',
+    'ico.title':'Track E · Genesis ICO','ico.poolTotal':'Pool Total','ico.remaining':'Remaining',
+    'ico.subscribed':'Subscribed','ico.backingRate':'Backing Rate','ico.currentPhase':'Current Phase',
+    'ico.phase2':'Tier 2 · D31-60 · 7x Weight','ico.yourSub':'Your Subscription',
+    'ico.yourPts':'Your Points','ico.poolAlloc':'Pool Allocation',
+    'ico.amountLabel':'Subscribe Amount (USDC)','ico.hint':'Personal cap: 1,000 pGOLD',
+    'ico.subscribBtn':'Subscribe Now','ico.errMin':'Minimum 100 USDC','ico.errMax':'Exceeds personal cap',
+    'ico.errInvalid':'Enter a valid amount','ico.success':'Subscribed!',
+    'vest.overview':'Vesting Overview','vest.released':'Released','vest.pending':'Pending Total',
+    'vest.nextRelease':'Next Release','vest.annualRelease':'Annual Release','vest.progress':'Track Progress',
+    'vest.trackE':'Track E · Genesis','vest.trackB':'Track B · Monthly Reward','vest.trackC':'Track C · Burn Comp',
+    'vest.linear':'10yr Linear','vest.linear3y':'3yr Linear','vest.wrap':'Wrap to vPGOLD',
+    'vest.vpCenter':'vPGOLD Transfer Center','vest.vpBalance':'vPGOLD Balance',
+    'vest.toAddr':'Recipient Address','vest.amount':'Amount','vest.send':'Send',
+    'vest.redeem':'Redeem pGOLD','vest.unwrap':'Unwrap','vest.claimAll':'Claim All',
+    'vest.vpDesc':'vPGOLD is a tokenized certificate of your vesting rights. Transferable and tradable.',
     'vest.remain3y':'35/36 periods left','vest.remain10y':'118/120 periods left',
-    'stake.errZero':'Enter an amount greater than 0',
-    'team.myTeam':'My Team',
-    'team.invite':'Referral Rewards',
-    'team.leaderboard':'Team Leaderboard',
-    'team.name':'Team Name',
-    'team.members':'Members',
-    'team.volume':'Team Volume',
-    'team.reward':'Contest Reward',
-    'team.createBtn':'Create Team',
-    'team.joinBtn':'Join Team',
-    'team.inviteLink':'Your Invite Link',
-    'team.direct':'Direct Referrals',
-    'team.indirect':'Indirect Referrals',
-    'team.pendingComm':'Pending Commission',
-    'team.claimComm':'Claim Commission',
-    'team.bindInviter':'Bind Inviter',
-    'team.thTeam':'Team',
-    'team.thLeader':'Leader',
-    'team.thMembers':'Members',
-    'team.thVol':'Volume',
-    'team.thReward':'Reward',
-    'team.promptAddr':'Enter inviter Ethereum address',
-    'team.bound':'Bound',
-    'team.invalidAddr':'Enter a valid Ethereum address',
-    'hist.all':'All',
-    'hist.buy':'Buy',
-    'hist.sell':'Sell',
-    'hist.stake':'Stake',
-    'hist.claim':'Claim',
-    'hist.thTime':'Time',
-    'hist.thType':'Type',
-    'hist.thAmt':'Amount',
-    'hist.thPrice':'Price',
-    'hist.thFee':'Fee',
-    'modal.default':'Confirm Action',
-    'modal.cancel':'Cancel',
-    'modal.ok':'Confirm',
-    'modal.stake':'Confirm Stake',
-    'modal.unstake':'Confirm Unstake',
-    'modal.deposit':'Confirm Deposit',
-    'modal.withdraw':'Confirm Withdraw',
-    'modal.claim':'Confirm Claim',
-    'modal.wrap':'Confirm Wrap',
-    'modal.claimAll':'Confirm Claim All',
-    'modal.claimReward':'Confirm Claim Dividend',
-    'modal.transferVp':'Confirm Send vPGOLD',
-    'modal.claimVp':'Confirm Redeem',
-    'modal.unwrapVp':'Confirm Unwrap',
-    'modal.createTeam':'Confirm Create Team',
-    'modal.joinTeam':'Confirm Join Team',
-    'modal.claimTeamReward':'Confirm Claim',
-    'modal.claimCommission':'Confirm Claim Commission',
-    'tab.dash':'Dash',
-    'tab.ico':'ICO',
-    'tab.dash':'Overview',
-    'tab.ico':'ICO',
-    'tab.staking':'Staking',
-    'tab.vesting':'Vesting',
-    'tab.ranking':'Ranking',
-    'tab.team':'Team',
+    'rank.monthly':'Monthly','rank.quarterly':'Quarterly','rank.annual':'Annual',
+    'rank.thRank':'Rank','rank.thTrader':'Trader','rank.thVol':'Volume',
+    'rank.thDeposit':'Deposit','rank.thReward':'Reward','rank.thMult':'Mult',
+    'rank.note':'Reward = Deposit × Multiplier, 10yr linear vesting. Rank is the ticket, deposit size determines reward.',
+    'stake.trackA':'Track A · Hold & Earn','stake.trackB':'Track B · Top100 Anchor',
+    'stake.trackADesc':'Stake pGOLD for 3.5% APY, accrued per second, withdraw anytime',
+    'stake.trackBDesc':'Deposit pGOLD to lock reward base. Rank determines eligibility, deposit determines reward',
+    'stake.staked':'Staked','stake.pending':'Pending Dividend','stake.deposited':'Track B Deposit',
+    'stake.stakeAmt':'Stake Amount','stake.depositAmt':'Deposit Amount',
+    'stake.stakeBtn':'Stake','stake.unstakeBtn':'Unstake','stake.claimDiv':'Claim Dividend',
+    'stake.depositBtn':'Deposit','stake.withdrawBtn':'Withdraw','stake.claimAll':'Claim Rewards',
+    'stake.formulaVal':'Deposit × Multiplier','stake.errZero':'Enter an amount greater than 0',
+    'team.myTeam':'My Team','team.invite':'Referral','team.leaderboard':'Leaderboard',
+    'team.name':'Team Name','team.members':'Members','team.volume':'Team Volume',
+    'team.reward':'Contest Reward','team.createBtn':'Create Team','team.joinBtn':'Join Team',
+    'team.inviteLink':'Your Invite Link','team.direct':'Direct Referrals','team.indirect':'Indirect Referrals',
+    'team.pendingComm':'Pending Commission','team.claimComm':'Claim Commission','team.bindInviter':'Bind Inviter',
+    'team.thTeam':'Team','team.thLeader':'Leader','team.thMembers':'Members',
+    'team.thVol':'Volume','team.thReward':'Reward',
+    'team.promptAddr':'Enter inviter Ethereum address','team.bound':'Bound','team.invalidAddr':'Enter a valid Ethereum address',
+    'hist.all':'All','hist.buy':'Buy','hist.sell':'Sell','hist.stake':'Stake','hist.claim':'Claim',
+    'hist.thTime':'Time','hist.thType':'Type','hist.thAmt':'Amount','hist.thPrice':'Price','hist.thFee':'Fee',
+    'modal.default':'Confirm Action','modal.cancel':'Cancel','modal.ok':'Confirm',
+    'modal.stake':'Confirm Stake','modal.unstake':'Confirm Unstake','modal.deposit':'Confirm Deposit',
+    'modal.withdraw':'Confirm Withdraw','modal.claim':'Confirm Claim','modal.wrap':'Confirm Wrap',
+    'modal.claimAll':'Confirm Claim All','modal.claimReward':'Confirm Claim Dividend',
+    'modal.transferVp':'Confirm Send vPGOLD','modal.claimVp':'Confirm Redeem','modal.unwrapVp':'Confirm Unwrap',
+    'modal.createTeam':'Confirm Create Team','modal.joinTeam':'Confirm Join Team',
+    'modal.claimTeamReward':'Confirm Claim','modal.claimCommission':'Confirm Claim Commission',
+    'modal.subscribe':'Confirm Subscribe',
   },
   _lang:'zh',
   t(k){return(this[this._lang]||this.zh)[k]||k;},
@@ -1015,249 +948,222 @@ const I18N = {
 };
 const t=k=>I18N.t(k);
 
-let currentPage='dashboard',pendingAction=null;
+let currentPage='dashboard', pendingAction=null;
 
-const PAGE_TITLES = {
-  zh:{ dashboard:'总览', ico:'创世池 ICO', vesting:'释放计划', ranking:'Top 100', staking:'质押中心', team:'战队中心', history:'交易记录' },
-  en:{ dashboard:'Overview', ico:'Genesis ICO', vesting:'Vesting', ranking:'Top 100', staking:'Staking', team:'Team', history:'History' }
+const PAGE_TITLES={
+  zh:{dashboard:'总览',ico:'创世池 ICO',staking:'质押中心',vesting:'释放计划',ranking:'Top 100',team:'战队中心',history:'交易记录'},
+  en:{dashboard:'Overview',ico:'Genesis ICO',staking:'Staking',vesting:'Vesting',ranking:'Top 100',team:'Team',history:'History'}
 };
 
 function switchPage(page){
   currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
-  document.querySelectorAll('.bottom-tab').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
-  document.getElementById('mainContent').scrollTop=0;
-  const titleEl=document.getElementById('topbarTitle');
-  const lang=I18N.getLang();
-  if(titleEl) titleEl.textContent=(PAGE_TITLES[lang]||PAGE_TITLES.zh)[page]||'';
+  const el=document.getElementById('page-'+page);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-link,.drawer-link').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  window.scrollTo(0,0);
+  document.title='pGOLD · '+(PAGE_TITLES[I18N.getLang()]||PAGE_TITLES.zh)[page]||'pGOLD DApp';
 }
 
-function toggleSidebar(){
-  const sb=document.getElementById('sidebar');
-  const hb=document.getElementById('hamburger');
-  const bd=document.getElementById('navBackdrop');
-  const isOpen=sb.classList.contains('open');
-  if(isOpen){closeSidebar();}
-  else{
-    sb.classList.add('open');
-    hb.classList.add('open');
-    bd.classList.add('show');
-    document.body.style.overflow='hidden';
-  }
+/* ── DRAWER ── */
+function openDrawer(){
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerBackdrop').classList.add('show');
+  document.body.style.overflow='hidden';
 }
-
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('hamburger').classList.remove('open');
-  document.getElementById('navBackdrop').classList.remove('show');
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerBackdrop').classList.remove('show');
   document.body.style.overflow='';
 }
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
 
+/* ── I18N ── */
 function renderI18n(){
   const lang=I18N.getLang();
-  document.documentElement.lang = lang==='zh'?'zh-CN':'en';
+  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
   document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const key=el.dataset.i18n,text=t(key);
-    if(text&&text!==key)el.textContent=text;
+    const txt=t(el.dataset.i18n);
+    if(txt&&txt!==el.dataset.i18n)el.textContent=txt;
   });
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
-  // sync topbar title
-  const titleEl=document.getElementById('topbarTitle');
-  if(titleEl) titleEl.textContent=(PAGE_TITLES[lang]||PAGE_TITLES.zh)[currentPage]||'';
+  document.title='pGOLD · '+(PAGE_TITLES[lang]||PAGE_TITLES.zh)[currentPage]||'pGOLD DApp';
 }
-
-// Toast
-let toastTimer;
-function showToast(msg,type){
-  const el=document.getElementById('toast');
-  clearTimeout(toastTimer);el.textContent=msg;el.className='toast toast-'+(type||'success');
-  void el.offsetWidth;el.classList.add('show');
-  toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
-}
-
-// Confirm Modal
-function withConfirm(action,param){
-  pendingAction={action,param};
-  const titles={stake:t('modal.stake'),unstake:t('modal.unstake'),deposit:t('modal.deposit'),withdraw:t('modal.withdraw'),claim:t('modal.claim'),wrap:t('modal.wrap'),claimAll:t('modal.claimAll'),claimReward:t('modal.claimReward'),transferVp:t('modal.transferVp'),claimVp:t('modal.claimVp'),unwrapVp:t('modal.unwrapVp'),createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission')};
-  document.getElementById('modalTitle').textContent=titles[action]||t('modal.default');
-  document.getElementById('modalMsg').textContent='';
-  document.getElementById('confirmModal').classList.add('show');
-}
-function closeConfirmModal(){document.getElementById('confirmModal').classList.remove('show');pendingAction=null;}
-function executeConfirmed(){
-  if(!pendingAction)return;
-  const btn=document.getElementById('modalConfirmBtn');btn.classList.add('loading');
-  setTimeout(()=>{
-    const{action,param}=pendingAction;
-    showToast(action+' ✓','success');
-    btn.classList.remove('loading');closeConfirmModal();
-  },500);
-}
-
-// ICO
-function validateICO(){
-  const maxUsdc = Math.round(ICO_CAP_PGOLD * dappPgoldPrice);
-  const val=parseInt(document.getElementById('icoAmount').value)||0,err=document.getElementById('icoError');
-  if(val<100){err.textContent=t('ico.errMin');err.classList.add('show');}
-  else if(val>maxUsdc){err.textContent=t('ico.errMax');err.classList.add('show');}
-  else{err.classList.remove('show');}
-}
-function confirmSubscribe(){
-  const maxUsdc = Math.round(ICO_CAP_PGOLD * dappPgoldPrice);
-  const val=parseInt(document.getElementById('icoAmount').value)||0;
-  if(val<100||val>maxUsdc){showToast(t('ico.errInvalid'),'error');return;}
-  const btn=document.getElementById('icoBtn');btn.classList.add('loading');
-  setTimeout(()=>{btn.classList.remove('loading');showToast(t('ico.success'),'success');},600);
-}
-
-// Staking
-function validateStake(){
-  const val=parseInt(document.getElementById('stakeAmount').value)||0,err=document.getElementById('stakeError');
-  err.classList.toggle('show',val<=0);if(val<=0)err.textContent=t('stake.errZero');
-}
-function validateRankStake(){
-  const val=parseInt(document.getElementById('rankStakeAmount').value)||0,err=document.getElementById('rankStakeError');
-  err.classList.toggle('show',val<=0);if(val<=0)err.textContent=t('stake.errZero');
-}
-
-// Team
-function switchTeamTab(tab){
-  ['myTeam','invite','leaderboard'].forEach(t=>{
-    document.getElementById('teamTab-'+t).style.display=t===tab?'':'none';
-  });
-  document.querySelectorAll('#page-team .tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.ttab===tab));
-}
-function openBindInviter(){
-  const addr=prompt(t('team.promptAddr'));
-  if(addr&&addr.startsWith('0x')&&addr.length===42){showToast(t('team.bound')+': '+addr.slice(0,8)+'...','success');}
-  else if(addr){showToast(t('team.invalidAddr'),'error');}
-}
-
-// Ranking
-function switchRankTab(tab){
-  document.querySelectorAll('#page-ranking .tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.rank===tab));
-}
-
-// History
-function switchHistFilter(filter){
-  document.querySelectorAll('#page-history .tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.hfilter===filter));
-}
-
-// Mobile
-function toggleMore(){document.getElementById('morePanel').classList.toggle('show');}
-
-// Modal overlay click close
-document.getElementById('confirmModal').addEventListener('click',function(e){if(e.target===this)closeConfirmModal();});
-
-// ESC closes sidebar
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSidebar();});
-
-// Lang
-document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{
   I18N.setLang(b.dataset.lang);
   localStorage.setItem('pgold_lang',b.dataset.lang);
   renderI18n();
-});});
+  const hint=document.getElementById('ico-hint-text');
+  if(hint&&dappPgoldPrice)updateDappPriceDisplays(dappPgoldPrice);
+}));
 
-// Init — restore saved lang
-const _savedLang=localStorage.getItem('pgold_lang');
-if(_savedLang&&(_savedLang==='zh'||_savedLang==='en'))I18N.setLang(_savedLang);
+/* ── TOAST ── */
+function showToast(msg,type='info'){
+  const area=document.getElementById('toastArea');
+  if(!area)return;
+  const el=document.createElement('div');
+  el.className=`toast toast-${type}`;
+  el.textContent=msg;
+  area.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400);},3000);
+}
+
+/* ── CONFIRM MODAL ── */
+function withConfirm(action,track){
+  pendingAction={action,track};
+  const modal=document.getElementById('confirmModal');
+  const title=document.getElementById('modalTitle');
+  const msg=document.getElementById('modalMsg');
+  const msgs={
+    stake:`${t('modal.stake')}: ${document.getElementById('stakeAmount')?.value||0} pGOLD`,
+    unstake:t('modal.unstake'),deposit:t('modal.deposit'),withdraw:t('modal.withdraw'),
+    claim:`${t('modal.claim')} ${track||''}`,wrap:t('modal.wrap'),claimAll:t('modal.claimAll'),
+    claimReward:t('modal.claimReward'),transferVp:t('modal.transferVp'),claimVp:t('modal.claimVp'),
+    unwrapVp:t('modal.unwrapVp'),createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),
+    claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission'),
+  };
+  title.textContent=t('modal.default');
+  msg.textContent=msgs[action]||action;
+  modal.classList.add('show');
+}
+function closeModal(){
+  document.getElementById('confirmModal').classList.remove('show');
+  pendingAction=null;
+}
+function confirmAction(){
+  closeModal();
+  showToast(t('common.confirm')+'!','success');
+}
+
+/* ── ICO ── */
+function validateICO(){
+  const v=parseFloat(document.getElementById('icoAmount')?.value);
+  const err=document.getElementById('icoError');
+  if(!err)return;
+  if(isNaN(v)||v<=0){err.textContent=t('ico.errInvalid');err.classList.add('show');}
+  else if(v<100){err.textContent=t('ico.errMin');err.classList.add('show');}
+  else if(v>dappPgoldPrice*1000){err.textContent=t('ico.errMax');err.classList.add('show');}
+  else err.classList.remove('show');
+}
+function confirmSubscribe(){
+  const v=parseFloat(document.getElementById('icoAmount')?.value);
+  if(!v||v<100){validateICO();return;}
+  pendingAction={action:'subscribe'};
+  const modal=document.getElementById('confirmModal');
+  document.getElementById('modalTitle').textContent=t('modal.subscribe');
+  document.getElementById('modalMsg').textContent=`${v.toLocaleString()} USDC`;
+  modal.classList.add('show');
+}
+
+/* ── STAKE VALIDATE ── */
+function validateStake(){
+  const v=parseFloat(document.getElementById('stakeAmount')?.value);
+  const err=document.getElementById('stakeError');
+  if(!err)return;
+  if(isNaN(v)||v<=0){err.textContent=t('stake.errZero');err.classList.add('show');}
+  else err.classList.remove('show');
+}
+
+/* ── TRACK EXPAND ── */
+function toggleTrack(id){
+  const detail=document.getElementById(id);
+  const chev=document.getElementById('chev-'+id);
+  if(!detail)return;
+  const open=detail.classList.toggle('open');
+  if(chev)chev.style.transform=open?'rotate(90deg)':'rotate(0)';
+}
+
+/* ── RANK TAB ── */
+function switchRankTab(tab){
+  document.querySelectorAll('[data-rank]').forEach(b=>b.classList.toggle('active',b.dataset.rank===tab));
+}
+
+/* ── TEAM TAB ── */
+function switchTeamTab(tab){
+  document.querySelectorAll('[data-team]').forEach(b=>b.classList.toggle('active',b.dataset.team===tab));
+  ['myTeam','invite','leaderboard'].forEach(id=>{
+    const el=document.getElementById('teamTab-'+id);
+    if(el)el.style.display=id===tab?'':'none';
+  });
+}
+
+/* ── HISTORY FILTER ── */
+function switchHistFilter(f){
+  document.querySelectorAll('[data-hfilter]').forEach(b=>b.classList.toggle('active',b.dataset.hfilter===f));
+}
+
+/* ── BIND INVITER ── */
+function openBindInviter(){
+  const addr=prompt(t('team.promptAddr'));
+  if(!addr)return;
+  if(!/^0x[0-9a-fA-F]{40}$/.test(addr)){showToast(t('team.invalidAddr'),'error');return;}
+  showToast(t('team.bound')+': '+addr.slice(0,8)+'...','success');
+}
+
+/* ── CONNECT WALLET ── */
+async function connectWallet(){
+  if(typeof window.ethereum==='undefined'){showToast('Please install MetaMask','error');return;}
+  try{
+    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+    if(accounts[0]){
+      const addr=accounts[0];
+      const short=addr.slice(0,6)+'...'+addr.slice(-4);
+      document.getElementById('walletBadge').textContent=short;
+      document.getElementById('drawerWallet').textContent=addr;
+      showToast('Connected: '+short,'success');
+    }
+  }catch(e){showToast('Connection rejected','error');}
+}
+
+/* ── PRICE ── */
+const PORTFOLIO={liquid:600,staked:800,vesting:2455,vp:240};
+const ICO_CAP_PGOLD=1000;
+let dappPgoldPrice=85;
+
+function updateDappPriceDisplays(p){
+  dappPgoldPrice=p;
+  const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  set('nw-price','$'+p.toFixed(2));
+  const total=(PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp)*p;
+  set('nw-total',fmt(total));
+  set('stat-balance-usd','≈ '+fmt((PORTFOLIO.liquid+PORTFOLIO.staked)*p));
+  set('port-total-usd',fmt(total));
+  const icoMax=Math.round(ICO_CAP_PGOLD*p);
+  const icoEl=document.getElementById('icoAmount');
+  if(icoEl)icoEl.max=icoMax;
+  const isEn=I18N.getLang()==='en';
+  const hint=document.getElementById('ico-hint-text');
+  if(hint)hint.textContent=isEn?`Personal cap: 1,000 pGOLD ($${icoMax.toLocaleString('en-US')})`:`个人上限 1,000 pGOLD ($${icoMax.toLocaleString('en-US')})`;
+  const offsets=[0.20,-0.20,0,0,0];
+  document.querySelectorAll('.hist-price').forEach((td,i)=>{
+    if(i<offsets.length)td.textContent='$'+(p+offsets[i]).toFixed(2);
+  });
+}
+
+async function fetchPAXGPrice(){
+  try{
+    const res=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true',{cache:'no-store'});
+    const data=await res.json();
+    if(data['pax-gold']?.usd){
+      const p=data['pax-gold'].usd/31.1035;
+      const ch=data['pax-gold'].usd_24h_change||0;
+      updateDappPriceDisplays(p);
+      const chEl=document.getElementById('nw-change');
+      if(chEl){const s=ch>=0?'+':'';chEl.textContent=`${s}${ch.toFixed(2)}%`;chEl.style.color=ch>=0?'var(--green)':'var(--red)';}
+    }
+  }catch(e){console.warn('price fetch failed',e);setTimeout(fetchPAXGPrice,60000);}
+}
+
+/* ── INIT ── */
+const _sl=localStorage.getItem('pgold_lang');
+if(_sl==='zh'||_sl==='en')I18N.setLang(_sl);
 renderI18n();
 switchPage('dashboard');
-
-// ── Fetch PAXG Real-time Price ──
-// Portfolio demo holdings (pGOLD amounts)
-const PORTFOLIO = { liquid: 600, staked: 800, vesting: 2455, vp: 240 };
-// ICO personal cap in pGOLD
-const ICO_CAP_PGOLD = 1000;
-
-let dappPgoldPrice = 85; // fallback until API responds
-
-function updateDappPriceDisplays(pgoldPrice) {
-  dappPgoldPrice = pgoldPrice;
-  const fmt = v => '$' + Math.round(v).toLocaleString('en-US');
-  const p = pgoldPrice;
-
-  // Price bar
-  const priceEl = document.getElementById('dapp-pgold-price');
-  if (priceEl) priceEl.textContent = '$' + p.toFixed(2);
-  const inlineEl = document.getElementById('dash-price-inline');
-  if (inlineEl) inlineEl.textContent = '$' + p.toFixed(2);
-
-  // Portfolio USD values
-  const liquidUsd  = PORTFOLIO.liquid  * p;
-  const stakedUsd  = PORTFOLIO.staked  * p;
-  const vestingUsd = PORTFOLIO.vesting * p;
-  const vpUsd      = PORTFOLIO.vp      * p;
-  const totalUsd   = liquidUsd + stakedUsd + vestingUsd + vpUsd;
-
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = fmt(val); };
-  set('port-liquid-usd',  liquidUsd);
-  set('port-staked-usd',  stakedUsd);
-  set('port-vesting-usd', vestingUsd);
-  set('port-vp-usd',      vpUsd);
-  set('port-total-usd',   totalUsd);
-
-  // Dashboard stat cards
-  const balanceTotal = PORTFOLIO.liquid + PORTFOLIO.staked;
-  const dashBalEl = document.getElementById('dash-balance-usd');
-  if (dashBalEl) dashBalEl.textContent = '≈ ' + fmt(balanceTotal * p);
-  const barNetEl = document.getElementById('bar-net-worth');
-  if (barNetEl) barNetEl.textContent = fmt(totalUsd);
-
-  // ICO cap: 1,000 pGOLD × price
-  const icoMaxUsdc = Math.round(ICO_CAP_PGOLD * p);
-  const icoAmountEl = document.getElementById('icoAmount');
-  if (icoAmountEl) icoAmountEl.max = icoMaxUsdc;
-
-  const isEn = I18N.getLang() === 'en';
-  const hintEl = document.getElementById('ico-hint-text');
-  if (hintEl) hintEl.textContent = isEn
-    ? `Personal cap: 1,000 pGOLD ($${icoMaxUsdc.toLocaleString('en-US')})`
-    : `个人上限 1,000 pGOLD ($${icoMaxUsdc.toLocaleString('en-US')})`;
-
-  // History table — replace demo prices with scaled real prices
-  const tbody = document.getElementById('hist-tbody');
-  if (tbody) {
-    const cells = tbody.querySelectorAll('.hist-price');
-    // Demo offsets relative to $85 base
-    const offsets = [+0.20, -0.20, 0];
-    cells.forEach((td, i) => {
-      if (i < offsets.length) td.textContent = '$' + (p + offsets[i]).toFixed(2);
-    });
-  }
-}
-
-async function fetchPAXGPrice() {
-  try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true',
-      { cache: 'no-store' }
-    );
-    const data = await res.json();
-    if (data['pax-gold'] && data['pax-gold'].usd) {
-      const pgoldPrice = data['pax-gold'].usd / 31.1035;
-      const change24h = data['pax-gold'].usd_24h_change || 0;
-      updateDappPriceDisplays(pgoldPrice);
-      // price bar 24h change badge
-      const changeEl = document.getElementById('dapp-pgold-change');
-      if (changeEl) {
-        const sign = change24h >= 0 ? '+' : '';
-        changeEl.textContent = `${sign}${change24h.toFixed(2)}%`;
-        changeEl.style.color = change24h >= 0 ? 'var(--green)' : 'var(--red)';
-      }
-    }
-  } catch (err) {
-    console.warn('PAXG price fetch failed:', err);
-    setTimeout(fetchPAXGPrice, 60_000);
-  }
-}
-
 fetchPAXGPrice();
-setInterval(fetchPAXGPrice, 5 * 60 * 1000);
+setInterval(fetchPAXGPrice,5*60*1000);
 </script>
 </body>
 </html>
-
+</html>
