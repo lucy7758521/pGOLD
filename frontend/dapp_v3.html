@@ -230,8 +230,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <!-- ═══════════ SIDEBAR ═══════════ -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <a href="index.html" title="返回官网" style="display:inline-flex;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:.72em;margin-bottom:6px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">← 首页</a>
-      <a href="swap_v3.html" title="去交易" style="display:inline-flex;align-items:center;gap:4px;color:var(--gold);text-decoration:none;font-size:.72em;margin-bottom:6px;margin-left:12px;padding:2px 8px;border:1px solid rgba(212,168,67,.15);border-radius:4px;transition:all .2s;" onmouseover="this.style.background='rgba(212,168,67,.08)'" onmouseout="this.style.background='transparent'">⇄ Swap</a>
+      <a href="index.html" id="sbHome" style="display:inline-flex;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:.72em;margin-bottom:6px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">← Home</a>
+      <a href="swap_v3.html" id="sbSwap" style="display:inline-flex;align-items:center;gap:4px;color:var(--gold);text-decoration:none;font-size:.72em;margin-bottom:6px;margin-left:12px;padding:2px 8px;border:1px solid rgba(212,168,67,.15);border-radius:4px;transition:all .2s;" onmouseover="this.style.background='rgba(212,168,67,.08)'" onmouseout="this.style.background='transparent'">⇄ Swap</a>
       <br>
       <svg viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="12" fill="url(#gd)" stroke="var(--gold)" stroke-width="1.2"/><circle cx="13" cy="13" r="7" fill="none" stroke="var(--gold)" stroke-width=".6" stroke-dasharray="2 2"/><circle cx="13" cy="13" r="3" fill="var(--gold)"/><defs><radialGradient id="gd"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs></svg>
       <span>pGOLD</span> DApp
@@ -250,12 +250,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
       <div class="wallet-info" id="walletInfo">0x0000...0000</div>
-      <a href="swap_v3.html" style="font-size:12px;color:var(--gold);text-align:center;display:block;padding:8px 0;text-decoration:none;">⇄ Swap 交易</a>
-      <a href="index.html" style="font-size:11.5px;color:var(--muted);text-align:center;display:block;text-decoration:none;">← 返回官网</a>
+      <a href="swap_v3.html" id="sbSwap2" style="font-size:12px;color:var(--gold);text-align:center;display:block;padding:8px 0;text-decoration:none;">⇄ Swap</a>
+      <a href="index.html" id="sbHome2" style="font-size:11.5px;color:var(--muted);text-align:center;display:block;text-decoration:none;">← Home</a>
       <div style="display:flex;justify-content:center;gap:10px;margin-top:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.05);padding-top:10px;">
-        <a href="../pGOLD_whitepaper.html" target="_blank" style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📖 白皮书</a>
-        <a href="../pGOLD_Roadshow_V3.pptx" download style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📑 PPT</a>
-        <a href="../trade_simulation_v5.html" target="_blank" style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📊 测算器</a>
+        <a href="../pGOLD_whitepaper.html" id="sbWp" target="_blank" style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📖 Whitepaper</a>
+        <a href="../pGOLD_Roadshow_V3.pptx" id="sbPpt" download style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📑 Deck</a>
+        <a href="../trade_simulation_v5.html" id="sbSim" target="_blank" style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📊 Simulator</a>
       </div>
     </div>
   </nav>
@@ -265,7 +265,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <!-- ── TOPBAR ── -->
     <div class="topbar">
       <div class="topbar-left">
-        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="菜单">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
         <span class="topbar-title" id="topbarTitle">仪表盘</span>
@@ -284,25 +284,25 @@ tr:hover td{background:rgba(255,255,255,.015);}
       </div>
       <div class="grid2">
         <div class="card">
-          <h3>📈 <span data-i18n="dash.trackA">A轨·持币分红</span><span class="badge badge-green" style="margin-left:auto">年化 3.5%</span></h3>
-          <div class="flex-between gap8"><span>质押量</span><b>800 pGOLD</b></div>
-          <div class="flex-between gap8 mt12"><span>待领分红</span><b style="color:var(--green)">12.5 pGOLD</b></div>
-          <button class="btn btn-gold btn-full mt12" onclick="switchPage('staking')">去质押</button>
+          <h3>📈 <span data-i18n="dash.trackA">A轨·持币分红</span><span class="badge badge-green" style="margin-left:auto" data-i18n="dash.apy35">年化 3.5%</span></h3>
+          <div class="flex-between gap8"><span data-i18n="dash.staked">质押量</span><b>800 pGOLD</b></div>
+          <div class="flex-between gap8 mt12"><span data-i18n="dash.pendingDiv">待领分红</span><b style="color:var(--green)">12.5 pGOLD</b></div>
+          <button class="btn btn-gold btn-full mt12" onclick="switchPage('staking')" data-i18n="dash.goStake">去质押</button>
         </div>
         <div class="card">
           <h3>🏆 <span data-i18n="dash.trackB">B轨·Top 100</span><span class="badge badge-blue" style="margin-left:auto">月300% 季500% 年1000%</span></h3>
-          <div class="flex-between gap8"><span>月榜排名</span><b style="color:var(--gold)">#12</b></div>
-          <div class="flex-between gap8 mt12"><span>月榜奖励</span><b style="color:var(--blue)">240 pGOLD</b></div>
+          <div class="flex-between gap8"><span data-i18n="dash.monthRank">月榜排名</span><b style="color:var(--gold)">#12</b></div>
+          <div class="flex-between gap8 mt12"><span data-i18n="dash.monthReward">月榜奖励</span><b style="color:var(--blue)">240 pGOLD</b></div>
         </div>
         <div class="card">
-          <h3>🔥 <span data-i18n="dash.trackC">C轨·燃烧挖矿</span><span class="badge badge-red" style="margin-left:auto">手续费×10</span></h3>
-          <div class="flex-between gap8"><span>累计手续费</span><b style="color:var(--red)">$1,250</b></div>
-          <div class="flex-between gap8 mt12"><span>累计补偿</span><b style="color:var(--orange)">150 pGOLD</b></div>
+          <h3>🔥 <span data-i18n="dash.trackC">C轨·燃烧挖矿</span><span class="badge badge-red" style="margin-left:auto" data-i18n="dash.fee10x">手续费×10</span></h3>
+          <div class="flex-between gap8"><span data-i18n="dash.totalFee">累计手续费</span><b style="color:var(--red)">$1,250</b></div>
+          <div class="flex-between gap8 mt12"><span data-i18n="dash.totalComp">累计补偿</span><b style="color:var(--orange)">150 pGOLD</b></div>
         </div>
         <div class="card">
           <h3>👥 <span data-i18n="dash.trackD">D轨·战队返佣</span><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple);margin-left:auto">直20% 间5%</span></h3>
-          <div class="flex-between gap8"><span>直邀/间邀</span><b>8 / 23</b></div>
-          <div class="flex-between gap8 mt12"><span>待领返佣</span><b style="color:var(--purple)">$340</b></div>
+          <div class="flex-between gap8"><span data-i18n="dash.referrals">直邀/间邀</span><b>8 / 23</b></div>
+          <div class="flex-between gap8 mt12"><span data-i18n="dash.pendingComm">待领返佣</span><b style="color:var(--purple)">$340</b></div>
         </div>
       </div>
     </div>
@@ -313,26 +313,26 @@ tr:hover td{background:rgba(255,255,255,.015);}
         <div class="card">
           <h3>🚀 <span data-i18n="ico.title">E轨 · 创世池 ICO</span></h3>
           <div class="grid2">
-            <div class="kpi"><div class="l">池子总量</div><div class="v gold">200,000 pGOLD</div></div>
-            <div class="kpi"><div class="l">剩余</div><div class="v">168,500</div></div>
-            <div class="kpi"><div class="l">已认购</div><div class="v pos">31,500</div></div>
-            <div class="kpi"><div class="l">背书率</div><div class="v pur">23.5%</div></div>
+            <div class="kpi"><div class="l" data-i18n="ico.poolTotal">池子总量</div><div class="v gold">200,000 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="ico.remaining">剩余</div><div class="v">168,500</div></div>
+            <div class="kpi"><div class="l" data-i18n="ico.subscribed">已认购</div><div class="v pos">31,500</div></div>
+            <div class="kpi"><div class="l" data-i18n="ico.backingRate">背书率</div><div class="v pur">23.5%</div></div>
           </div>
-          <div class="flex-between gap8 mt12" style="font-size:.8em;color:var(--muted)"><span>当前阶段</span><b style="color:var(--gold)">第2档 · D31-60 · 7x 权重</b></div>
+          <div class="flex-between gap8 mt12" style="font-size:.8em;color:var(--muted)"><span data-i18n="ico.currentPhase">当前阶段</span><b style="color:var(--gold)" data-i18n="ico.phase2">第2档 · D31-60 · 7x 权重</b></div>
         </div>
         <div class="card">
-          <h3>🎯 你的认购</h3>
+          <h3>🎯 <span data-i18n="ico.yourSub">你的认购</span></h3>
           <div class="grid2">
-            <div class="kpi"><div class="l">你的积分</div><div class="v gold">8,400</div></div>
-            <div class="kpi"><div class="l">池分配</div><div class="v">420 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="ico.yourPts">你的积分</div><div class="v gold">8,400</div></div>
+            <div class="kpi"><div class="l" data-i18n="ico.poolAlloc">池分配</div><div class="v">420 pGOLD</div></div>
           </div>
           <div class="form-row mt12">
-            <label>认购金额 (USDC)</label>
+            <label data-i18n="ico.amountLabel">认购金额 (USDC)</label>
             <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO()">
             <div class="form-error" id="icoError"></div>
-            <div class="form-hint">个人上限 1,000 pGOLD ($85,000)</div>
+            <div class="form-hint" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
           </div>
-          <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()"><span class="btn-label">立即认购</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()"><span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span></button>
         </div>
       </div>
     </div>
@@ -341,21 +341,21 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="page" id="page-portfolio">
       <div class="grid2">
         <div class="card">
-          <h3>💼 资产明细</h3>
-          <div class="flex-between gap8"><span>当前 pGOLD 价格</span><b style="color:var(--gold)">$85.00</b></div>
+          <h3>💼 <span data-i18n="port.assets">资产明细</span></h3>
+          <div class="flex-between gap8"><span data-i18n="port.price">当前 pGOLD 价格</span><b style="color:var(--gold)">$85.00</b></div>
           <div class="mt12" style="border-top:1px solid var(--border);padding-top:14px">
-            <div class="flex-between gap8"><span>流通 pGOLD</span><b>600</b><span style="color:var(--muted);font-size:.75em">$51,000</span></div>
-            <div class="flex-between gap8 mt12"><span>质押中 pGOLD</span><b>800</b><span style="color:var(--muted);font-size:.75em">$68,000</span></div>
-            <div class="flex-between gap8 mt12"><span>待释放 pGOLD</span><b style="color:var(--purple)">2,455</b><span style="color:var(--muted);font-size:.75em">$208,675</span></div>
-            <div class="flex-between gap8 mt12"><span>vPGOLD 余额</span><b>240</b><span style="color:var(--muted);font-size:.75em">$20,400</span></div>
-            <div class="flex-between gap8 mt12" style="border-top:1px solid var(--border);padding-top:14px;font-weight:700"><span>持仓总价值</span><b style="color:var(--gold);font-size:1.1em">$348,075</b></div>
+            <div class="flex-between gap8"><span data-i18n="port.liquid">流通 pGOLD</span><b>600</b><span style="color:var(--muted);font-size:.75em">$51,000</span></div>
+            <div class="flex-between gap8 mt12"><span data-i18n="port.staked">质押中 pGOLD</span><b>800</b><span style="color:var(--muted);font-size:.75em">$68,000</span></div>
+            <div class="flex-between gap8 mt12"><span data-i18n="port.vesting">待释放 pGOLD</span><b style="color:var(--purple)">2,455</b><span style="color:var(--muted);font-size:.75em">$208,675</span></div>
+            <div class="flex-between gap8 mt12"><span data-i18n="port.vpBalance">vPGOLD 余额</span><b>240</b><span style="color:var(--muted);font-size:.75em">$20,400</span></div>
+            <div class="flex-between gap8 mt12" style="border-top:1px solid var(--border);padding-top:14px;font-weight:700"><span data-i18n="port.totalValue">持仓总价值</span><b style="color:var(--gold);font-size:1.1em">$348,075</b></div>
           </div>
         </div>
         <div class="card">
-          <h3>📈 资产占比</h3>
-          <div class="vest-item" style="border-left:3px solid var(--green)"><div class="top"><span>流通 pGOLD</span><span>14.7%</span></div><div class="vest-bar"><div class="vest-fill" style="width:14.7%;background:var(--green)"></div></div></div>
-          <div class="vest-item" style="border-left:3px solid var(--gold)"><div class="top"><span>质押中</span><span>19.5%</span></div><div class="vest-bar"><div class="vest-fill" style="width:19.5%;background:var(--gold)"></div></div></div>
-          <div class="vest-item" style="border-left:3px solid var(--purple)"><div class="top"><span>待释放</span><span>59.9%</span></div><div class="vest-bar"><div class="vest-fill" style="width:59.9%;background:var(--purple)"></div></div></div>
+          <h3>📈 <span data-i18n="port.allocation">资产占比</span></h3>
+          <div class="vest-item" style="border-left:3px solid var(--green)"><div class="top"><span data-i18n="port.liquid">流通 pGOLD</span><span>14.7%</span></div><div class="vest-bar"><div class="vest-fill" style="width:14.7%;background:var(--green)"></div></div></div>
+          <div class="vest-item" style="border-left:3px solid var(--gold)"><div class="top"><span data-i18n="port.stakedLabel">质押中</span><span>19.5%</span></div><div class="vest-bar"><div class="vest-fill" style="width:19.5%;background:var(--gold)"></div></div></div>
+          <div class="vest-item" style="border-left:3px solid var(--purple)"><div class="top"><span data-i18n="port.vestingLabel">待释放</span><span>59.9%</span></div><div class="vest-bar"><div class="vest-fill" style="width:59.9%;background:var(--purple)"></div></div></div>
           <div class="vest-item" style="border-left:3px solid var(--blue)"><div class="top"><span>vPGOLD</span><span>5.9%</span></div><div class="vest-bar"><div class="vest-fill" style="width:5.9%;background:var(--blue)"></div></div></div>
         </div>
       </div>
@@ -365,60 +365,60 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="page" id="page-vesting">
       <div class="grid2">
         <div class="card">
-          <h3>🔓 释放总览</h3>
+          <h3>🔓 <span data-i18n="vest.overview">释放总览</span></h3>
           <div class="grid2">
-            <div class="kpi"><div class="l">已释放</div><div class="v pos">245 pGOLD</div></div>
-            <div class="kpi"><div class="l">待释放</div><div class="v pur">2,455 pGOLD</div></div>
-            <div class="kpi"><div class="l">下次释放</div><div class="v">+68 pGOLD</div></div>
-            <div class="kpi"><div class="l">年化释放</div><div class="v">~820 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="vest.released">已释放</div><div class="v pos">245 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="vest.pending">待释放</div><div class="v pur">2,455 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="vest.nextRelease">下次释放</div><div class="v">+68 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="vest.annualRelease">年化释放</div><div class="v">~820 pGOLD</div></div>
           </div>
-          <button class="btn btn-gold btn-full mt12" onclick="withConfirm('claimAll')">一键领取全部</button>
+          <button class="btn btn-gold btn-full mt12" onclick="withConfirm('claimAll')" data-i18n="vest.claimAll">一键领取全部</button>
         </div>
         <div class="card">
-          <h3>📅 各轨释放进度</h3>
+          <h3>📅 <span data-i18n="vest.progress">各轨释放进度</span></h3>
           <div class="vest-item" style="border-left:3px solid var(--purple)">
-            <div class="top"><span>E轨 · 创世池</span><span>2,400 pGOLD</span></div>
+            <div class="top"><span data-i18n="vest.trackE">E轨 · 创世池</span><span>2,400 pGOLD</span></div>
             <div class="vest-bar"><div class="vest-fill" style="width:5.8%;background:var(--purple)"></div></div>
-            <div class="vest-info"><span>3年线性</span><span>剩余 35/36 期</span></div>
+            <div class="vest-info"><span data-i18n="vest.linear3y">3年线性</span><span>剩余 35/36 期</span></div>
             <div class="vest-actions">
-              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','E')"><span class="btn-label">领取</span><span class="btn-spinner"></span></button>
-              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
+              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','E')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
             </div>
           </div>
           <div class="vest-item" style="border-left:3px solid var(--blue)">
-            <div class="top"><span>B轨 · 月榜奖励</span><span>180 pGOLD</span></div>
+            <div class="top"><span data-i18n="vest.trackB">B轨 · 月榜奖励</span><span>180 pGOLD</span></div>
             <div class="vest-bar"><div class="vest-fill" style="width:2.5%;background:var(--blue)"></div></div>
-            <div class="vest-info"><span>10年线性</span><span>剩余 118/120 期</span></div>
+            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span>剩余 118/120 期</span></div>
             <div class="vest-actions">
-              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label">领取</span><span class="btn-spinner"></span></button>
-              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','B')"><span class="btn-label">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
+              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','B')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
             </div>
           </div>
           <div class="vest-item" style="border-left:3px solid var(--orange)">
-            <div class="top"><span>C轨 · 燃烧补偿</span><span>120 pGOLD</span></div>
+            <div class="top"><span data-i18n="vest.trackC">C轨 · 燃烧补偿</span><span>120 pGOLD</span></div>
             <div class="vest-bar"><div class="vest-fill" style="width:1.7%;background:var(--orange)"></div></div>
-            <div class="vest-info"><span>10年线性</span><span>剩余 118/120 期</span></div>
+            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span>剩余 118/120 期</span></div>
             <div class="vest-actions">
-              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','C')"><span class="btn-label">领取</span><span class="btn-spinner"></span></button>
-              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','C')"><span class="btn-label">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
+              <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','C')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+              <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','C')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
             </div>
           </div>
         </div>
       </div>
       <!-- vPGOLD -->
       <div class="card">
-        <h3>💠 vPGOLD 转让中心</h3>
+        <h3>💠 <span data-i18n="vest.vpCenter">vPGOLD 转让中心</span></h3>
         <div class="grid2">
           <div>
-            <div class="kpi"><div class="l">vPGOLD 余额</div><div class="v">240 vPGOLD</div></div>
-            <div class="form-row"><label>接收地址</label><input type="text" id="vpTo" placeholder="0x..."></div>
-            <div class="form-row"><label>数量</label><input type="number" id="vpAmount" placeholder="0" min="1"></div>
-            <button class="btn btn-gold btn-full" onclick="withConfirm('transferVp')"><span class="btn-label">发送</span><span class="btn-spinner"></span></button>
+            <div class="kpi"><div class="l" data-i18n="vest.vpBalance">vPGOLD 余额</div><div class="v">240 vPGOLD</div></div>
+            <div class="form-row"><label data-i18n="vest.toAddr">接收地址</label><input type="text" id="vpTo" placeholder="0x..."></div>
+            <div class="form-row"><label data-i18n="vest.amount">数量</label><input type="number" id="vpAmount" placeholder="0" min="1"></div>
+            <button class="btn btn-gold btn-full" onclick="withConfirm('transferVp')"><span class="btn-label" data-i18n="vest.send">发送</span><span class="btn-spinner"></span></button>
           </div>
           <div>
-            <p style="color:var(--muted);font-size:.78em;margin-bottom:12px;line-height:1.5">vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。</p>
-            <button class="btn btn-purple btn-full mb12" onclick="withConfirm('claimVp')"><span class="btn-label">赎回底层 pGOLD</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-outline btn-full" onclick="withConfirm('unwrapVp')"><span class="btn-label">解包恢复释放计划</span><span class="btn-spinner"></span></button>
+            <p style="color:var(--muted);font-size:.78em;margin-bottom:12px;line-height:1.5" data-i18n="vest.vpDesc">vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。</p>
+            <button class="btn btn-purple btn-full mb12" onclick="withConfirm('claimVp')"><span class="btn-label" data-i18n="vest.redeem">赎回底层 pGOLD</span><span class="btn-spinner"></span></button>
+            <button class="btn btn-outline btn-full" onclick="withConfirm('unwrapVp')"><span class="btn-label" data-i18n="vest.unwrap">解包恢复释放计划</span><span class="btn-spinner"></span></button>
           </div>
         </div>
       </div>
@@ -427,13 +427,13 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <!-- ── RANKING ── -->
     <div class="page" id="page-ranking">
       <div class="tab-bar">
-        <button class="tab-btn active" data-rank="monthly" onclick="switchRankTab('monthly')">月榜</button>
-        <button class="tab-btn" data-rank="quarterly" onclick="switchRankTab('quarterly')">季榜</button>
-        <button class="tab-btn" data-rank="annual" onclick="switchRankTab('annual')">年榜</button>
+        <button class="tab-btn active" data-rank="monthly" onclick="switchRankTab('monthly')" data-i18n="rank.monthly">月榜</button>
+        <button class="tab-btn" data-rank="quarterly" onclick="switchRankTab('quarterly')" data-i18n="rank.quarterly">季榜</button>
+        <button class="tab-btn" data-rank="annual" onclick="switchRankTab('annual')" data-i18n="rank.annual">年榜</button>
       </div>
       <div class="card">
         <table>
-          <thead><tr><th>排名</th><th>交易者</th><th>交易量</th><th>存入量</th><th>奖励</th><th>倍数</th></tr></thead>
+          <thead><tr><th data-i18n="rank.thRank">排名</th><th data-i18n="rank.thTrader">交易者</th><th data-i18n="rank.thVol">交易量</th><th data-i18n="rank.thDeposit">存入量</th><th data-i18n="rank.thReward">奖励</th><th data-i18n="rank.thMult">倍数</th></tr></thead>
           <tbody>
             <tr><td>🥇 #1</td><td>0xAb...Ef01</td><td>$2.4M</td><td>5,000</td><td style="color:var(--green)">15,000 pGOLD</td><td>300%</td></tr>
             <tr><td>🥈 #2</td><td>0xBc...Fg23</td><td>$1.8M</td><td>3,200</td><td style="color:var(--green)">9,600 pGOLD</td><td>300%</td></tr>
@@ -441,7 +441,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <tr style="background:rgba(212,168,67,.04)"><td>#12</td><td>0xDe...Hi67 (You)</td><td>$450K</td><td>800</td><td style="color:var(--green)">2,400 pGOLD</td><td>300%</td></tr>
           </tbody>
         </table>
-        <p style="font-size:.7em;color:var(--muted);margin-top:14px">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
+        <p style="font-size:.7em;color:var(--muted);margin-top:14px" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
       </div>
     </div>
 
@@ -449,30 +449,30 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="page" id="page-staking">
       <div class="grid2">
         <div class="card">
-          <h3>💎 A轨 · 持币分红</h3>
-          <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</p>
+          <h3>💎 <span data-i18n="stake.trackA">A轨 · 持币分红</span></h3>
+          <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5" data-i18n="stake.trackADesc">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</p>
           <div class="grid2">
-            <div class="kpi"><div class="l">已质押</div><div class="v gold">800 pGOLD</div></div>
-            <div class="kpi"><div class="l">待领分红</div><div class="v pos">12.5 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="stake.staked">已质押</div><div class="v gold">800 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="stake.pending">待领分红</div><div class="v pos">12.5 pGOLD</div></div>
           </div>
-          <div class="form-row"><label>质押数量</label><input type="number" id="stakeAmount" placeholder="100" min="1" oninput="validateStake()"><div class="form-error" id="stakeError"></div></div>
+          <div class="form-row"><label data-i18n="stake.stakeAmt">质押数量</label><input type="number" id="stakeAmount" placeholder="100" min="1" oninput="validateStake()"><div class="form-error" id="stakeError"></div></div>
           <div class="flex-between gap8">
-            <button class="btn btn-gold" onclick="withConfirm('stake','A')" style="flex:1"><span class="btn-label">质押</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-outline" onclick="withConfirm('unstake')" style="flex:1"><span class="btn-label">解质押</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-green" onclick="withConfirm('claimReward')" style="flex:1"><span class="btn-label">领取分红</span><span class="btn-spinner"></span></button>
+            <button class="btn btn-gold" onclick="withConfirm('stake','A')" style="flex:1"><span class="btn-label" data-i18n="stake.stakeBtn">质押</span><span class="btn-spinner"></span></button>
+            <button class="btn btn-outline" onclick="withConfirm('unstake')" style="flex:1"><span class="btn-label" data-i18n="stake.unstakeBtn">解质押</span><span class="btn-spinner"></span></button>
+            <button class="btn btn-green" onclick="withConfirm('claimReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimDiv">领取分红</span><span class="btn-spinner"></span></button>
           </div>
         </div>
         <div class="card">
-          <h3>🏆 B轨 · Top100 存入锚定</h3>
-          <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</p>
+          <h3>🏆 <span data-i18n="stake.trackB">B轨 · Top100 存入锚定</span></h3>
+          <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</p>
           <div class="grid2">
-            <div class="kpi"><div class="l">已存入</div><div class="v gold">800 pGOLD</div></div>
-            <div class="kpi"><div class="l">奖励公式</div><div class="v" style="font-size:.68em;color:var(--blue)">存入×倍数</div></div>
+            <div class="kpi"><div class="l" data-i18n="stake.deposited">已存入</div><div class="v gold">800 pGOLD</div></div>
+            <div class="kpi"><div class="l" data-i18n="stake.formula">奖励公式</div><div class="v" style="font-size:.68em;color:var(--blue)">存入×倍数</div></div>
           </div>
-          <div class="form-row"><label>存入数量</label><input type="number" id="rankStakeAmount" placeholder="100" min="1" oninput="validateRankStake()"><div class="form-error" id="rankStakeError"></div></div>
+          <div class="form-row"><label data-i18n="stake.depositAmt">存入数量</label><input type="number" id="rankStakeAmount" placeholder="100" min="1" oninput="validateRankStake()"><div class="form-error" id="rankStakeError"></div></div>
           <div class="flex-between gap8">
-            <button class="btn btn-gold" onclick="withConfirm('deposit')" style="flex:1"><span class="btn-label">存入锚定</span><span class="btn-spinner"></span></button>
-            <button class="btn btn-outline" onclick="withConfirm('withdraw')" style="flex:1"><span class="btn-label">取出</span><span class="btn-spinner"></span></button>
+            <button class="btn btn-gold" onclick="withConfirm('deposit')" style="flex:1"><span class="btn-label" data-i18n="stake.depositBtn">存入锚定</span><span class="btn-spinner"></span></button>
+            <button class="btn btn-outline" onclick="withConfirm('withdraw')" style="flex:1"><span class="btn-label" data-i18n="stake.withdrawBtn">取出</span><span class="btn-spinner"></span></button>
           </div>
         </div>
       </div>
@@ -481,38 +481,38 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <!-- ── TEAM ── -->
     <div class="page" id="page-team">
       <div class="tab-bar">
-        <button class="tab-btn active" data-ttab="myTeam" onclick="switchTeamTab('myTeam')">我的战队</button>
-        <button class="tab-btn" data-ttab="invite" onclick="switchTeamTab('invite')">邀请返佣</button>
-        <button class="tab-btn" data-ttab="leaderboard" onclick="switchTeamTab('leaderboard')">战队竞赛榜</button>
+        <button class="tab-btn active" data-ttab="myTeam" onclick="switchTeamTab('myTeam')" data-i18n="team.myTeam">我的战队</button>
+        <button class="tab-btn" data-ttab="invite" onclick="switchTeamTab('invite')" data-i18n="team.invite">邀请返佣</button>
+        <button class="tab-btn" data-ttab="leaderboard" onclick="switchTeamTab('leaderboard')" data-i18n="team.leaderboard">战队竞赛榜</button>
       </div>
       <div id="teamTab-myTeam" class="card">
         <div class="grid2">
-          <div class="kpi"><div class="l">战队名称</div><div class="v gold">TIGER_TEAM</div></div>
-          <div class="kpi"><div class="l">成员</div><div class="v">12</div></div>
-          <div class="kpi"><div class="l">战队交易量</div><div class="v">$3.4M</div></div>
-          <div class="kpi"><div class="l">竞赛奖励</div><div class="v pos">2,400 pGOLD</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.name">战队名称</div><div class="v gold">TIGER_TEAM</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.members">成员</div><div class="v">12</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.volume">战队交易量</div><div class="v">$3.4M</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.reward">竞赛奖励</div><div class="v pos">2,400 pGOLD</div></div>
         </div>
         <div class="flex-between gap8 mt12">
-          <button class="btn btn-purple" onclick="withConfirm('createTeam')" style="flex:1"><span class="btn-label">创建战队</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-outline" onclick="withConfirm('joinTeam')" style="flex:1"><span class="btn-label">加入战队</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-gold" onclick="withConfirm('claimTeamReward')" style="flex:1"><span class="btn-label">领取奖励</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-purple" onclick="withConfirm('createTeam')" style="flex:1"><span class="btn-label" data-i18n="team.createBtn">创建战队</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-outline" onclick="withConfirm('joinTeam')" style="flex:1"><span class="btn-label" data-i18n="team.joinBtn">加入战队</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-gold" onclick="withConfirm('claimTeamReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
         </div>
       </div>
       <div id="teamTab-invite" class="card" style="display:none">
-        <div class="form-row"><label>你的邀请链接</label><input type="text" value="https://pgold.io/r/0xAbCd" readonly onclick="this.select()"></div>
+        <div class="form-row"><label data-i18n="team.inviteLink">你的邀请链接</label><input type="text" value="https://pgold.io/r/0xAbCd" readonly onclick="this.select()"></div>
         <div class="grid3">
-          <div class="kpi"><div class="l">直邀人数</div><div class="v">8</div></div>
-          <div class="kpi"><div class="l">间邀人数</div><div class="v">23</div></div>
-          <div class="kpi"><div class="l">待领返佣</div><div class="v pos">$340</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.direct">直邀人数</div><div class="v">8</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.indirect">间邀人数</div><div class="v">23</div></div>
+          <div class="kpi"><div class="l" data-i18n="team.pendingComm">待领返佣</div><div class="v pos">$340</div></div>
         </div>
         <div class="flex-between gap8 mt12">
-          <button class="btn btn-gold" onclick="withConfirm('claimCommission')" style="flex:1"><span class="btn-label">领取返佣</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-outline" onclick="openBindInviter()" style="flex:1"><span class="btn-label">绑定邀请人</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-gold" onclick="withConfirm('claimCommission')" style="flex:1"><span class="btn-label" data-i18n="team.claimComm">领取返佣</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-outline" onclick="openBindInviter()" style="flex:1"><span class="btn-label" data-i18n="team.bindInviter">绑定邀请人</span><span class="btn-spinner"></span></button>
         </div>
       </div>
       <div id="teamTab-leaderboard" class="card" style="display:none">
         <table>
-          <thead><tr><th>#</th><th>战队</th><th>队长</th><th>成员</th><th>交易量</th><th>奖励</th></tr></thead>
+          <thead><tr><th>#</th><th data-i18n="team.thTeam">战队</th><th data-i18n="team.thLeader">队长</th><th data-i18n="team.thMembers">成员</th><th data-i18n="team.thVol">交易量</th><th data-i18n="team.thReward">奖励</th></tr></thead>
           <tbody>
             <tr><td>🥇 1</td><td>DRAGON</td><td>0xAA...BB</td><td>48</td><td>$12M</td><td style="color:var(--green)">6,000 pGOLD</td></tr>
             <tr><td>🥈 2</td><td>PHOENIX</td><td>0xCC...DD</td><td>35</td><td>$8.2M</td><td style="color:var(--green)">4,800 pGOLD</td></tr>
@@ -525,15 +525,15 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <!-- ── HISTORY ── -->
     <div class="page" id="page-history">
       <div class="tab-bar">
-        <button class="tab-btn active" data-hfilter="all" onclick="switchHistFilter('all')">全部</button>
-        <button class="tab-btn" data-hfilter="buy" onclick="switchHistFilter('buy')">买入</button>
-        <button class="tab-btn" data-hfilter="sell" onclick="switchHistFilter('sell')">卖出</button>
-        <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')">质押</button>
-        <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')">领取</button>
+        <button class="tab-btn active" data-hfilter="all" onclick="switchHistFilter('all')" data-i18n="hist.all">全部</button>
+        <button class="tab-btn" data-hfilter="buy" onclick="switchHistFilter('buy')" data-i18n="hist.buy">买入</button>
+        <button class="tab-btn" data-hfilter="sell" onclick="switchHistFilter('sell')" data-i18n="hist.sell">卖出</button>
+        <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
+        <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
       </div>
       <div class="card">
         <table>
-          <thead><tr><th>时间</th><th>类型</th><th>数量</th><th>价格</th><th>手续费</th></tr></thead>
+          <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th><th data-i18n="hist.thFee">手续费</th></tr></thead>
           <tbody>
             <tr><td>2026-06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50 pGOLD</td><td>$85.20</td><td>$10.65</td></tr>
             <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20 pGOLD</td><td>$84.80</td><td>$4.24</td></tr>
@@ -587,26 +587,340 @@ tr:hover td{background:rgba(255,255,255,.015);}
 /* ════════ I18N (inline) ════════ */
 const I18N = {
   zh:{
-    'nav.dashboard':'仪表盘','nav.ico':'创世池 ICO','nav.portfolio':'我的持仓','nav.vesting':'释放计划',
-    'nav.ranking':'Top 100','nav.staking':'质押中心','nav.team':'战队中心','nav.history':'交易记录',
-    'common.cancel':'取消','common.confirm':'确认','common.copied':'已复制',
-    'dash.pgoldBalance':'pGOLD 余额','dash.netWorth':'净资产','dash.totalRewards':'累计奖励','dash.vestedBalance':'待释放',
-    'dash.trackA':'A轨·持币分红','dash.trackB':'B轨·Top 100','dash.trackC':'C轨·燃烧挖矿','dash.trackD':'D轨·战队返佣',
+    'nav.dashboard':'仪表盘',
+    'nav.ico':'创世池 ICO',
+    'nav.portfolio':'我的持仓',
+    'nav.vesting':'释放计划',
+    'nav.ranking':'Top 100',
+    'nav.staking':'质押中心',
+    'nav.team':'战队中心',
+    'nav.history':'交易记录',
+    'common.cancel':'取消',
+    'common.confirm':'确认',
+    'common.copied':'已复制',
+    'common.claim':'领取',
+    'dash.pgoldBalance':'pGOLD 余额',
+    'dash.netWorth':'净资产',
+    'dash.totalRewards':'累计奖励',
+    'dash.vestedBalance':'待释放',
+    'dash.trackA':'A轨·持币分红',
+    'dash.trackB':'B轨·Top 100',
+    'dash.trackC':'C轨·燃烧挖矿',
+    'dash.trackD':'D轨·战队返佣',
+    'dash.staked':'质押量',
+    'dash.pendingDiv':'待领分红',
+    'dash.goStake':'去质押',
+    'dash.monthRank':'月榜排名',
+    'dash.monthReward':'月榜奖励',
+    'dash.totalFee':'累计手续费',
+    'dash.totalComp':'累计补偿',
+    'dash.referrals':'直邀/间邀',
+    'dash.pendingComm':'待领返佣',
+    'dash.apy35':'年化 3.5%',
+    'dash.fee10x':'手续费×10',
     'ico.title':'E轨 · 创世池 ICO',
-    'modal.confirm':'确认操作','modal.cancel':'取消','modal.ok':'确认',
-    'tab.dash':'仪表','tab.ico':'ICO','tab.portfolio':'持仓','tab.staking':'质押','tab.more':'更多',
-    'more.vesting':'🔓 释放','more.ranking':'🏆 排名','more.team':'👥 战队','more.history':'📜 记录',
+    'ico.poolTotal':'池子总量',
+    'ico.remaining':'剩余',
+    'ico.subscribed':'已认购',
+    'ico.backingRate':'背书率',
+    'ico.currentPhase':'当前阶段',
+    'ico.phase2':'第2档 · D31-60 · 7x 权重',
+    'ico.yourSub':'你的认购',
+    'ico.yourPts':'你的积分',
+    'ico.poolAlloc':'池分配',
+    'ico.amountLabel':'认购金额 (USDC)',
+    'ico.hint':'个人上限 1,000 pGOLD ($85,000)',
+    'ico.subscribBtn':'立即认购',
+    'ico.errMin':'最低 100 USDC',
+    'ico.errMax':'超过个人上限 $85,000',
+    'ico.errInvalid':'请输入有效金额 (100-85,000 USDC)',
+    'ico.success':'认购成功！',
+    'port.assets':'资产明细',
+    'port.price':'当前 pGOLD 价格',
+    'port.liquid':'流通 pGOLD',
+    'port.staked':'质押中 pGOLD',
+    'port.vesting':'待释放 pGOLD',
+    'port.vpBalance':'vPGOLD 余额',
+    'port.totalValue':'持仓总价值',
+    'port.allocation':'资产占比',
+    'port.stakedLabel':'质押中',
+    'port.vestingLabel':'待释放',
+    'vest.overview':'释放总览',
+    'vest.released':'已释放',
+    'vest.pending':'待释放',
+    'vest.nextRelease':'下次释放',
+    'vest.annualRelease':'年化释放',
+    'vest.progress':'各轨释放进度',
+    'vest.trackE':'E轨 · 创世池',
+    'vest.trackB':'B轨 · 月榜奖励',
+    'vest.trackC':'C轨 · 燃烧补偿',
+    'vest.linear':'10年线性',
+    'vest.linear3y':'3年线性',
+    'vest.wrap':'包装为 vPGOLD',
+    'vest.vpCenter':'vPGOLD 转让中心',
+    'vest.vpBalance':'vPGOLD 余额',
+    'vest.toAddr':'接收地址',
+    'vest.amount':'数量',
+    'vest.send':'发送',
+    'vest.redeem':'赎回底层 pGOLD',
+    'vest.unwrap':'解包恢复释放计划',
+    'vest.claimAll':'一键领取全部',
+    'vest.vpDesc':'vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。',
+    'rank.monthly':'月榜',
+    'rank.quarterly':'季榜',
+    'rank.annual':'年榜',
+    'rank.thRank':'排名',
+    'rank.thTrader':'交易者',
+    'rank.thVol':'交易量',
+    'rank.thDeposit':'存入量',
+    'rank.thReward':'奖励',
+    'rank.thMult':'倍数',
+    'rank.note':'奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。',
+    'stake.trackA':'A轨 · 持币分红',
+    'stake.trackB':'B轨 · Top100 存入锚定',
+    'stake.trackADesc':'质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取',
+    'stake.trackBDesc':'存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小',
+    'stake.staked':'已质押',
+    'stake.pending':'待领分红',
+    'stake.deposited':'已存入',
+    'stake.formula':'奖励公式',
+    'stake.stakeAmt':'质押数量',
+    'stake.depositAmt':'存入数量',
+    'stake.stakeBtn':'质押',
+    'stake.unstakeBtn':'解质押',
+    'stake.claimDiv':'领取分红',
+    'stake.depositBtn':'存入锚定',
+    'stake.withdrawBtn':'取出',
+    'stake.claimAll':'领取奖励',
+    'stake.errZero':'请输入大于 0 的数量',
+    'team.myTeam':'我的战队',
+    'team.invite':'邀请返佣',
+    'team.leaderboard':'战队竞赛榜',
+    'team.name':'战队名称',
+    'team.members':'成员',
+    'team.volume':'战队交易量',
+    'team.reward':'竞赛奖励',
+    'team.createBtn':'创建战队',
+    'team.joinBtn':'加入战队',
+    'team.inviteLink':'你的邀请链接',
+    'team.direct':'直邀人数',
+    'team.indirect':'间邀人数',
+    'team.pendingComm':'待领返佣',
+    'team.claimComm':'领取返佣',
+    'team.bindInviter':'绑定邀请人',
+    'team.thTeam':'战队',
+    'team.thLeader':'队长',
+    'team.thMembers':'成员',
+    'team.thVol':'交易量',
+    'team.thReward':'奖励',
+    'team.promptAddr':'请输入邀请人以太坊地址',
+    'team.bound':'已绑定',
+    'team.invalidAddr':'请输入有效的以太坊地址',
+    'hist.all':'全部',
+    'hist.buy':'买入',
+    'hist.sell':'卖出',
+    'hist.stake':'质押',
+    'hist.claim':'领取',
+    'hist.thTime':'时间',
+    'hist.thType':'类型',
+    'hist.thAmt':'数量',
+    'hist.thPrice':'价格',
+    'hist.thFee':'手续费',
+    'modal.default':'确认操作',
+    'modal.cancel':'取消',
+    'modal.ok':'确认',
+    'modal.stake':'确认质押',
+    'modal.unstake':'确认解质押',
+    'modal.deposit':'确认存入',
+    'modal.withdraw':'确认取出',
+    'modal.claim':'确认领取',
+    'modal.wrap':'确认包装',
+    'modal.claimAll':'确认一键领取',
+    'modal.claimReward':'确认领取分红',
+    'modal.transferVp':'确认发送 vPGOLD',
+    'modal.claimVp':'确认赎回',
+    'modal.unwrapVp':'确认解包',
+    'modal.createTeam':'确认创建战队',
+    'modal.joinTeam':'确认加入战队',
+    'modal.claimTeamReward':'确认领取',
+    'modal.claimCommission':'确认领取返佣',
+    'tab.dash':'仪表',
+    'tab.ico':'ICO',
+    'tab.portfolio':'持仓',
+    'tab.staking':'质押',
+    'tab.more':'更多',
+    'more.vesting':'🔓 释放',
+    'more.ranking':'🏆 排名',
+    'more.team':'👥 战队',
+    'more.history':'📜 记录',
   },
   en:{
-    'nav.dashboard':'Dashboard','nav.ico':'Genesis ICO','nav.portfolio':'Portfolio','nav.vesting':'Vesting',
-    'nav.ranking':'Top 100','nav.staking':'Staking','nav.team':'Team','nav.history':'History',
-    'common.cancel':'Cancel','common.confirm':'Confirm','common.copied':'Copied',
-    'dash.pgoldBalance':'pGOLD Balance','dash.netWorth':'Net Worth','dash.totalRewards':'Total Rewards','dash.vestedBalance':'Pending Release',
-    'dash.trackA':'Track A · Hold & Earn','dash.trackB':'Track B · Top 100','dash.trackC':'Track C · Burn Mining','dash.trackD':'Track D · Referral',
+    'nav.dashboard':'Dashboard',
+    'nav.ico':'Genesis ICO',
+    'nav.portfolio':'Portfolio',
+    'nav.vesting':'Vesting',
+    'nav.ranking':'Top 100',
+    'nav.staking':'Staking',
+    'nav.team':'Team',
+    'nav.history':'History',
+    'common.cancel':'Cancel',
+    'common.confirm':'Confirm',
+    'common.copied':'Copied',
+    'common.claim':'Claim',
+    'dash.pgoldBalance':'pGOLD Balance',
+    'dash.netWorth':'Net Worth',
+    'dash.totalRewards':'Total Rewards',
+    'dash.vestedBalance':'Pending Release',
+    'dash.trackA':'Track A · Hold & Earn',
+    'dash.trackB':'Track B · Top 100',
+    'dash.trackC':'Track C · Burn Mining',
+    'dash.trackD':'Track D · Referral',
+    'dash.staked':'Staked',
+    'dash.pendingDiv':'Pending Dividend',
+    'dash.goStake':'Go Stake',
+    'dash.monthRank':'Monthly Rank',
+    'dash.monthReward':'Monthly Reward',
+    'dash.totalFee':'Total Fees',
+    'dash.totalComp':'Total Compensation',
+    'dash.referrals':'Direct/Indirect',
+    'dash.pendingComm':'Pending Commission',
+    'dash.apy35':'3.5% APR',
+    'dash.fee10x':'Fee × 10',
     'ico.title':'Track E · Genesis Pool ICO',
-    'modal.confirm':'Confirm Action','modal.cancel':'Cancel','modal.ok':'Confirm',
-    'tab.dash':'Dash','tab.ico':'ICO','tab.portfolio':'Portfolio','tab.staking':'Staking','tab.more':'More',
-    'more.vesting':'🔓 Vesting','more.ranking':'🏆 Ranking','more.team':'👥 Team','more.history':'📜 History',
+    'ico.poolTotal':'Pool Total',
+    'ico.remaining':'Remaining',
+    'ico.subscribed':'Subscribed',
+    'ico.backingRate':'Backing Rate',
+    'ico.currentPhase':'Current Phase',
+    'ico.phase2':'Tier 2 · D31-60 · 7x Weight',
+    'ico.yourSub':'Your Subscription',
+    'ico.yourPts':'Your Points',
+    'ico.poolAlloc':'Pool Allocation',
+    'ico.amountLabel':'Amount (USDC)',
+    'ico.hint':'Personal cap: 1,000 pGOLD ($85,000)',
+    'ico.subscribBtn':'Subscribe Now',
+    'ico.errMin':'Minimum 100 USDC',
+    'ico.errMax':'Exceeds personal cap $85,000',
+    'ico.errInvalid':'Enter valid amount (100-85,000 USDC)',
+    'ico.success':'Subscription successful!',
+    'port.assets':'Asset Overview',
+    'port.price':'Current pGOLD Price',
+    'port.liquid':'Liquid pGOLD',
+    'port.staked':'Staked pGOLD',
+    'port.vesting':'Vesting pGOLD',
+    'port.vpBalance':'vPGOLD Balance',
+    'port.totalValue':'Total Portfolio Value',
+    'port.allocation':'Allocation',
+    'port.stakedLabel':'Staked',
+    'port.vestingLabel':'Vesting',
+    'vest.overview':'Vesting Overview',
+    'vest.released':'Released',
+    'vest.pending':'Pending',
+    'vest.nextRelease':'Next Release',
+    'vest.annualRelease':'Annual Release',
+    'vest.progress':'Track Progress',
+    'vest.trackE':'Track E · Genesis Pool',
+    'vest.trackB':'Track B · Monthly Reward',
+    'vest.trackC':'Track C · Burn Compensation',
+    'vest.linear':'10yr Linear',
+    'vest.linear3y':'3yr Linear',
+    'vest.wrap':'Wrap to vPGOLD',
+    'vest.vpCenter':'vPGOLD Transfer Center',
+    'vest.vpBalance':'vPGOLD Balance',
+    'vest.toAddr':'Recipient Address',
+    'vest.amount':'Amount',
+    'vest.send':'Send',
+    'vest.redeem':'Redeem underlying pGOLD',
+    'vest.unwrap':'Unwrap to resume vesting',
+    'vest.claimAll':'Claim All',
+    'vest.vpDesc':'vPGOLD is a tokenized certificate of your locked vesting rights. Transferable and tradeable.',
+    'rank.monthly':'Monthly',
+    'rank.quarterly':'Quarterly',
+    'rank.annual':'Annual',
+    'rank.thRank':'Rank',
+    'rank.thTrader':'Trader',
+    'rank.thVol':'Volume',
+    'rank.thDeposit':'Deposit',
+    'rank.thReward':'Reward',
+    'rank.thMult':'Multiplier',
+    'rank.note':'Reward = Deposit × Multiplier, 10yr vesting. Rank is your ticket; deposit size determines reward.',
+    'stake.trackA':'Track A · Hold & Earn',
+    'stake.trackB':'Track B · Top100 Deposit Anchor',
+    'stake.trackADesc':'Stake pGOLD to earn 3.5% APR dividend, accrued by the second, withdraw anytime.',
+    'stake.trackBDesc':'Deposit pGOLD to lock reward base. Rank determines eligibility; deposit size determines reward.',
+    'stake.staked':'Staked',
+    'stake.pending':'Pending Dividend',
+    'stake.deposited':'Deposited',
+    'stake.formula':'Reward Formula',
+    'stake.stakeAmt':'Stake Amount',
+    'stake.depositAmt':'Deposit Amount',
+    'stake.stakeBtn':'Stake',
+    'stake.unstakeBtn':'Unstake',
+    'stake.claimDiv':'Claim Dividend',
+    'stake.depositBtn':'Deposit',
+    'stake.withdrawBtn':'Withdraw',
+    'stake.claimAll':'Claim Rewards',
+    'stake.errZero':'Enter an amount greater than 0',
+    'team.myTeam':'My Team',
+    'team.invite':'Referral Rewards',
+    'team.leaderboard':'Team Leaderboard',
+    'team.name':'Team Name',
+    'team.members':'Members',
+    'team.volume':'Team Volume',
+    'team.reward':'Contest Reward',
+    'team.createBtn':'Create Team',
+    'team.joinBtn':'Join Team',
+    'team.inviteLink':'Your Invite Link',
+    'team.direct':'Direct Referrals',
+    'team.indirect':'Indirect Referrals',
+    'team.pendingComm':'Pending Commission',
+    'team.claimComm':'Claim Commission',
+    'team.bindInviter':'Bind Inviter',
+    'team.thTeam':'Team',
+    'team.thLeader':'Leader',
+    'team.thMembers':'Members',
+    'team.thVol':'Volume',
+    'team.thReward':'Reward',
+    'team.promptAddr':'Enter inviter Ethereum address',
+    'team.bound':'Bound',
+    'team.invalidAddr':'Enter a valid Ethereum address',
+    'hist.all':'All',
+    'hist.buy':'Buy',
+    'hist.sell':'Sell',
+    'hist.stake':'Stake',
+    'hist.claim':'Claim',
+    'hist.thTime':'Time',
+    'hist.thType':'Type',
+    'hist.thAmt':'Amount',
+    'hist.thPrice':'Price',
+    'hist.thFee':'Fee',
+    'modal.default':'Confirm Action',
+    'modal.cancel':'Cancel',
+    'modal.ok':'Confirm',
+    'modal.stake':'Confirm Stake',
+    'modal.unstake':'Confirm Unstake',
+    'modal.deposit':'Confirm Deposit',
+    'modal.withdraw':'Confirm Withdraw',
+    'modal.claim':'Confirm Claim',
+    'modal.wrap':'Confirm Wrap',
+    'modal.claimAll':'Confirm Claim All',
+    'modal.claimReward':'Confirm Claim Dividend',
+    'modal.transferVp':'Confirm Send vPGOLD',
+    'modal.claimVp':'Confirm Redeem',
+    'modal.unwrapVp':'Confirm Unwrap',
+    'modal.createTeam':'Confirm Create Team',
+    'modal.joinTeam':'Confirm Join Team',
+    'modal.claimTeamReward':'Confirm Claim',
+    'modal.claimCommission':'Confirm Claim Commission',
+    'tab.dash':'Dash',
+    'tab.ico':'ICO',
+    'tab.portfolio':'Portfolio',
+    'tab.staking':'Staking',
+    'tab.more':'More',
+    'more.vesting':'🔓 Vesting',
+    'more.ranking':'🏆 Ranking',
+    'more.team':'👥 Team',
+    'more.history':'📜 History',
   },
   _lang:'zh',
   t(k){return(this[this._lang]||this.zh)[k]||k;},
@@ -680,8 +994,8 @@ function showToast(msg,type){
 // Confirm Modal
 function withConfirm(action,param){
   pendingAction={action,param};
-  const titles={stake:'确认质押',unstake:'确认解质押',deposit:'确认存入',withdraw:'确认取出',claim:'确认领取',wrap:'确认包装',claimAll:'确认一键领取',claimReward:'确认领取分红',transferVp:'确认发送 vPGOLD',claimVp:'确认赎回',unwrapVp:'确认解包',createTeam:'确认创建战队',joinTeam:'确认加入战队',claimTeamReward:'确认领取',claimCommission:'确认领取返佣'};
-  document.getElementById('modalTitle').textContent=titles[action]||'确认操作';
+  const titles={stake:t('modal.stake'),unstake:t('modal.unstake'),deposit:t('modal.deposit'),withdraw:t('modal.withdraw'),claim:t('modal.claim'),wrap:t('modal.wrap'),claimAll:t('modal.claimAll'),claimReward:t('modal.claimReward'),transferVp:t('modal.transferVp'),claimVp:t('modal.claimVp'),unwrapVp:t('modal.unwrapVp'),createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission')};
+  document.getElementById('modalTitle').textContent=titles[action]||t('modal.default');
   document.getElementById('modalMsg').textContent='';
   document.getElementById('confirmModal').classList.add('show');
 }
@@ -699,25 +1013,25 @@ function executeConfirmed(){
 // ICO
 function validateICO(){
   const val=parseInt(document.getElementById('icoAmount').value)||0,err=document.getElementById('icoError');
-  if(val<100){err.textContent='最低 100 USDC';err.classList.add('show');}
-  else if(val>85000){err.textContent='超过个人上限 $85,000';err.classList.add('show');}
+  if(val<100){err.textContent=t('ico.errMin');err.classList.add('show');}
+  else if(val>85000){err.textContent=t('ico.errMax');err.classList.add('show');}
   else{err.classList.remove('show');}
 }
 function confirmSubscribe(){
   const val=parseInt(document.getElementById('icoAmount').value)||0;
-  if(val<100||val>85000){showToast('请输入有效金额 (100-85,000 USDC)','error');return;}
+  if(val<100||val>85000){showToast(t('ico.errInvalid'),'error');return;}
   const btn=document.getElementById('icoBtn');btn.classList.add('loading');
-  setTimeout(()=>{btn.classList.remove('loading');showToast('认购成功！','success');},600);
+  setTimeout(()=>{btn.classList.remove('loading');showToast(t('ico.success'),'success');},600);
 }
 
 // Staking
 function validateStake(){
   const val=parseInt(document.getElementById('stakeAmount').value)||0,err=document.getElementById('stakeError');
-  err.classList.toggle('show',val<=0);if(val<=0)err.textContent='请输入大于 0 的数量';
+  err.classList.toggle('show',val<=0);if(val<=0)err.textContent=t('stake.errZero');
 }
 function validateRankStake(){
   const val=parseInt(document.getElementById('rankStakeAmount').value)||0,err=document.getElementById('rankStakeError');
-  err.classList.toggle('show',val<=0);if(val<=0)err.textContent='请输入大于 0 的数量';
+  err.classList.toggle('show',val<=0);if(val<=0)err.textContent=t('stake.errZero');
 }
 
 // Team
@@ -728,9 +1042,9 @@ function switchTeamTab(tab){
   document.querySelectorAll('#page-team .tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.ttab===tab));
 }
 function openBindInviter(){
-  const addr=prompt('请输入邀请人以太坊地址');
-  if(addr&&addr.startsWith('0x')&&addr.length===42){showToast('已绑定: '+addr.slice(0,8)+'...','success');}
-  else if(addr){showToast('请输入有效的以太坊地址','error');}
+  const addr=prompt(t('team.promptAddr'));
+  if(addr&&addr.startsWith('0x')&&addr.length===42){showToast(t('team.bound')+': '+addr.slice(0,8)+'...','success');}
+  else if(addr){showToast(t('team.invalidAddr'),'error');}
 }
 
 // Ranking
