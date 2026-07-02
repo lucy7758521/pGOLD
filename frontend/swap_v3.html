@@ -683,36 +683,38 @@ let paxgPriceUSD = null;
 
 async function fetchPAXGPrice() {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
-    const data = await response.json();
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true',
+      { cache: 'no-store' }
+    );
+    const data = await res.json();
     if (data['pax-gold'] && data['pax-gold'].usd) {
       const newPaxgPrice = data['pax-gold'].usd;
       const change24h = data['pax-gold'].usd_24h_change || 0;
 
-      // pGOLD = 1 gram = 1/31.1035 oz of gold
+      // pGOLD = 1 gram = 1/31.1035 troy oz
       const pgoldPrice = newPaxgPrice / 31.1035;
-      const prevPrice = paxgPriceUSD ? paxgPriceUSD / 31.1035 : pgoldPrice;
       paxgPriceUSD = newPaxgPrice;
 
-      // Update pool ratio to reflect real price: usdc/pgold = pgoldPrice
-      // Keep pool size realistic but update the ratio
+      // Update AMM pool ratio so bannerPrice / valPrice reflect real price
       const poolPGOLD = pool.pgold > 0 ? pool.pgold : 11765;
       pool.usdc = poolPGOLD * pgoldPrice;
 
-      // Update banner
+      // Update 24h change badge
       const changeColor = change24h >= 0 ? 'var(--green)' : 'var(--red)';
-      const changeSign = change24h >= 0 ? '+' : '';
+      const changeSign  = change24h >= 0 ? '+' : '';
       const bannerChangeEl = document.getElementById('bannerChange');
       if (bannerChangeEl) {
         bannerChangeEl.textContent = `${changeSign}${change24h.toFixed(2)}%`;
         bannerChangeEl.style.color = changeColor;
       }
 
-      // Re-render to reflect new price in banner and valPrice
+      // Re-render so bannerPrice / valPrice update
       render();
     }
   } catch (err) {
-    console.error('PAXG price fetch failed:', err);
+    console.warn('PAXG price fetch failed, retrying in 60s:', err);
+    setTimeout(fetchPAXGPrice, 60_000);
   }
 }
 

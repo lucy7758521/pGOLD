@@ -330,7 +330,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <label data-i18n="ico.amountLabel">认购金额 (USDC)</label>
             <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO()">
             <div class="form-error" id="icoError"></div>
-            <div class="form-hint" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
+            <div class="form-hint" id="ico-hint-text" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
           </div>
           <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()"><span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span></button>
         </div>
@@ -344,11 +344,11 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <h3>💼 <span data-i18n="port.assets">资产明细</span></h3>
           <div class="flex-between gap8"><span data-i18n="port.price">当前 pGOLD 价格</span><b style="color:var(--gold)" id="dapp-pgold-price">$85.00</b></div>
           <div class="mt12" style="border-top:1px solid var(--border);padding-top:14px">
-            <div class="flex-between gap8"><span data-i18n="port.liquid">流通 pGOLD</span><b>600</b><span style="color:var(--muted);font-size:.75em">$51,000</span></div>
-            <div class="flex-between gap8 mt12"><span data-i18n="port.staked">质押中 pGOLD</span><b>800</b><span style="color:var(--muted);font-size:.75em">$68,000</span></div>
-            <div class="flex-between gap8 mt12"><span data-i18n="port.vesting">待释放 pGOLD</span><b style="color:var(--purple)">2,455</b><span style="color:var(--muted);font-size:.75em">$208,675</span></div>
-            <div class="flex-between gap8 mt12"><span data-i18n="port.vpBalance">vPGOLD 余额</span><b>240</b><span style="color:var(--muted);font-size:.75em">$20,400</span></div>
-            <div class="flex-between gap8 mt12" style="border-top:1px solid var(--border);padding-top:14px;font-weight:700"><span data-i18n="port.totalValue">持仓总价值</span><b style="color:var(--gold);font-size:1.1em">$348,075</b></div>
+            <div class="flex-between gap8"><span data-i18n="port.liquid">流通 pGOLD</span><b>600</b><span style="color:var(--muted);font-size:.75em" id="port-liquid-usd">$51,000</span></div>
+            <div class="flex-between gap8 mt12"><span data-i18n="port.staked">质押中 pGOLD</span><b>800</b><span style="color:var(--muted);font-size:.75em" id="port-staked-usd">$68,000</span></div>
+            <div class="flex-between gap8 mt12"><span data-i18n="port.vesting">待释放 pGOLD</span><b style="color:var(--purple)">2,455</b><span style="color:var(--muted);font-size:.75em" id="port-vesting-usd">$208,675</span></div>
+            <div class="flex-between gap8 mt12"><span data-i18n="port.vpBalance">vPGOLD 余额</span><b>240</b><span style="color:var(--muted);font-size:.75em" id="port-vp-usd">$20,400</span></div>
+            <div class="flex-between gap8 mt12" style="border-top:1px solid var(--border);padding-top:14px;font-weight:700"><span data-i18n="port.totalValue">持仓总价值</span><b style="color:var(--gold);font-size:1.1em" id="port-total-usd">$348,075</b></div>
           </div>
         </div>
         <div class="card">
@@ -534,10 +534,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="card">
         <table>
           <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th><th data-i18n="hist.thFee">手续费</th></tr></thead>
-          <tbody>
-            <tr><td>2026-06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50 pGOLD</td><td>$85.20</td><td>$10.65</td></tr>
-            <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20 pGOLD</td><td>$84.80</td><td>$4.24</td></tr>
-            <tr><td>2026-06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100 pGOLD</td><td>$85.00</td><td>$21.25</td></tr>
+          <tbody id="hist-tbody">
+            <tr><td>2026-06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50 pGOLD</td><td class="hist-price">$85.20</td><td>$10.65</td></tr>
+            <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20 pGOLD</td><td class="hist-price">$84.80</td><td>$4.24</td></tr>
+            <tr><td>2026-06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100 pGOLD</td><td class="hist-price">$85.00</td><td>$21.25</td></tr>
             <tr><td>2026-06-24 16:45</td><td><span class="badge badge-blue">STAKE</span></td><td>200 pGOLD</td><td>—</td><td>—</td></tr>
             <tr><td>2026-06-24 08:00</td><td><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple)">CLAIM</span></td><td>12.5 pGOLD</td><td>—</td><td>—</td></tr>
           </tbody>
@@ -629,11 +629,11 @@ const I18N = {
     'ico.yourPts':'你的积分',
     'ico.poolAlloc':'池分配',
     'ico.amountLabel':'认购金额 (USDC)',
-    'ico.hint':'个人上限 1,000 pGOLD ($85,000)',
+    'ico.hint':'个人上限 1,000 pGOLD',
     'ico.subscribBtn':'立即认购',
     'ico.errMin':'最低 100 USDC',
-    'ico.errMax':'超过个人上限 $85,000',
-    'ico.errInvalid':'请输入有效金额 (100-85,000 USDC)',
+    'ico.errMax':'超过个人上限',
+    'ico.errInvalid':'请输入有效金额',
     'ico.success':'认购成功！',
     'port.assets':'资产明细',
     'port.price':'当前 pGOLD 价格',
@@ -800,11 +800,11 @@ const I18N = {
     'ico.yourPts':'Your Points',
     'ico.poolAlloc':'Pool Allocation',
     'ico.amountLabel':'Amount (USDC)',
-    'ico.hint':'Personal cap: 1,000 pGOLD ($85,000)',
+    'ico.hint':'Personal cap: 1,000 pGOLD',
     'ico.subscribBtn':'Subscribe Now',
     'ico.errMin':'Minimum 100 USDC',
-    'ico.errMax':'Exceeds personal cap $85,000',
-    'ico.errInvalid':'Enter valid amount (100-85,000 USDC)',
+    'ico.errMax':'Exceeds personal cap',
+    'ico.errInvalid':'Enter a valid amount',
     'ico.success':'Subscription successful!',
     'port.assets':'Asset Overview',
     'port.price':'Current pGOLD Price',
@@ -1018,14 +1018,16 @@ function executeConfirmed(){
 
 // ICO
 function validateICO(){
+  const maxUsdc = Math.round(ICO_CAP_PGOLD * dappPgoldPrice);
   const val=parseInt(document.getElementById('icoAmount').value)||0,err=document.getElementById('icoError');
   if(val<100){err.textContent=t('ico.errMin');err.classList.add('show');}
-  else if(val>85000){err.textContent=t('ico.errMax');err.classList.add('show');}
+  else if(val>maxUsdc){err.textContent=t('ico.errMax');err.classList.add('show');}
   else{err.classList.remove('show');}
 }
 function confirmSubscribe(){
+  const maxUsdc = Math.round(ICO_CAP_PGOLD * dappPgoldPrice);
   const val=parseInt(document.getElementById('icoAmount').value)||0;
-  if(val<100||val>85000){showToast(t('ico.errInvalid'),'error');return;}
+  if(val<100||val>maxUsdc){showToast(t('ico.errInvalid'),'error');return;}
   const btn=document.getElementById('icoBtn');btn.classList.add('loading');
   setTimeout(()=>{btn.classList.remove('loading');showToast(t('ico.success'),'success');},600);
 }
@@ -1086,21 +1088,73 @@ renderI18n();
 switchPage('dashboard');
 
 // ── Fetch PAXG Real-time Price ──
+// Portfolio demo holdings (pGOLD amounts)
+const PORTFOLIO = { liquid: 600, staked: 800, vesting: 2455, vp: 240 };
+// ICO personal cap in pGOLD
+const ICO_CAP_PGOLD = 1000;
+
+let dappPgoldPrice = 85; // fallback until API responds
+
+function updateDappPriceDisplays(pgoldPrice) {
+  dappPgoldPrice = pgoldPrice;
+  const fmt = v => '$' + Math.round(v).toLocaleString('en-US');
+  const p = pgoldPrice;
+
+  // Portfolio price label
+  const priceEl = document.getElementById('dapp-pgold-price');
+  if (priceEl) priceEl.textContent = '$' + p.toFixed(2);
+
+  // Portfolio USD values
+  const liquidUsd  = PORTFOLIO.liquid  * p;
+  const stakedUsd  = PORTFOLIO.staked  * p;
+  const vestingUsd = PORTFOLIO.vesting * p;
+  const vpUsd      = PORTFOLIO.vp      * p;
+  const totalUsd   = liquidUsd + stakedUsd + vestingUsd + vpUsd;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = fmt(val); };
+  set('port-liquid-usd',  liquidUsd);
+  set('port-staked-usd',  stakedUsd);
+  set('port-vesting-usd', vestingUsd);
+  set('port-vp-usd',      vpUsd);
+  set('port-total-usd',   totalUsd);
+
+  // ICO cap: 1,000 pGOLD × price
+  const icoMaxUsdc = Math.round(ICO_CAP_PGOLD * p);
+  const icoAmountEl = document.getElementById('icoAmount');
+  if (icoAmountEl) icoAmountEl.max = icoMaxUsdc;
+
+  const isEn = I18N.getLang() === 'en';
+  const hintEl = document.getElementById('ico-hint-text');
+  if (hintEl) hintEl.textContent = isEn
+    ? `Personal cap: 1,000 pGOLD ($${icoMaxUsdc.toLocaleString('en-US')})`
+    : `个人上限 1,000 pGOLD ($${icoMaxUsdc.toLocaleString('en-US')})`;
+
+  // History table — replace demo prices with scaled real prices
+  const tbody = document.getElementById('hist-tbody');
+  if (tbody) {
+    const cells = tbody.querySelectorAll('.hist-price');
+    // Demo offsets relative to $85 base
+    const offsets = [+0.20, -0.20, 0];
+    cells.forEach((td, i) => {
+      if (i < offsets.length) td.textContent = '$' + (p + offsets[i]).toFixed(2);
+    });
+  }
+}
+
 async function fetchPAXGPrice() {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
-    const data = await response.json();
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true',
+      { cache: 'no-store' }
+    );
+    const data = await res.json();
     if (data['pax-gold'] && data['pax-gold'].usd) {
-      const paxgPrice = data['pax-gold'].usd;
-      // pGOLD = 1 gram = 1/31.1035 troy oz
-      const pgoldPrice = paxgPrice / 31.1035;
-      const pgoldStr = '$' + pgoldPrice.toFixed(2);
-
-      const priceEl = document.getElementById('dapp-pgold-price');
-      if (priceEl) priceEl.textContent = pgoldStr;
+      const pgoldPrice = data['pax-gold'].usd / 31.1035;
+      updateDappPriceDisplays(pgoldPrice);
     }
   } catch (err) {
-    console.error('PAXG price fetch failed:', err);
+    console.warn('PAXG price fetch failed:', err);
+    setTimeout(fetchPAXGPrice, 60_000);
   }
 }
 

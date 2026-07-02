@@ -901,52 +901,78 @@ fadeEls.forEach(el => {
 });
 
 // ── Fetch PAXG Real-time Price ──
-async function fetchPAXGPrice() {
-  try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
-    const data = await response.json();
-    if (data['pax-gold'] && data['pax-gold'].usd) {
-      const paxgPrice = data['pax-gold'].usd;
-      const change24h = data['pax-gold'].usd_24h_change || 0;
+// Cached live prices (updated every 5 min)
+const livePrices = { paxg: null, pgold: null, change24h: 0 };
 
-      // pGOLD = 1 gram = 1/31.1035 troy oz of gold
-      const pgoldPrice = paxgPrice / 31.1035;
-      const pgoldStr = `$${pgoldPrice.toFixed(2)}`;
-      const paxgStr = `$${paxgPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+function updatePriceDisplays() {
+  const { paxg, pgold, change24h } = livePrices;
+  if (!paxg || !pgold) return;
 
-      // pGOLD 24h change mirrors PAXG (same underlying asset)
-      const changeSign = change24h >= 0 ? '▲' : '▼';
-      const changeColor = change24h >= 0 ? 'var(--green)' : 'var(--red)';
-      const pgoldDisplay = `${pgoldStr} ${changeSign}${Math.abs(change24h).toFixed(2)}%`;
+  const pgoldStr = `$${pgold.toFixed(2)}`;
+  const paxgStr  = `$${paxg.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const changeSign  = change24h >= 0 ? '▲' : '▼';
+  const changeColor = change24h >= 0 ? 'var(--green)' : 'var(--red)';
+  const pgoldDisplay = `${pgoldStr} ${changeSign}${Math.abs(change24h).toFixed(2)}%`;
+  const isEn = document.documentElement.lang === 'en';
 
-      // Update PAXG ticker items
-      const paxg1 = document.getElementById('paxg-price-1');
-      const paxg2 = document.getElementById('paxg-price-2');
-      if (paxg1) paxg1.textContent = paxgStr;
-      if (paxg2) paxg2.textContent = paxgStr;
+  // Ticker — PAXG
+  ['paxg-price-1', 'paxg-price-2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = paxgStr;
+  });
+  // Ticker — pGOLD
+  ['pgold-price-1', 'pgold-price-2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = pgoldDisplay; el.style.color = changeColor; }
+  });
 
-      // Update pGOLD ticker items
-      const pgold1 = document.getElementById('pgold-price-1');
-      const pgold2 = document.getElementById('pgold-price-2');
-      if (pgold1) { pgold1.textContent = pgoldDisplay; pgold1.style.color = changeColor; }
-      if (pgold2) { pgold2.textContent = pgoldDisplay; pgold2.style.color = changeColor; }
+  // Compare card — pGOLD unit price
+  const cmpPgold = document.getElementById('cmp-pgold-price');
+  if (cmpPgold) cmpPgold.textContent = `≈ ${pgoldStr}`;
 
-      // Update compare card prices
-      const cmpPgold = document.getElementById('cmp-pgold-price');
-      const cmpPgoldMin = document.getElementById('cmp-pgold-min');
-      const cmpPaxg = document.getElementById('cmp-paxg-price');
-      if (cmpPgold) cmpPgold.textContent = `≈ ${pgoldStr}`;
-      if (cmpPaxg) cmpPaxg.textContent = `≈ ${paxgStr}`;
-      // Use current lang for min purchase label
-      const isEn = document.documentElement.lang === 'en';
-      if (cmpPgoldMin) cmpPgoldMin.textContent = isEn ? `1 pGOLD (≈${pgoldStr})` : `1 pGOLD（≈${pgoldStr}）`;
-    }
-  } catch (error) {
-    console.error('Failed to fetch PAXG price:', error);
+  // Compare card — PAXG unit price
+  const cmpPaxg = document.getElementById('cmp-paxg-price');
+  if (cmpPaxg) cmpPaxg.textContent = `≈ ${paxgStr}`;
+
+  // Compare card — min purchase
+  const cmpMin = document.getElementById('cmp-pgold-min');
+  if (cmpMin) cmpMin.textContent = isEn
+    ? `1 pGOLD (≈${pgoldStr})`
+    : `1 pGOLD（≈${pgoldStr}）`;
+
+  // Compare section subtitle — embedded prices
+  const cmpSub = document.querySelector('[data-i18n="cmp_sub"]');
+  if (cmpSub) {
+    cmpSub.textContent = isEn
+      ? `PAXG is 1 troy oz (≈31.1g) at ≈${paxgStr}. pGOLD is 1 gram at ≈${pgoldStr} — better suited for retail users and small payments.`
+      : `PAXG 是 1 盎司（≈31.1g）一枚，约 ${paxgStr}。pGOLD 是 1 克一枚，约 ${pgoldStr}，更适合普通用户持有和小额支付。`;
   }
 }
 
-// Fetch price on load and every 5 minutes
+async function fetchPAXGPrice() {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true',
+      { cache: 'no-store' }
+    );
+    const data = await res.json();
+    if (data['pax-gold'] && data['pax-gold'].usd) {
+      livePrices.paxg     = data['pax-gold'].usd;
+      livePrices.pgold    = data['pax-gold'].usd / 31.1035;
+      livePrices.change24h = data['pax-gold'].usd_24h_change || 0;
+      updatePriceDisplays();
+    }
+  } catch (err) {
+    console.warn('PAXG price fetch failed, retrying in 60s:', err);
+    setTimeout(fetchPAXGPrice, 60_000);
+  }
+}
+
+// Re-run price display after lang switch so embedded text is correct
+const _origSetLang = setLang;
+setLang = function(lang) { _origSetLang(lang); updatePriceDisplays(); };
+
+// Fetch on load and every 5 minutes
 fetchPAXGPrice();
 setInterval(fetchPAXGPrice, 5 * 60 * 1000);
 </script>
