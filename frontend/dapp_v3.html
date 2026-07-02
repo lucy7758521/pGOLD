@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -467,7 +467,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <p style="font-size:.78em;color:var(--muted);margin-bottom:14px;line-height:1.5" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</p>
           <div class="grid2">
             <div class="kpi"><div class="l" data-i18n="stake.deposited">已存入</div><div class="v gold">800 pGOLD</div></div>
-            <div class="kpi"><div class="l" data-i18n="stake.formula">奖励公式</div><div class="v" style="font-size:.68em;color:var(--blue)">存入×倍数</div></div>
+            <div class="kpi"><div class="l" data-i18n="stake.formula">奖励公式</div><div class="v" style="font-size:.68em;color:var(--blue)" data-i18n="stake.formulaVal">存入×倍数</div></div>
           </div>
           <div class="form-row"><label data-i18n="stake.depositAmt">存入数量</label><input type="number" id="rankStakeAmount" placeholder="100" min="1" oninput="validateRankStake()"><div class="form-error" id="rankStakeError"></div></div>
           <div class="flex-between gap8">
@@ -692,6 +692,7 @@ const I18N = {
     'stake.depositBtn':'存入锚定',
     'stake.withdrawBtn':'取出',
     'stake.claimAll':'领取奖励',
+    'stake.formulaVal':'存入×倍数',
     'stake.errZero':'请输入大于 0 的数量',
     'team.myTeam':'我的战队',
     'team.invite':'邀请返佣',
@@ -860,6 +861,7 @@ const I18N = {
     'stake.depositBtn':'Deposit',
     'stake.withdrawBtn':'Withdraw',
     'stake.claimAll':'Claim Rewards',
+    'stake.formulaVal':'Deposit × Multiplier',
     'stake.errZero':'Enter an amount greater than 0',
     'team.myTeam':'My Team',
     'team.invite':'Referral Rewards',
