@@ -32,6 +32,21 @@ img { display: block; max-width: 100%; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: #2a2e3e; border-radius: 3px; }
 
+/* ── LANG SWITCH ── */
+.lang-switch {
+  display: flex; align-items: center; gap: 2px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px;
+  padding: 2px; margin-right: 10px;
+}
+.lang-btn {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .4px;
+  padding: 4px 9px; border-radius: 4px; cursor: pointer;
+  color: var(--txt-2); background: transparent; border: none;
+  transition: color .15s, background .15s;
+}
+.lang-btn.active { background: var(--gold); color: #1a1000; }
+.lang-btn:hover:not(.active) { color: var(--txt-0); }
+
 /* ── NAV ── */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -282,38 +297,42 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
     pGOLD
   </div>
   <div class="nav-links">
-    <a href="#how">工作原理</a>
-    <a href="#tracks">激励体系</a>
+    <a href="#how" data-i18n="nav_how">工作原理</a>
+    <a href="#tracks" data-i18n="nav_tracks">激励体系</a>
     <a href="#compare">vs PAXG</a>
-    <a href="#reserve">储备证明</a>
-    <a href="#roadmap">路线图</a>
-    <a href="#" style="color:var(--gold)">文档</a>
+    <a href="#reserve" data-i18n="nav_reserve">储备证明</a>
+    <a href="#roadmap" data-i18n="nav_roadmap">路线图</a>
+    <a href="#" style="color:var(--gold)" data-i18n="nav_docs">文档</a>
   </div>
   <div class="nav-cta">
-    <a href="dapp_v3.html"><button class="btn btn-outline">DApp</button></a>
-    <a href="swap_v3.html"><button class="btn btn-gold">开始交易</button></a>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">ZH</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="dapp_v3.html"><button class="btn btn-outline" data-i18n="nav_dapp">DApp</button></a>
+    <a href="swap_v3.html"><button class="btn btn-gold" data-i18n="nav_trade">开始交易</button></a>
   </div>
 </nav>
 
 <!-- ── TICKER ── -->
 <div class="ticker">
   <div class="ticker-inner" id="ticker">
-    <div class="ticker-item"><span class="label">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
-    <div class="ticker-item"><span class="label">PAXG 金价</span><span class="val">$3,098.40</span></div>
-    <div class="ticker-item"><span class="label">储备覆盖率</span><span class="val gold">100.04%</span></div>
-    <div class="ticker-item"><span class="label">PAXG 储备</span><span class="val">40,182 oz</span></div>
-    <div class="ticker-item"><span class="label">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
-    <div class="ticker-item"><span class="label">24h 成交量</span><span class="val">$8.42M</span></div>
-    <div class="ticker-item"><span class="label">创世池剩余</span><span class="val gold">142天</span></div>
-    <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/笔</span></div>
-    <div class="ticker-item"><span class="label">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
-    <div class="ticker-item"><span class="label">PAXG 金价</span><span class="val">$3,098.40</span></div>
-    <div class="ticker-item"><span class="label">储备覆盖率</span><span class="val gold">100.04%</span></div>
-    <div class="ticker-item"><span class="label">PAXG 储备</span><span class="val">40,182 oz</span></div>
-    <div class="ticker-item"><span class="label">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
-    <div class="ticker-item"><span class="label">24h 成交量</span><span class="val">$8.42M</span></div>
-    <div class="ticker-item"><span class="label">创世池剩余</span><span class="val gold">142天</span></div>
-    <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/笔</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_price">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_paxg">PAXG 金价</span><span class="val">$3,098.40</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_cover">储备覆盖率</span><span class="val gold">100.04%</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_reserve">PAXG 储备</span><span class="val">40,182 oz</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_circ">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_vol">24h 成交量</span><span class="val">$8.42M</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_genesis">创世池剩余</span><span class="val gold">142<span data-i18n="tk_days">天</span></span></div>
+    <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/<span data-i18n="tk_per">笔</span></span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_price">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_paxg">PAXG 金价</span><span class="val">$3,098.40</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_cover">储备覆盖率</span><span class="val gold">100.04%</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_reserve">PAXG 储备</span><span class="val">40,182 oz</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_circ">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_vol">24h 成交量</span><span class="val">$8.42M</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_genesis">创世池剩余</span><span class="val gold">142<span data-i18n="tk_days">天</span></span></div>
+    <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/<span data-i18n="tk_per">笔</span></span></div>
   </div>
 </div>
 
@@ -322,36 +341,36 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span> Arbitrum One · 实时储备可验证 · 0.25% 手续费</div>
-    <h1 class="hero-h1">黄金，<span class="gold">真正流通</span><br>的时代来了</h1>
-    <p class="hero-sub">1 pGOLD = 1 克黄金，由链上 PAXG 100% 储备支撑。<br>比 PAXG 单价低 31 倍，专为普通用户与小额支付设计。</p>
+    <div class="hero-badge"><span class="dot"></span> <span data-i18n="hero_badge">Arbitrum One · 实时储备可验证 · 0.25% 手续费</span></div>
+    <h1 class="hero-h1" data-i18n="hero_h1">黄金，<span class="gold">真正流通</span><br>的时代来了</h1>
+    <p class="hero-sub" data-i18n="hero_sub">1 pGOLD = 1 克黄金，由链上 PAXG 100% 储备支撑。<br>比 PAXG 单价低 31 倍，专为普通用户与小额支付设计。</p>
     <div class="hero-btns">
-      <a href="swap_v3.html"><button class="btn btn-gold btn-hero">立即交易 →</button></a>
-      <a href="dapp_v3.html"><button class="btn btn-outline btn-hero">进入 DApp</button></a>
+      <a href="swap_v3.html"><button class="btn btn-gold btn-hero" data-i18n="hero_trade">立即交易 →</button></a>
+      <a href="dapp_v3.html"><button class="btn btn-outline btn-hero" data-i18n="hero_dapp">进入 DApp</button></a>
     </div>
     <div class="hero-stats">
       <div class="stat-cell">
-        <div class="s-label">储备覆盖率</div>
+        <div class="s-label" data-i18n="stat_cover">储备覆盖率</div>
         <div class="s-val green" id="cnt-coverage">100.04%</div>
-        <div class="s-sub">实时预言机验证</div>
+        <div class="s-sub" data-i18n="stat_cover_sub">实时预言机验证</div>
       </div>
       <div class="stat-cell">
-        <div class="s-label">PAXG 链上储备</div>
+        <div class="s-label" data-i18n="stat_paxg">PAXG 链上储备</div>
         <div class="s-val gold" id="cnt-paxg">40,182</div>
-        <div class="s-sub">oz · 约 1,249 kg</div>
+        <div class="s-sub" data-i18n="stat_paxg_sub">oz · 约 1,249 kg</div>
       </div>
       <div class="stat-cell">
-        <div class="s-label">pGOLD 流通量</div>
+        <div class="s-label" data-i18n="stat_circ">pGOLD 流通量</div>
         <div class="s-val" id="cnt-circ">1,248,930</div>
-        <div class="s-sub">克 · 1g 起购</div>
+        <div class="s-sub" data-i18n="stat_circ_sub">克 · 1g 起购</div>
       </div>
       <div class="stat-cell">
-        <div class="s-label">最高年化奖励</div>
+        <div class="s-label" data-i18n="stat_apy">最高年化奖励</div>
         <div class="s-val gold">1800%</div>
-        <div class="s-sub">10 年线性释放</div>
+        <div class="s-sub" data-i18n="stat_apy_sub">10 年线性释放</div>
       </div>
       <div class="stat-cell">
-        <div class="s-label">链上 Gas 费用</div>
+        <div class="s-label" data-i18n="stat_gas">链上 Gas 费用</div>
         <div class="s-val">≈$0.02</div>
         <div class="s-sub">Arbitrum One</div>
       </div>
@@ -362,45 +381,45 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 <!-- ── HOW IT WORKS ── -->
 <section id="how" style="background:var(--bg-1); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="section-inner">
-    <div class="sec-label">工作原理</div>
-    <h2 class="sec-h2">手续费如何变成储备？</h2>
-    <p class="sec-sub">每一笔交易，协议自动将手续费买入 PAXG，储备持续增厚，奖励通过独立铸币发放，两者互不干扰。</p>
+    <div class="sec-label" data-i18n="how_label">工作原理</div>
+    <h2 class="sec-h2" data-i18n="how_h2">手续费如何变成储备？</h2>
+    <p class="sec-sub" data-i18n="how_sub">每一笔交易，协议自动将手续费买入 PAXG，储备持续增厚，奖励通过独立铸币发放，两者互不干扰。</p>
     <div class="how-grid">
       <div class="how-card">
         <div class="how-num">STEP 01</div>
         <div class="how-icon">💱</div>
-        <div class="how-title">用户交易</div>
-        <div class="how-desc">用户在内部 AMM（x·y=k）中买入或卖出 pGOLD，收取 <strong style="color:var(--gold)">0.25%</strong> 手续费，往返仅 0.5%。</div>
+        <div class="how-title" data-i18n="how1_title">用户交易</div>
+        <div class="how-desc" data-i18n="how1_desc">用户在内部 AMM（x·y=k）中买入或卖出 pGOLD，收取 <strong style="color:var(--gold)">0.25%</strong> 手续费，往返仅 0.5%。</div>
       </div>
       <div class="how-card">
         <div class="how-num">STEP 02</div>
         <div class="how-icon">🔀</div>
-        <div class="how-title">手续费路由</div>
-        <div class="how-desc">FeeRouter 硬编码分配：<strong>95%→ 购金储备</strong>，3% 保险，1.5% 流动性，0.5% 应急。</div>
+        <div class="how-title" data-i18n="how2_title">手续费路由</div>
+        <div class="how-desc" data-i18n="how2_desc">FeeRouter 硬编码分配：<strong>95%→ 购金储备</strong>，3% 保险，1.5% 流动性，0.5% 应急。</div>
       </div>
       <div class="how-card">
         <div class="how-num">STEP 03</div>
         <div class="how-icon">🥇</div>
-        <div class="how-title">自动购入 PAXG</div>
-        <div class="how-desc">Treasury 通过 Uniswap V3 将手续费的 95% 即时兑换为 PAXG，锁入链上金库，永久不动。</div>
+        <div class="how-title" data-i18n="how3_title">自动购入 PAXG</div>
+        <div class="how-desc" data-i18n="how3_desc">Treasury 通过 Uniswap V3 将手续费的 95% 即时兑换为 PAXG，锁入链上金库，永久不动。</div>
       </div>
       <div class="how-card">
         <div class="how-num">STEP 04</div>
         <div class="how-icon">📈</div>
-        <div class="how-title">储备持续增厚</div>
-        <div class="how-desc">每笔交易都让 PAXG 储备更多，覆盖率始终 ≥ 100%，任何人可在 Arbitrum 链上实时验证。</div>
+        <div class="how-title" data-i18n="how4_title">储备持续增厚</div>
+        <div class="how-desc" data-i18n="how4_desc">每笔交易都让 PAXG 储备更多，覆盖率始终 ≥ 100%，任何人可在 Arbitrum 链上实时验证。</div>
       </div>
       <div class="how-card">
         <div class="how-num">STEP 05</div>
         <div class="how-icon">🪙</div>
-        <div class="how-title">独立铸币发奖励</div>
-        <div class="how-desc">奖励来自独立 pGOLD 铸造，<strong>不从手续费中扣</strong>。储备增厚为新铸币提供黄金背书，逻辑自洽。</div>
+        <div class="how-title" data-i18n="how5_title">独立铸币发奖励</div>
+        <div class="how-desc" data-i18n="how5_desc">奖励来自独立 pGOLD 铸造，<strong>不从手续费中扣</strong>。储备增厚为新铸币提供黄金背书，逻辑自洽。</div>
       </div>
       <div class="how-card">
         <div class="how-num">STEP 06</div>
         <div class="how-icon">🔄</div>
-        <div class="how-title">信任飞轮转动</div>
-        <div class="how-desc">储备增加 → 新用户信任 → 交易量增加 → 手续费增加 → 储备继续增加。飞轮自我加速，10 年成就一个黄金资产。</div>
+        <div class="how-title" data-i18n="how6_title">信任飞轮转动</div>
+        <div class="how-desc" data-i18n="how6_desc">储备增加 → 新用户信任 → 交易量增加 → 手续费增加 → 储备继续增加。飞轮自我加速，10 年成就一个黄金资产。</div>
       </div>
     </div>
   </div>
@@ -409,44 +428,44 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 <!-- ── FIVE TRACKS ── -->
 <section id="tracks">
   <div class="section-inner">
-    <div class="sec-label">五轨激励体系</div>
-    <h2 class="sec-h2">每一类参与者，都有专属回报</h2>
-    <p class="sec-sub">A 留人、B 争人、C 信人、D 养人、E 谢人。五轨独立运行，互不冲突，可完全叠加。</p>
+    <div class="sec-label" data-i18n="tr_label">五轨激励体系</div>
+    <h2 class="sec-h2" data-i18n="tr_h2">每一类参与者，都有专属回报</h2>
+    <p class="sec-sub" data-i18n="tr_sub">A 留人、B 争人、C 信人、D 养人、E 谢人。五轨独立运行，互不冲突，可完全叠加。</p>
     <div class="tracks-grid">
       <div class="track-card">
         <div class="track-letter">TRACK A</div>
-        <div class="track-title">持有分红</div>
+        <div class="track-title" data-i18n="tra_title">持有分红</div>
         <div class="track-rate">3.5%<span> APR</span></div>
-        <div class="track-desc">持有并质押 pGOLD 即可按日获得分红，无需操作，无竞争门槛。</div>
-        <span class="track-tag">持有即挖矿</span>
+        <div class="track-desc" data-i18n="tra_desc">持有并质押 pGOLD 即可按日获得分红，无需操作，无竞争门槛。</div>
+        <span class="track-tag" data-i18n="tra_tag">持有即挖矿</span>
       </div>
       <div class="track-card">
         <div class="track-letter">TRACK B</div>
-        <div class="track-title">交易大师榜</div>
-        <div class="track-rate">1000%<span> 年榜</span></div>
-        <div class="track-desc">月榜 300%、季榜 500%、年榜 1000%，Top 100 独立结算，叠加最高 1800%，10 年线性释放。</div>
-        <span class="track-tag">可叠加</span>
+        <div class="track-title" data-i18n="trb_title">交易大师榜</div>
+        <div class="track-rate">1000%<span data-i18n="trb_rate_unit"> 年榜</span></div>
+        <div class="track-desc" data-i18n="trb_desc">月榜 300%、季榜 500%、年榜 1000%，Top 100 独立结算，叠加最高 1800%，10 年线性释放。</div>
+        <span class="track-tag" data-i18n="trb_tag">可叠加</span>
       </div>
       <div class="track-card">
         <div class="track-letter">TRACK C</div>
-        <div class="track-title">燃烧挖矿</div>
-        <div class="track-rate">×10<span> 补偿</span></div>
-        <div class="track-desc">累计手续费 × 10 倍补偿，单轮上限 50K pGOLD，10 年线性释放，等效年化 100%。信仰者的轨道。</div>
-        <span class="track-tag">无需质押</span>
+        <div class="track-title" data-i18n="trc_title">燃烧挖矿</div>
+        <div class="track-rate">×10<span data-i18n="trc_rate_unit"> 补偿</span></div>
+        <div class="track-desc" data-i18n="trc_desc">累计手续费 × 10 倍补偿，单轮上限 50K pGOLD，10 年线性释放，等效年化 100%。信仰者的轨道。</div>
+        <span class="track-tag" data-i18n="trc_tag">无需质押</span>
       </div>
       <div class="track-card">
         <div class="track-letter">TRACK D</div>
-        <div class="track-title">战队 &amp; 推荐</div>
-        <div class="track-rate">20%<span> 直推</span></div>
-        <div class="track-desc">直接推荐 20%，间接推荐 5%，战队队长分享团队业绩 30%，队员共享 70%。Merkle 链上发放。</div>
-        <span class="track-tag">无上限</span>
+        <div class="track-title" data-i18n="trd_title">战队 &amp; 推荐</div>
+        <div class="track-rate">20%<span data-i18n="trd_rate_unit"> 直推</span></div>
+        <div class="track-desc" data-i18n="trd_desc">直接推荐 20%，间接推荐 5%，战队队长分享团队业绩 30%，队员共享 70%。Merkle 链上发放。</div>
+        <span class="track-tag" data-i18n="trd_tag">无上限</span>
       </div>
       <div class="track-card">
         <div class="track-letter">TRACK E</div>
-        <div class="track-title">创世池 ICO</div>
+        <div class="track-title" data-i18n="tre_title">创世池 ICO</div>
         <div class="track-rate">10x<span> D1-30</span></div>
-        <div class="track-desc">180 天创世窗口，D1-30 享 10x 权重，D31-60 为 7x，D61-90 为 4x，D91-180 为 2x。3 年季度解锁，感谢最早的信任。</div>
-        <span class="track-tag">个人上限 1,000g</span>
+        <div class="track-desc" data-i18n="tre_desc">180 天创世窗口，D1-30 享 10x 权重，D31-60 为 7x，D61-90 为 4x，D91-180 为 2x。3 年季度解锁，感谢最早的信任。</div>
+        <span class="track-tag" data-i18n="tre_tag">个人上限 1,000g</span>
       </div>
     </div>
   </div>
@@ -456,32 +475,32 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 <section id="compare" style="background:var(--bg-1); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="section-inner">
     <div class="sec-label">pGOLD vs PAXG</div>
-    <h2 class="sec-h2">同样黄金背书，单位小 31 倍</h2>
-    <p class="sec-sub">PAXG 是 1 盎司（≈31.1g）一枚，约 $3,098。pGOLD 是 1 克一枚，约 $93，更适合普通用户持有和小额支付。</p>
+    <h2 class="sec-h2" data-i18n="cmp_h2">同样黄金背书，单位小 31 倍</h2>
+    <p class="sec-sub" data-i18n="cmp_sub">PAXG 是 1 盎司（≈31.1g）一枚，约 $3,098。pGOLD 是 1 克一枚，约 $93，更适合普通用户持有和小额支付。</p>
     <div class="compare-wrap">
       <div class="compare-card pgold">
         <div class="compare-logo gold-txt">pGOLD</div>
-        <div class="compare-tagline">1 枚 = 1 克黄金 · 专为普通用户设计</div>
-        <div class="compare-row"><span class="key">单枚价格</span><span class="val good">≈ $93</span></div>
-        <div class="compare-row"><span class="key">对应黄金</span><span class="val">1 克</span></div>
-        <div class="compare-row"><span class="key">交易手续费</span><span class="val good">0.25% / 笔</span></div>
-        <div class="compare-row"><span class="key">运行链</span><span class="val good">Arbitrum One（Gas ≈$0.02）</span></div>
-        <div class="compare-row"><span class="key">储备背书</span><span class="val good">PAXG 100% 链上可验证</span></div>
-        <div class="compare-row"><span class="key">激励体系</span><span class="val good">五轨（A/B/C/D/E），最高 1800%</span></div>
-        <div class="compare-row"><span class="key">最小购买</span><span class="val good">1 pGOLD（≈$93）</span></div>
-        <div class="compare-win"><span class="ico">✅</span><span>更小单位意味着更广泛的用户群、更活跃的流动性、更多手续费、更大的 PAXG 储备增速。</span></div>
+        <div class="compare-tagline" data-i18n="cmp_pg_tag">1 枚 = 1 克黄金 · 专为普通用户设计</div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_price">单枚价格</span><span class="val good">≈ $93</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_gold">对应黄金</span><span class="val" data-i18n="cmp_pg_gold">1 克</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_fee">交易手续费</span><span class="val good">0.25% / <span data-i18n="cmp_per">笔</span></span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_chain">运行链</span><span class="val good">Arbitrum One（Gas ≈$0.02）</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_backing">储备背书</span><span class="val good" data-i18n="cmp_pg_backing">PAXG 100% 链上可验证</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_incentive">激励体系</span><span class="val good" data-i18n="cmp_pg_incentive">五轨（A/B/C/D/E），最高 1800%</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_min">最小购买</span><span class="val good">1 pGOLD（≈$93）</span></div>
+        <div class="compare-win"><span class="ico">✅</span><span data-i18n="cmp_pg_win">更小单位意味着更广泛的用户群、更活跃的流动性、更多手续费、更大的 PAXG 储备增速。</span></div>
       </div>
       <div class="compare-card paxg">
         <div class="compare-logo" style="color:var(--txt-1);">PAXG</div>
-        <div class="compare-tagline">1 枚 = 1 盎司黄金 · 机构级持有</div>
-        <div class="compare-row"><span class="key">单枚价格</span><span class="val">≈ $3,098</span></div>
-        <div class="compare-row"><span class="key">对应黄金</span><span class="val">31.1 克（1 盎司）</span></div>
-        <div class="compare-row"><span class="key">交易手续费</span><span class="val">0.02% 铸造 + DEX 费</span></div>
-        <div class="compare-row"><span class="key">运行链</span><span class="val">Ethereum（Gas 较高）</span></div>
-        <div class="compare-row"><span class="key">储备背书</span><span class="val">实物金条，Paxos 审计</span></div>
-        <div class="compare-row"><span class="key">激励体系</span><span class="val">无原生激励体系</span></div>
-        <div class="compare-row"><span class="key">最小购买</span><span class="val">0.01 PAXG（≈$31）</span></div>
-        <div style="margin-top:20px; font-size:13px; color:var(--txt-2); line-height:1.6;">pGOLD 的 PAXG 储备由协议自动购入并在链上公开持有。pGOLD 本质上是 PAXG 的"克单位版"，为更广泛的用户群提供门槛更低的黄金资产通道。</div>
+        <div class="compare-tagline" data-i18n="cmp_px_tag">1 枚 = 1 盎司黄金 · 机构级持有</div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_price">单枚价格</span><span class="val">≈ $3,098</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_gold">对应黄金</span><span class="val" data-i18n="cmp_px_gold">31.1 克（1 盎司）</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_fee">交易手续费</span><span class="val" data-i18n="cmp_px_fee">0.02% 铸造 + DEX 费</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_chain">运行链</span><span class="val" data-i18n="cmp_px_chain">Ethereum（Gas 较高）</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_backing">储备背书</span><span class="val" data-i18n="cmp_px_backing">实物金条，Paxos 审计</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_incentive">激励体系</span><span class="val" data-i18n="cmp_px_incentive">无原生激励体系</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_min">最小购买</span><span class="val">0.01 PAXG（≈$31）</span></div>
+        <div style="margin-top:20px; font-size:13px; color:var(--txt-2); line-height:1.6;" data-i18n="cmp_px_note">pGOLD 的 PAXG 储备由协议自动购入并在链上公开持有。pGOLD 本质上是 PAXG 的"克单位版"，为更广泛的用户群提供门槛更低的黄金资产通道。</div>
       </div>
     </div>
   </div>
@@ -490,56 +509,56 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 <!-- ── RESERVE PROOF ── -->
 <section id="reserve">
   <div class="section-inner">
-    <div class="sec-label">储备透明度</div>
-    <h2 class="sec-h2">链上可验证，不信任，只验证</h2>
-    <p class="sec-sub">所有 PAXG 储备均持有在公开的 Arbitrum One 合约地址中，任何人任何时候可独立核查。</p>
+    <div class="sec-label" data-i18n="rv_label">储备透明度</div>
+    <h2 class="sec-h2" data-i18n="rv_h2">链上可验证，不信任，只验证</h2>
+    <p class="sec-sub" data-i18n="rv_sub">所有 PAXG 储备均持有在公开的 Arbitrum One 合约地址中，任何人任何时候可独立核查。</p>
     <div class="reserve-grid">
       <div class="reserve-card highlight">
-        <div class="res-label">储备覆盖率</div>
+        <div class="res-label" data-i18n="rv_cov_label">储备覆盖率</div>
         <div class="res-val green">100.04%</div>
-        <div class="res-sub">每枚流通中的 pGOLD 均有等量 PAXG 黄金储备支撑。覆盖率由链上预言机实时校验，低于 100% 时协议自动冻结新铸造。</div>
-        <div style="font-size:12px; color:var(--txt-2); margin-bottom:6px;">覆盖率 100.04%</div>
+        <div class="res-sub" data-i18n="rv_cov_sub">每枚流通中的 pGOLD 均有等量 PAXG 黄金储备支撑。覆盖率由链上预言机实时校验，低于 100% 时协议自动冻结新铸造。</div>
+        <div style="font-size:12px; color:var(--txt-2); margin-bottom:6px;"><span data-i18n="rv_cov_rate">覆盖率</span> 100.04%</div>
         <div class="res-bar"><div class="res-bar-fill" style="width:100%;"></div></div>
       </div>
       <div class="reserve-card">
-        <div class="res-label">PAXG 链上储备</div>
+        <div class="res-label" data-i18n="rv_paxg_label">PAXG 链上储备</div>
         <div class="res-val gold">40,182 oz</div>
-        <div class="res-sub">≈ 1,249 千克实物黄金当量，持有在 Treasury 合约四个子账户（金库 95% / 保险 3% / 流动性 1.5% / 应急 0.5%）。</div>
+        <div class="res-sub" data-i18n="rv_paxg_sub">≈ 1,249 千克实物黄金当量，持有在 Treasury 合约四个子账户（金库 95% / 保险 3% / 流动性 1.5% / 应急 0.5%）。</div>
         <div class="proof-links">
           <a class="proof-link" href="#" target="_blank">
-            <div class="pl-left"><span class="pl-icon">⛓</span><div><div class="pl-lbl">Treasury 合约</div><div class="pl-sub">Arbiscan 实时余额</div></div></div>
+            <div class="pl-left"><span class="pl-icon">⛓</span><div><div class="pl-lbl" data-i18n="rv_link1_title">Treasury 合约</div><div class="pl-sub" data-i18n="rv_link1_sub">Arbiscan 实时余额</div></div></div>
             <span class="pl-arr">→</span>
           </a>
           <a class="proof-link" href="#" target="_blank">
-            <div class="pl-left"><span class="pl-icon">📊</span><div><div class="pl-lbl">The Graph 子图</div><div class="pl-sub">所有交易与储备数据</div></div></div>
+            <div class="pl-left"><span class="pl-icon">📊</span><div><div class="pl-lbl" data-i18n="rv_link2_title">The Graph 子图</div><div class="pl-sub" data-i18n="rv_link2_sub">所有交易与储备数据</div></div></div>
             <span class="pl-arr">→</span>
           </a>
           <a class="proof-link" href="#" target="_blank">
-            <div class="pl-left"><span class="pl-icon">📋</span><div><div class="pl-lbl">Paxos 审计报告</div><div class="pl-sub">PAXG 实物黄金每月审计</div></div></div>
+            <div class="pl-left"><span class="pl-icon">📋</span><div><div class="pl-lbl" data-i18n="rv_link3_title">Paxos 审计报告</div><div class="pl-sub" data-i18n="rv_link3_sub">PAXG 实物黄金每月审计</div></div></div>
             <span class="pl-arr">→</span>
           </a>
         </div>
       </div>
       <div class="reserve-card">
-        <div class="res-label">手续费分配（硬编码）</div>
+        <div class="res-label" data-i18n="rv_fee_label">手续费分配（硬编码）</div>
         <div style="margin-top:8px; display:flex; flex-direction:column; gap:10px;">
           <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
-            <span style="color:var(--txt-1);">购金储备（GOLD_RESERVE）</span>
+            <span style="color:var(--txt-1);" data-i18n="rv_fee_gold">购金储备（GOLD_RESERVE）</span>
             <span style="font-family:var(--mono); color:var(--gold); font-weight:700;">95%</span>
           </div>
           <div class="res-bar"><div class="res-bar-fill" style="width:95%;"></div></div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:12px; color:var(--txt-2);">
-            <span>保险 3%</span><span>·</span><span>流动性 1.5%</span><span>·</span><span>应急 0.5%</span>
+            <span data-i18n="rv_fee_ins">保险 3%</span><span>·</span><span data-i18n="rv_fee_liq">流动性 1.5%</span><span>·</span><span data-i18n="rv_fee_emg">应急 0.5%</span>
           </div>
-          <div style="font-size:12.5px; color:var(--txt-1); margin-top:6px; line-height:1.6;">分配比例由 FeeRouter 合约硬编码，不可升级，不可修改，协议无法挪用。</div>
+          <div style="font-size:12.5px; color:var(--txt-1); margin-top:6px; line-height:1.6;" data-i18n="rv_fee_note">分配比例由 FeeRouter 合约硬编码，不可升级，不可修改，协议无法挪用。</div>
         </div>
       </div>
       <div class="reserve-card">
-        <div class="res-label">合约安全</div>
+        <div class="res-label" data-i18n="rv_sec_label">合约安全</div>
         <div style="margin-top:10px; display:flex; flex-direction:column; gap:12px;">
           <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
             <span style="color:var(--green); font-size:16px;">✓</span>
-            <span style="color:var(--txt-1);">16 个合约，5 层架构（Core / Incentive / Financial / Defense / Governance）</span>
+            <span style="color:var(--txt-1);" data-i18n="rv_sec1">16 个合约，5 层架构（Core / Incentive / Financial / Defense / Governance）</span>
           </div>
           <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
             <span style="color:var(--green); font-size:16px;">✓</span>
@@ -547,15 +566,15 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
           </div>
           <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
             <span style="color:var(--green); font-size:16px;">✓</span>
-            <span style="color:var(--txt-1);">212 单元测试全部通过，0 失败（Hardhat + ethers v6）</span>
+            <span style="color:var(--txt-1);" data-i18n="rv_sec3">212 单元测试全部通过，0 失败（Hardhat + ethers v6）</span>
           </div>
           <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
             <span style="color:var(--green); font-size:16px;">✓</span>
-            <span style="color:var(--txt-1);">48 小时 Timelock 守护所有参数变更，BUSL-1.1 许可证</span>
+            <span style="color:var(--txt-1);" data-i18n="rv_sec4">48 小时 Timelock 守护所有参数变更，BUSL-1.1 许可证</span>
           </div>
           <div style="display:flex; align-items:flex-start; gap:10px; font-size:13px;">
             <span style="color:var(--green); font-size:16px;">✓</span>
-            <span style="color:var(--txt-1);">三层价格防御：软锚定 / 条件赎回 / 稳定基金，防止 pGOLD 脱锚</span>
+            <span style="color:var(--txt-1);" data-i18n="rv_sec5">三层价格防御：软锚定 / 条件赎回 / 稳定基金，防止 pGOLD 脱锚</span>
           </div>
         </div>
       </div>
@@ -566,56 +585,56 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 <!-- ── ROADMAP ── -->
 <section id="roadmap" style="background:var(--bg-1); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
   <div class="section-inner">
-    <div class="sec-label">路线图</div>
-    <h2 class="sec-h2">10 年，打造真正的黄金资产</h2>
-    <p class="sec-sub">协议设计以 10 年为周期，逐步扩大储备规模、激励生态与全球黄金结算网络。</p>
+    <div class="sec-label" data-i18n="rm_label">路线图</div>
+    <h2 class="sec-h2" data-i18n="rm_h2">10 年，打造真正的黄金资产</h2>
+    <p class="sec-sub" data-i18n="rm_sub">协议设计以 10 年为周期，逐步扩大储备规模、激励生态与全球黄金结算网络。</p>
     <div class="roadmap-grid">
       <div class="rm-card active">
         <div class="rm-phase">Phase 1</div>
-        <div class="rm-status live"><span>●</span> 进行中</div>
-        <div class="rm-title">协议上线 &amp; 创世池</div>
+        <div class="rm-status live"><span>●</span> <span data-i18n="rm_live">进行中</span></div>
+        <div class="rm-title" data-i18n="rm1_title">协议上线 &amp; 创世池</div>
         <div class="rm-list">
-          <div class="rm-item done">16 个核心合约部署至 Arbitrum One</div>
-          <div class="rm-item done">212 单元测试全部通过</div>
-          <div class="rm-item done">内部 AMM（PGOLDSwap）上线</div>
-          <div class="rm-item">创世池 180 天 ICO 开放</div>
-          <div class="rm-item">The Graph 子图上线</div>
+          <div class="rm-item done" data-i18n="rm1_1">16 个核心合约部署至 Arbitrum One</div>
+          <div class="rm-item done" data-i18n="rm1_2">212 单元测试全部通过</div>
+          <div class="rm-item done" data-i18n="rm1_3">内部 AMM（PGOLDSwap）上线</div>
+          <div class="rm-item" data-i18n="rm1_4">创世池 180 天 ICO 开放</div>
+          <div class="rm-item" data-i18n="rm1_5">The Graph 子图上线</div>
         </div>
       </div>
       <div class="rm-card">
         <div class="rm-phase">Phase 2</div>
-        <div class="rm-status soon"><span>◎</span> 即将开始</div>
-        <div class="rm-title">生态扩张 &amp; 商家接入</div>
+        <div class="rm-status soon"><span>◎</span> <span data-i18n="rm_soon">即将开始</span></div>
+        <div class="rm-title" data-i18n="rm2_title">生态扩张 &amp; 商家接入</div>
         <div class="rm-list">
-          <div class="rm-item">Top 100 月榜 / 季榜 / 年榜激活</div>
-          <div class="rm-item">燃烧挖矿（Track C）全面开放</div>
-          <div class="rm-item">战队 &amp; 推荐系统（Track D）上线</div>
-          <div class="rm-item">首批商家贸易结算试点</div>
-          <div class="rm-item">三层价格防御系统激活</div>
+          <div class="rm-item" data-i18n="rm2_1">Top 100 月榜 / 季榜 / 年榜激活</div>
+          <div class="rm-item" data-i18n="rm2_2">燃烧挖矿（Track C）全面开放</div>
+          <div class="rm-item" data-i18n="rm2_3">战队 &amp; 推荐系统（Track D）上线</div>
+          <div class="rm-item" data-i18n="rm2_4">首批商家贸易结算试点</div>
+          <div class="rm-item" data-i18n="rm2_5">三层价格防御系统激活</div>
         </div>
       </div>
       <div class="rm-card">
         <div class="rm-phase">Phase 3</div>
-        <div class="rm-status future">○ 规划中</div>
-        <div class="rm-title">跨链 &amp; 全球流通</div>
+        <div class="rm-status future">○ <span data-i18n="rm_planned">规划中</span></div>
+        <div class="rm-title" data-i18n="rm3_title">跨链 &amp; 全球流通</div>
         <div class="rm-list">
-          <div class="rm-item">跨链桥接（Base / Polygon / BNB Chain）</div>
-          <div class="rm-item">法币出金通道（东南亚 / 中东试点）</div>
-          <div class="rm-item">vPGOLD 二级市场做市</div>
-          <div class="rm-item">机构托管服务</div>
-          <div class="rm-item">PAXG 持仓排名进入全球前 10</div>
+          <div class="rm-item" data-i18n="rm3_1">跨链桥接（Base / Polygon / BNB Chain）</div>
+          <div class="rm-item" data-i18n="rm3_2">法币出金通道（东南亚 / 中东试点）</div>
+          <div class="rm-item" data-i18n="rm3_3">vPGOLD 二级市场做市</div>
+          <div class="rm-item" data-i18n="rm3_4">机构托管服务</div>
+          <div class="rm-item" data-i18n="rm3_5">PAXG 持仓排名进入全球前 10</div>
         </div>
       </div>
       <div class="rm-card">
         <div class="rm-phase">Phase 4</div>
-        <div class="rm-status future">○ 愿景</div>
-        <div class="rm-title">成为黄金结算标准</div>
+        <div class="rm-status future">○ <span data-i18n="rm_vision">愿景</span></div>
+        <div class="rm-title" data-i18n="rm4_title">成为黄金结算标准</div>
         <div class="rm-list">
-          <div class="rm-item">全球黄金贸易 pGOLD 结算网络</div>
-          <div class="rm-item">协议 DAO 治理完全去中心化</div>
-          <div class="rm-item">年储备增长 &gt; 1 吨黄金</div>
-          <div class="rm-item">1 亿美元以上月交易量</div>
-          <div class="rm-item">信任飞轮完成第一个完整周期</div>
+          <div class="rm-item" data-i18n="rm4_1">全球黄金贸易 pGOLD 结算网络</div>
+          <div class="rm-item" data-i18n="rm4_2">协议 DAO 治理完全去中心化</div>
+          <div class="rm-item" data-i18n="rm4_3">年储备增长 &gt; 1 吨黄金</div>
+          <div class="rm-item" data-i18n="rm4_4">1 亿美元以上月交易量</div>
+          <div class="rm-item" data-i18n="rm4_5">信任飞轮完成第一个完整周期</div>
         </div>
       </div>
     </div>
@@ -624,11 +643,11 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 
 <!-- ── CTA BAND ── -->
 <div class="cta-band">
-  <h2 class="cta-h">现在入场，参与第一个完整周期</h2>
-  <p class="cta-sub">创世池 D1–30 权重为 10x，是参与成本最低、回报倍率最高的窗口。每过一档，权重递减不可逆。</p>
+  <h2 class="cta-h" data-i18n="cta_h">现在入场，参与第一个完整周期</h2>
+  <p class="cta-sub" data-i18n="cta_sub">创世池 D1–30 权重为 10x，是参与成本最低、回报倍率最高的窗口。每过一档，权重递减不可逆。</p>
   <div class="cta-band-btns">
-    <a href="swap_v3.html"><button class="btn btn-gold" style="padding:14px 36px;font-size:15px;">立即购买 pGOLD</button></a>
-    <a href="dapp_v3.html"><button class="btn btn-outline" style="padding:14px 36px;font-size:15px;">进入创世池 ICO</button></a>
+    <a href="swap_v3.html"><button class="btn btn-gold" style="padding:14px 36px;font-size:15px;" data-i18n="cta_buy">立即购买 pGOLD</button></a>
+    <a href="dapp_v3.html"><button class="btn btn-outline" style="padding:14px 36px;font-size:15px;" data-i18n="cta_ico">进入创世池 ICO</button></a>
   </div>
 </div>
 
@@ -638,45 +657,163 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
     <div class="footer-top">
       <div class="footer-brand">
         <div class="logo"><div class="coin">pG</div>pGOLD</div>
-        <p>1 pGOLD = 1 克黄金。由链上 PAXG 100% 储备支撑，运行在 Arbitrum One。专为普通用户与小额支付设计的黄金资产协议。</p>
+        <p data-i18n="ft_brand">1 pGOLD = 1 克黄金。由链上 PAXG 100% 储备支撑，运行在 Arbitrum One。专为普通用户与小额支付设计的黄金资产协议。</p>
       </div>
       <div class="footer-col">
-        <h4>产品</h4>
-        <a href="swap_v3.html">Swap 交易</a>
-        <a href="dapp_v3.html">DApp 主页</a>
-        <a href="dapp_v3.html">创世池 ICO</a>
-        <a href="dapp_v3.html">质押分红</a>
-        <a href="dapp_v3.html">排行榜</a>
+        <h4 data-i18n="ft_prod">产品</h4>
+        <a href="swap_v3.html" data-i18n="ft_swap">Swap 交易</a>
+        <a href="dapp_v3.html" data-i18n="ft_dapp">DApp 主页</a>
+        <a href="dapp_v3.html" data-i18n="ft_ico">创世池 ICO</a>
+        <a href="dapp_v3.html" data-i18n="ft_stake">质押分红</a>
+        <a href="dapp_v3.html" data-i18n="ft_rank">排行榜</a>
       </div>
       <div class="footer-col">
-        <h4>协议</h4>
-        <a href="#">白皮书</a>
-        <a href="#">合约审计</a>
-        <a href="#">储备证明</a>
-        <a href="#">The Graph 子图</a>
-        <a href="#">开源代码</a>
+        <h4 data-i18n="ft_proto">协议</h4>
+        <a href="#" data-i18n="ft_wp">白皮书</a>
+        <a href="#" data-i18n="ft_audit">合约审计</a>
+        <a href="#" data-i18n="ft_proof">储备证明</a>
+        <a href="#">The Graph</a>
+        <a href="#" data-i18n="ft_oss">开源代码</a>
       </div>
       <div class="footer-col">
-        <h4>社区</h4>
+        <h4 data-i18n="ft_comm">社区</h4>
         <a href="#">Twitter / X</a>
         <a href="#">Telegram</a>
         <a href="#">Discord</a>
         <a href="#">Medium</a>
-        <a href="#">联系我们</a>
+        <a href="#" data-i18n="ft_contact">联系我们</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 pGOLD Protocol · BUSL-1.1 License · 非投资建议</span>
+      <span data-i18n="ft_copy">© 2026 pGOLD Protocol · BUSL-1.1 License · 非投资建议</span>
       <div class="chain-badge">
         <div class="chain-dot"></div>
-        <span>Arbitrum One · 区块同步正常</span>
+        <span data-i18n="ft_chain">Arbitrum One · 区块同步正常</span>
       </div>
     </div>
   </div>
 </footer>
 
 <script>
-// ── Nav scroll effect ──
+// ── i18n ──
+const I18N = {
+  zh: {
+    nav_how:'工作原理', nav_tracks:'激励体系', nav_reserve:'储备证明', nav_roadmap:'路线图', nav_docs:'文档', nav_dapp:'DApp', nav_trade:'开始交易',
+    tk_price:'pGOLD 价格', tk_paxg:'PAXG 金价', tk_cover:'储备覆盖率', tk_reserve:'PAXG 储备', tk_circ:'pGOLD 流通', tk_vol:'24h 成交量', tk_genesis:'创世池剩余', tk_days:'天', tk_per:'笔',
+    hero_badge:'Arbitrum One · 实时储备可验证 · 0.25% 手续费',
+    hero_h1:'黄金，<span class="gold">真正流通</span><br>的时代来了',
+    hero_sub:'1 pGOLD = 1 克黄金，由链上 PAXG 100% 储备支撑。<br>比 PAXG 单价低 31 倍，专为普通用户与小额支付设计。',
+    hero_trade:'立即交易 →', hero_dapp:'进入 DApp',
+    stat_cover:'储备覆盖率', stat_cover_sub:'实时预言机验证', stat_paxg:'PAXG 链上储备', stat_paxg_sub:'oz · 约 1,249 kg', stat_circ:'pGOLD 流通量', stat_circ_sub:'克 · 1g 起购', stat_apy:'最高年化奖励', stat_apy_sub:'10 年线性释放', stat_gas:'链上 Gas 费用',
+    how_label:'工作原理', how_h2:'手续费如何变成储备？', how_sub:'每一笔交易，协议自动将手续费买入 PAXG，储备持续增厚，奖励通过独立铸币发放，两者互不干扰。',
+    how1_title:'用户交易', how1_desc:'用户在内部 AMM（x·y=k）中买入或卖出 pGOLD，收取 <strong style="color:var(--gold)">0.25%</strong> 手续费，往返仅 0.5%。',
+    how2_title:'手续费路由', how2_desc:'FeeRouter 硬编码分配：<strong>95%→ 购金储备</strong>，3% 保险，1.5% 流动性，0.5% 应急。',
+    how3_title:'自动购入 PAXG', how3_desc:'Treasury 通过 Uniswap V3 将手续费的 95% 即时兑换为 PAXG，锁入链上金库，永久不动。',
+    how4_title:'储备持续增厚', how4_desc:'每笔交易都让 PAXG 储备更多，覆盖率始终 ≥ 100%，任何人可在 Arbitrum 链上实时验证。',
+    how5_title:'独立铸币发奖励', how5_desc:'奖励来自独立 pGOLD 铸造，<strong>不从手续费中扣</strong>。储备增厚为新铸币提供黄金背书，逻辑自洽。',
+    how6_title:'信任飞轮转动', how6_desc:'储备增加 → 新用户信任 → 交易量增加 → 手续费增加 → 储备继续增加。飞轮自我加速，10 年成就一个黄金资产。',
+    tr_label:'五轨激励体系', tr_h2:'每一类参与者，都有专属回报', tr_sub:'A 留人、B 争人、C 信人、D 养人、E 谢人。五轨独立运行，互不冲突，可完全叠加。',
+    tra_title:'持有分红', tra_desc:'持有并质押 pGOLD 即可按日获得分红，无需操作，无竞争门槛。', tra_tag:'持有即挖矿',
+    trb_title:'交易大师榜', trb_rate_unit:' 年榜', trb_desc:'月榜 300%、季榜 500%、年榜 1000%，Top 100 独立结算，叠加最高 1800%，10 年线性释放。', trb_tag:'可叠加',
+    trc_title:'燃烧挖矿', trc_rate_unit:' 补偿', trc_desc:'累计手续费 × 10 倍补偿，单轮上限 50K pGOLD，10 年线性释放，等效年化 100%。信仰者的轨道。', trc_tag:'无需质押',
+    trd_title:'战队 &amp; 推荐', trd_rate_unit:' 直推', trd_desc:'直接推荐 20%，间接推荐 5%，战队队长分享团队业绩 30%，队员共享 70%。Merkle 链上发放。', trd_tag:'无上限',
+    tre_title:'创世池 ICO', tre_desc:'180 天创世窗口，D1-30 享 10x 权重，D31-60 为 7x，D61-90 为 4x，D91-180 为 2x。3 年季度解锁，感谢最早的信任。', tre_tag:'个人上限 1,000g',
+    cmp_h2:'同样黄金背书，单位小 31 倍', cmp_sub:'PAXG 是 1 盎司（≈31.1g）一枚，约 $3,098。pGOLD 是 1 克一枚，约 $93，更适合普通用户持有和小额支付。',
+    cmp_pg_tag:'1 枚 = 1 克黄金 · 专为普通用户设计', cmp_px_tag:'1 枚 = 1 盎司黄金 · 机构级持有',
+    cmp_price:'单枚价格', cmp_gold:'对应黄金', cmp_fee:'交易手续费', cmp_chain:'运行链', cmp_backing:'储备背书', cmp_incentive:'激励体系', cmp_min:'最小购买', cmp_per:'笔',
+    cmp_pg_gold:'1 克', cmp_pg_backing:'PAXG 100% 链上可验证', cmp_pg_incentive:'五轨（A/B/C/D/E），最高 1800%',
+    cmp_pg_win:'更小单位意味着更广泛的用户群、更活跃的流动性、更多手续费、更大的 PAXG 储备增速。',
+    cmp_px_gold:'31.1 克（1 盎司）', cmp_px_fee:'0.02% 铸造 + DEX 费', cmp_px_chain:'Ethereum（Gas 较高）', cmp_px_backing:'实物金条，Paxos 审计', cmp_px_incentive:'无原生激励体系',
+    cmp_px_note:'pGOLD 的 PAXG 储备由协议自动购入并在链上公开持有。pGOLD 本质上是 PAXG 的"克单位版"，为更广泛的用户群提供门槛更低的黄金资产通道。',
+    rv_label:'储备透明度', rv_h2:'链上可验证，不信任，只验证', rv_sub:'所有 PAXG 储备均持有在公开的 Arbitrum One 合约地址中，任何人任何时候可独立核查。',
+    rv_cov_label:'储备覆盖率', rv_cov_sub:'每枚流通中的 pGOLD 均有等量 PAXG 黄金储备支撑。覆盖率由链上预言机实时校验，低于 100% 时协议自动冻结新铸造。', rv_cov_rate:'覆盖率',
+    rv_paxg_label:'PAXG 链上储备', rv_paxg_sub:'≈ 1,249 千克实物黄金当量，持有在 Treasury 合约四个子账户（金库 95% / 保险 3% / 流动性 1.5% / 应急 0.5%）。',
+    rv_link1_title:'Treasury 合约', rv_link1_sub:'Arbiscan 实时余额', rv_link2_title:'The Graph 子图', rv_link2_sub:'所有交易与储备数据', rv_link3_title:'Paxos 审计报告', rv_link3_sub:'PAXG 实物黄金每月审计',
+    rv_fee_label:'手续费分配（硬编码）', rv_fee_gold:'购金储备（GOLD_RESERVE）', rv_fee_ins:'保险 3%', rv_fee_liq:'流动性 1.5%', rv_fee_emg:'应急 0.5%',
+    rv_fee_note:'分配比例由 FeeRouter 合约硬编码，不可升级，不可修改，协议无法挪用。',
+    rv_sec_label:'合约安全', rv_sec1:'16 个合约，5 层架构（Core / Incentive / Financial / Defense / Governance）',
+    rv_sec3:'212 单元测试全部通过，0 失败（Hardhat + ethers v6）', rv_sec4:'48 小时 Timelock 守护所有参数变更，BUSL-1.1 许可证', rv_sec5:'三层价格防御：软锚定 / 条件赎回 / 稳定基金，防止 pGOLD 脱锚',
+    rm_label:'路线图', rm_h2:'10 年，打造真正的黄金资产', rm_sub:'协议设计以 10 年为周期，逐步扩大储备规模、激励生态与全球黄金结算网络。',
+    rm_live:'进行中', rm_soon:'即将开始', rm_planned:'规划中', rm_vision:'愿景',
+    rm1_title:'协议上线 &amp; 创世池', rm1_1:'16 个核心合约部署至 Arbitrum One', rm1_2:'212 单元测试全部通过', rm1_3:'内部 AMM（PGOLDSwap）上线', rm1_4:'创世池 180 天 ICO 开放', rm1_5:'The Graph 子图上线',
+    rm2_title:'生态扩张 &amp; 商家接入', rm2_1:'Top 100 月榜 / 季榜 / 年榜激活', rm2_2:'燃烧挖矿（Track C）全面开放', rm2_3:'战队 &amp; 推荐系统（Track D）上线', rm2_4:'首批商家贸易结算试点', rm2_5:'三层价格防御系统激活',
+    rm3_title:'跨链 &amp; 全球流通', rm3_1:'跨链桥接（Base / Polygon / BNB Chain）', rm3_2:'法币出金通道（东南亚 / 中东试点）', rm3_3:'vPGOLD 二级市场做市', rm3_4:'机构托管服务', rm3_5:'PAXG 持仓排名进入全球前 10',
+    rm4_title:'成为黄金结算标准', rm4_1:'全球黄金贸易 pGOLD 结算网络', rm4_2:'协议 DAO 治理完全去中心化', rm4_3:'年储备增长 &gt; 1 吨黄金', rm4_4:'1 亿美元以上月交易量', rm4_5:'信任飞轮完成第一个完整周期',
+    cta_h:'现在入场，参与第一个完整周期', cta_sub:'创世池 D1–30 权重为 10x，是参与成本最低、回报倍率最高的窗口。每过一档，权重递减不可逆。', cta_buy:'立即购买 pGOLD', cta_ico:'进入创世池 ICO',
+    ft_brand:'1 pGOLD = 1 克黄金。由链上 PAXG 100% 储备支撑，运行在 Arbitrum One。专为普通用户与小额支付设计的黄金资产协议。',
+    ft_prod:'产品', ft_swap:'Swap 交易', ft_dapp:'DApp 主页', ft_ico:'创世池 ICO', ft_stake:'质押分红', ft_rank:'排行榜',
+    ft_proto:'协议', ft_wp:'白皮书', ft_audit:'合约审计', ft_proof:'储备证明', ft_oss:'开源代码',
+    ft_comm:'社区', ft_contact:'联系我们',
+    ft_copy:'© 2026 pGOLD Protocol · BUSL-1.1 License · 非投资建议', ft_chain:'Arbitrum One · 区块同步正常',
+  },
+  en: {
+    nav_how:'How It Works', nav_tracks:'Incentives', nav_reserve:'Reserve Proof', nav_roadmap:'Roadmap', nav_docs:'Docs', nav_dapp:'DApp', nav_trade:'Start Trading',
+    tk_price:'pGOLD Price', tk_paxg:'PAXG Gold', tk_cover:'Reserve Coverage', tk_reserve:'PAXG Reserve', tk_circ:'pGOLD Supply', tk_vol:'24h Volume', tk_genesis:'Genesis Pool', tk_days:'d left', tk_per:'tx',
+    hero_badge:'Arbitrum One · Real-time Reserves · 0.25% Fee',
+    hero_h1:'Gold, <span class="gold">Finally Spendable</span>',
+    hero_sub:'1 pGOLD = 1 gram of gold, 100% backed by on-chain PAXG.<br>31× cheaper than PAXG — built for everyday users and micropayments.',
+    hero_trade:'Trade Now →', hero_dapp:'Enter DApp',
+    stat_cover:'Reserve Coverage', stat_cover_sub:'Real-time oracle verified', stat_paxg:'PAXG On-Chain', stat_paxg_sub:'oz · ≈1,249 kg', stat_circ:'pGOLD Supply', stat_circ_sub:'grams · min 1g', stat_apy:'Max APY Reward', stat_apy_sub:'10-year vesting', stat_gas:'On-Chain Gas',
+    how_label:'How It Works', how_h2:'How Fees Become Reserves', how_sub:'Every trade auto-converts fees into PAXG reserves. Rewards are minted independently — the two never conflict.',
+    how1_title:'User Trades', how1_desc:'Users buy or sell pGOLD via an internal AMM (x·y=k). A <strong style="color:var(--gold)">0.25%</strong> fee is charged — 0.5% round-trip.',
+    how2_title:'Fee Routing', how2_desc:'FeeRouter hard-codes: <strong>95% → gold reserve</strong>, 3% insurance, 1.5% liquidity, 0.5% emergency.',
+    how3_title:'Auto-Buy PAXG', how3_desc:'Treasury swaps 95% of fees into PAXG via Uniswap V3 instantly — locked in the on-chain vault forever.',
+    how4_title:'Reserves Thicken', how4_desc:'Every trade adds more PAXG reserves. Coverage stays ≥ 100%, verifiable on Arbitrum by anyone, anytime.',
+    how5_title:'Mint Rewards', how5_desc:'Rewards come from independent pGOLD minting — <strong>never deducted from fees</strong>. Reserves back the new mint.',
+    how6_title:'Flywheel Spins', how6_desc:'More reserves → more trust → more volume → more fees → more reserves. Self-accelerating over 10 years.',
+    tr_label:'Five-Track Incentives', tr_h2:'Every Participant Has a Dedicated Reward', tr_sub:'A holds, B competes, C believes, D grows, E pioneers. All tracks run independently and stack fully.',
+    tra_title:'Hold & Earn', tra_desc:'Stake pGOLD to earn daily dividends — no action needed, no competition threshold.', tra_tag:'Stake to Mine',
+    trb_title:'Top 100 Leaderboard', trb_rate_unit:' Annual', trb_desc:'Monthly 300%, Quarterly 500%, Annual 1000%. Top 100 settle independently, stack up to 1800%, 10-year vesting.', trb_tag:'Stackable',
+    trc_title:'Burn Mining', trc_rate_unit:' Compensation', trc_desc:'Cumulative fees × 10x compensation. 50K pGOLD cap per round, 10-year vesting, ~100% APY equivalent.', trc_tag:'No Staking',
+    trd_title:'Squad & Referral', trd_rate_unit:' Direct', trd_desc:'Direct referral 20%, indirect 5%. Squad leader shares 30% of team volume, members share 70%. Merkle on-chain distribution.', trd_tag:'Uncapped',
+    tre_title:'Genesis Pool ICO', tre_desc:'180-day genesis window. D1-30: 10x weight, D31-60: 7x, D61-90: 4x, D91-180: 2x. 3-year quarterly unlock. Rewarding earliest believers.', tre_tag:'1,000g personal cap',
+    cmp_h2:'Same Gold Backing, 31× Smaller Unit', cmp_sub:'PAXG is 1 troy oz (≈31.1g) at ~$3,098. pGOLD is 1 gram at ~$93 — better suited for retail users and small payments.',
+    cmp_pg_tag:'1 token = 1 gram gold · Built for everyday users', cmp_px_tag:'1 token = 1 oz gold · Institutional grade',
+    cmp_price:'Unit Price', cmp_gold:'Gold Weight', cmp_fee:'Trading Fee', cmp_chain:'Network', cmp_backing:'Reserve Backing', cmp_incentive:'Incentives', cmp_min:'Min Purchase', cmp_per:'tx',
+    cmp_pg_gold:'1 gram', cmp_pg_backing:'PAXG 100% on-chain verifiable', cmp_pg_incentive:'Five Tracks (A/B/C/D/E), up to 1800%',
+    cmp_pg_win:'Smaller unit = broader user base, deeper liquidity, more fees, faster PAXG reserve growth.',
+    cmp_px_gold:'31.1g (1 troy oz)', cmp_px_fee:'0.02% mint + DEX fee', cmp_px_chain:'Ethereum (higher gas)', cmp_px_backing:'Physical gold bars, Paxos audited', cmp_px_incentive:'No native incentive system',
+    cmp_px_note:'pGOLD\'s PAXG reserves are auto-purchased by the protocol and held publicly on-chain. pGOLD is essentially the gram-denominated version of PAXG, opening gold access to a much wider audience.',
+    rv_label:'Reserve Transparency', rv_h2:'On-Chain Verifiable — Don\'t Trust, Verify', rv_sub:'All PAXG reserves are held at a public Arbitrum One contract address. Anyone can independently verify at any time.',
+    rv_cov_label:'Reserve Coverage', rv_cov_sub:'Every circulating pGOLD is backed by an equal amount of PAXG. Coverage is verified by on-chain oracle in real time — new minting auto-freezes below 100%.', rv_cov_rate:'Coverage',
+    rv_paxg_label:'PAXG On-Chain Reserve', rv_paxg_sub:'≈ 1,249 kg physical gold equivalent, held across four Treasury sub-accounts (vault 95% / insurance 3% / liquidity 1.5% / emergency 0.5%).',
+    rv_link1_title:'Treasury Contract', rv_link1_sub:'Arbiscan live balance', rv_link2_title:'The Graph Subgraph', rv_link2_sub:'All trades & reserve data', rv_link3_title:'Paxos Audit Report', rv_link3_sub:'PAXG monthly physical gold audit',
+    rv_fee_label:'Fee Distribution (Hard-coded)', rv_fee_gold:'Gold Reserve (GOLD_RESERVE)', rv_fee_ins:'Insurance 3%', rv_fee_liq:'Liquidity 1.5%', rv_fee_emg:'Emergency 0.5%',
+    rv_fee_note:'Distribution ratios are hard-coded in the FeeRouter contract — non-upgradeable, immutable, protocol cannot redirect funds.',
+    rv_sec_label:'Contract Security', rv_sec1:'16 contracts, 5-layer architecture (Core / Incentive / Financial / Defense / Governance)',
+    rv_sec3:'212 unit tests passed, 0 failures (Hardhat + ethers v6)', rv_sec4:'48-hour Timelock on all parameter changes, BUSL-1.1 license', rv_sec5:'Three-layer price defense: soft peg / conditional redemption / stability fund',
+    rm_label:'Roadmap', rm_h2:'10 Years to Build Real Gold Infrastructure', rm_sub:'The protocol is designed on a 10-year cycle, progressively scaling reserves, incentive ecosystem, and global settlement.',
+    rm_live:'In Progress', rm_soon:'Coming Soon', rm_planned:'Planned', rm_vision:'Vision',
+    rm1_title:'Protocol Launch &amp; Genesis Pool', rm1_1:'16 core contracts deployed to Arbitrum One', rm1_2:'212 unit tests passed', rm1_3:'Internal AMM (PGOLDSwap) live', rm1_4:'Genesis Pool 180-day ICO open', rm1_5:'The Graph subgraph live',
+    rm2_title:'Ecosystem Expansion &amp; Merchant Onboarding', rm2_1:'Top 100 Monthly / Quarterly / Annual leaderboard active', rm2_2:'Burn Mining (Track C) fully open', rm2_3:'Squad &amp; Referral system (Track D) live', rm2_4:'First merchant trade settlement pilots', rm2_5:'Three-layer price defense activated',
+    rm3_title:'Cross-chain &amp; Global Circulation', rm3_1:'Cross-chain bridge (Base / Polygon / BNB Chain)', rm3_2:'Fiat off-ramp (SEA / Middle East pilot)', rm3_3:'vPGOLD secondary market making', rm3_4:'Institutional custody service', rm3_5:'PAXG holdings ranked top 10 globally',
+    rm4_title:'Become the Gold Settlement Standard', rm4_1:'Global gold trade pGOLD settlement network', rm4_2:'Protocol DAO governance fully decentralized', rm4_3:'Annual reserve growth &gt; 1 tonne gold', rm4_4:'$100M+ monthly trading volume', rm4_5:'Trust flywheel completes first full cycle',
+    cta_h:'Join Now — Participate in the First Full Cycle', cta_sub:'Genesis Pool D1–30 weight is 10x — the lowest entry cost, highest reward window. Each tier reduces irreversibly.', cta_buy:'Buy pGOLD Now', cta_ico:'Enter Genesis Pool ICO',
+    ft_brand:'1 pGOLD = 1 gram of gold. 100% backed by on-chain PAXG, running on Arbitrum One. A gold asset protocol designed for everyday users and micropayments.',
+    ft_prod:'Products', ft_swap:'Swap', ft_dapp:'DApp', ft_ico:'Genesis Pool ICO', ft_stake:'Staking Dividends', ft_rank:'Leaderboard',
+    ft_proto:'Protocol', ft_wp:'Whitepaper', ft_audit:'Contract Audit', ft_proof:'Reserve Proof', ft_oss:'Open Source',
+    ft_comm:'Community', ft_contact:'Contact Us',
+    ft_copy:'© 2026 pGOLD Protocol · BUSL-1.1 License · Not investment advice', ft_chain:'Arbitrum One · Blocks syncing normally',
+  }
+};
+
+let currentLang = localStorage.getItem('pgold_lang') || 'zh';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('pgold_lang', lang);
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = I18N[lang][key];
+    if (val !== undefined) el.innerHTML = val;
+  });
+}
+
+// init on load
+setLang(currentLang);
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 40);
