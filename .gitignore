@@ -11,12 +11,9 @@ __pycache__/
 *.log
 NUL
 
-# 旧版本文件（可选，如果不想上传旧版本）
+# 旧版本文件（保留，不上传）
 frontend/index_v2.html
 frontend/index_v3.html
-frontend/index_v4.html
-frontend/swap_v4.html
-frontend/test.txt
 
 # Node modules (如果有)
 node_modules/
