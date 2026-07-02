@@ -317,16 +317,16 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
 <!-- ── TICKER ── -->
 <div class="ticker">
   <div class="ticker-inner" id="ticker">
-    <div class="ticker-item"><span class="label" data-i18n="tk_price">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
-    <div class="ticker-item"><span class="label" data-i18n="tk_paxg">PAXG 金价</span><span class="val">$3,098.40</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_price">pGOLD 价格</span><span class="val up" id="pgold-price-1">$93.42 ▲1.86%</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_paxg">PAXG 金价</span><span class="val" id="paxg-price-1">$3,098.40</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_cover">储备覆盖率</span><span class="val gold">100.04%</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_reserve">PAXG 储备</span><span class="val">40,182 oz</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_circ">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_vol">24h 成交量</span><span class="val">$8.42M</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_genesis">创世池剩余</span><span class="val gold">142<span data-i18n="tk_days">天</span></span></div>
     <div class="ticker-item"><span class="label">Gas (Arbitrum)</span><span class="val">0.02 USDC/<span data-i18n="tk_per">笔</span></span></div>
-    <div class="ticker-item"><span class="label" data-i18n="tk_price">pGOLD 价格</span><span class="val up">$93.42 ▲1.86%</span></div>
-    <div class="ticker-item"><span class="label" data-i18n="tk_paxg">PAXG 金价</span><span class="val">$3,098.40</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_price">pGOLD 价格</span><span class="val up" id="pgold-price-2">$93.42 ▲1.86%</span></div>
+    <div class="ticker-item"><span class="label" data-i18n="tk_paxg">PAXG 金价</span><span class="val" id="paxg-price-2">$3,098.40</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_cover">储备覆盖率</span><span class="val gold">100.04%</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_reserve">PAXG 储备</span><span class="val">40,182 oz</span></div>
     <div class="ticker-item"><span class="label" data-i18n="tk_circ">pGOLD 流通</span><span class="val">1,248,930 g</span></div>
@@ -481,19 +481,19 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
       <div class="compare-card pgold">
         <div class="compare-logo gold-txt">pGOLD</div>
         <div class="compare-tagline" data-i18n="cmp_pg_tag">1 枚 = 1 克黄金 · 专为普通用户设计</div>
-        <div class="compare-row"><span class="key" data-i18n="cmp_price">单枚价格</span><span class="val good">≈ $93</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_price">单枚价格</span><span class="val good" id="cmp-pgold-price">≈ $93</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_gold">对应黄金</span><span class="val" data-i18n="cmp_pg_gold">1 克</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_fee">交易手续费</span><span class="val good">0.25% / <span data-i18n="cmp_per">笔</span></span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_chain">运行链</span><span class="val good">Arbitrum One（Gas ≈$0.02）</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_backing">储备背书</span><span class="val good" data-i18n="cmp_pg_backing">PAXG 100% 链上可验证</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_incentive">激励体系</span><span class="val good" data-i18n="cmp_pg_incentive">五轨（A/B/C/D/E），最高 1800%</span></div>
-        <div class="compare-row"><span class="key" data-i18n="cmp_min">最小购买</span><span class="val good">1 pGOLD（≈$93）</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_min">最小购买</span><span class="val good" id="cmp-pgold-min">1 pGOLD（≈$93）</span></div>
         <div class="compare-win"><span class="ico">✅</span><span data-i18n="cmp_pg_win">更小单位意味着更广泛的用户群、更活跃的流动性、更多手续费、更大的 PAXG 储备增速。</span></div>
       </div>
       <div class="compare-card paxg">
         <div class="compare-logo" style="color:var(--txt-1);">PAXG</div>
         <div class="compare-tagline" data-i18n="cmp_px_tag">1 枚 = 1 盎司黄金 · 机构级持有</div>
-        <div class="compare-row"><span class="key" data-i18n="cmp_price">单枚价格</span><span class="val">≈ $3,098</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_price">单枚价格</span><span class="val" id="cmp-paxg-price">≈ $3,098</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_gold">对应黄金</span><span class="val" data-i18n="cmp_px_gold">31.1 克（1 盎司）</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_fee">交易手续费</span><span class="val" data-i18n="cmp_px_fee">0.02% 铸造 + DEX 费</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_chain">运行链</span><span class="val" data-i18n="cmp_px_chain">Ethereum（Gas 较高）</span></div>
@@ -899,6 +899,56 @@ fadeEls.forEach(el => {
   el.style.transition = 'opacity .5s ease, transform .5s ease';
   fadeObs.observe(el);
 });
+
+// ── Fetch PAXG Real-time Price ──
+async function fetchPAXGPrice() {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
+    const data = await response.json();
+    if (data['pax-gold'] && data['pax-gold'].usd) {
+      const paxgPrice = data['pax-gold'].usd;
+      const change24h = data['pax-gold'].usd_24h_change || 0;
+
+      // pGOLD = 1 gram = 1/31.1035 troy oz of gold
+      const pgoldPrice = paxgPrice / 31.1035;
+      const pgoldStr = `$${pgoldPrice.toFixed(2)}`;
+      const paxgStr = `$${paxgPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      // pGOLD 24h change mirrors PAXG (same underlying asset)
+      const changeSign = change24h >= 0 ? '▲' : '▼';
+      const changeColor = change24h >= 0 ? 'var(--green)' : 'var(--red)';
+      const pgoldDisplay = `${pgoldStr} ${changeSign}${Math.abs(change24h).toFixed(2)}%`;
+
+      // Update PAXG ticker items
+      const paxg1 = document.getElementById('paxg-price-1');
+      const paxg2 = document.getElementById('paxg-price-2');
+      if (paxg1) paxg1.textContent = paxgStr;
+      if (paxg2) paxg2.textContent = paxgStr;
+
+      // Update pGOLD ticker items
+      const pgold1 = document.getElementById('pgold-price-1');
+      const pgold2 = document.getElementById('pgold-price-2');
+      if (pgold1) { pgold1.textContent = pgoldDisplay; pgold1.style.color = changeColor; }
+      if (pgold2) { pgold2.textContent = pgoldDisplay; pgold2.style.color = changeColor; }
+
+      // Update compare card prices
+      const cmpPgold = document.getElementById('cmp-pgold-price');
+      const cmpPgoldMin = document.getElementById('cmp-pgold-min');
+      const cmpPaxg = document.getElementById('cmp-paxg-price');
+      if (cmpPgold) cmpPgold.textContent = `≈ ${pgoldStr}`;
+      if (cmpPaxg) cmpPaxg.textContent = `≈ ${paxgStr}`;
+      // Use current lang for min purchase label
+      const isEn = document.documentElement.lang === 'en';
+      if (cmpPgoldMin) cmpPgoldMin.textContent = isEn ? `1 pGOLD (≈${pgoldStr})` : `1 pGOLD（≈${pgoldStr}）`;
+    }
+  } catch (error) {
+    console.error('Failed to fetch PAXG price:', error);
+  }
+}
+
+// Fetch price on load and every 5 minutes
+fetchPAXGPrice();
+setInterval(fetchPAXGPrice, 5 * 60 * 1000);
 </script>
 </body>
 </html>

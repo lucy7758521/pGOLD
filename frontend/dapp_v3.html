@@ -342,7 +342,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="grid2">
         <div class="card">
           <h3>💼 <span data-i18n="port.assets">资产明细</span></h3>
-          <div class="flex-between gap8"><span data-i18n="port.price">当前 pGOLD 价格</span><b style="color:var(--gold)">$85.00</b></div>
+          <div class="flex-between gap8"><span data-i18n="port.price">当前 pGOLD 价格</span><b style="color:var(--gold)" id="dapp-pgold-price">$85.00</b></div>
           <div class="mt12" style="border-top:1px solid var(--border);padding-top:14px">
             <div class="flex-between gap8"><span data-i18n="port.liquid">流通 pGOLD</span><b>600</b><span style="color:var(--muted);font-size:.75em">$51,000</span></div>
             <div class="flex-between gap8 mt12"><span data-i18n="port.staked">质押中 pGOLD</span><b>800</b><span style="color:var(--muted);font-size:.75em">$68,000</span></div>
@@ -1084,6 +1084,28 @@ const _savedLang=localStorage.getItem('pgold_lang');
 if(_savedLang&&(_savedLang==='zh'||_savedLang==='en'))I18N.setLang(_savedLang);
 renderI18n();
 switchPage('dashboard');
+
+// ── Fetch PAXG Real-time Price ──
+async function fetchPAXGPrice() {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
+    const data = await response.json();
+    if (data['pax-gold'] && data['pax-gold'].usd) {
+      const paxgPrice = data['pax-gold'].usd;
+      // pGOLD = 1 gram = 1/31.1035 troy oz
+      const pgoldPrice = paxgPrice / 31.1035;
+      const pgoldStr = '$' + pgoldPrice.toFixed(2);
+
+      const priceEl = document.getElementById('dapp-pgold-price');
+      if (priceEl) priceEl.textContent = pgoldStr;
+    }
+  } catch (err) {
+    console.error('PAXG price fetch failed:', err);
+  }
+}
+
+fetchPAXGPrice();
+setInterval(fetchPAXGPrice, 5 * 60 * 1000);
 </script>
 </body>
 </html>
