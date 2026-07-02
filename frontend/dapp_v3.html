@@ -548,32 +548,32 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
   <!-- ═══════════ BOTTOM TABS (MOBILE) ═══════════ -->
   <nav class="bottom-tabs" id="bottomTabs">
-    <div class="bottom-tab active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="icon">📊</span>仪表</div>
-    <div class="bottom-tab" data-page="ico" onclick="switchPage('ico')"><span class="icon">🚀</span>ICO</div>
-    <div class="bottom-tab" data-page="portfolio" onclick="switchPage('portfolio')"><span class="icon">💼</span>持仓</div>
-    <div class="bottom-tab" data-page="staking" onclick="switchPage('staking')"><span class="icon">💎</span>质押</div>
-    <div class="bottom-tab" data-page="_more" onclick="toggleMore()" id="btnMore"><span class="icon">⋯</span>更多</div>
+    <div class="bottom-tab active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="icon">📊</span><span data-i18n="tab.dash">仪表</span></div>
+    <div class="bottom-tab" data-page="ico" onclick="switchPage('ico')"><span class="icon">🚀</span><span data-i18n="tab.ico">ICO</span></div>
+    <div class="bottom-tab" data-page="portfolio" onclick="switchPage('portfolio')"><span class="icon">💼</span><span data-i18n="tab.portfolio">持仓</span></div>
+    <div class="bottom-tab" data-page="staking" onclick="switchPage('staking')"><span class="icon">💎</span><span data-i18n="tab.staking">质押</span></div>
+    <div class="bottom-tab" data-page="_more" onclick="toggleMore()" id="btnMore"><span class="icon">⋯</span><span data-i18n="tab.more">更多</span></div>
   </nav>
   <div class="more-panel" id="morePanel">
-    <div class="more-item" onclick="switchPage('vesting');toggleMore()">🔓 释放</div>
-    <div class="more-item" onclick="switchPage('ranking');toggleMore()">🏆 排名</div>
-    <div class="more-item" onclick="switchPage('team');toggleMore()">👥 战队</div>
-    <div class="more-item" onclick="switchPage('history');toggleMore()">📜 记录</div>
-    <div class="more-item" onclick="location.href='swap_v3.html'" style="color:var(--gold)">⇄ Swap 交易</div>
-    <div class="more-item" onclick="location.href='index.html'" style="color:var(--muted)">← 返回官网</div>
-    <div class="more-item" onclick="window.open('../pGOLD_whitepaper.html')" style="color:var(--muted)">📖 白皮书</div>
-    <div class="more-item" onclick="window.open('../trade_simulation_v5.html')" style="color:var(--muted)">📊 测算器</div>
+    <div class="more-item" onclick="switchPage('vesting');toggleMore()" data-i18n="more.vesting">🔓 释放</div>
+    <div class="more-item" onclick="switchPage('ranking');toggleMore()" data-i18n="more.ranking">🏆 排名</div>
+    <div class="more-item" onclick="switchPage('team');toggleMore()" data-i18n="more.team">👥 战队</div>
+    <div class="more-item" onclick="switchPage('history');toggleMore()" data-i18n="more.history">📜 记录</div>
+    <div class="more-item" onclick="location.href='swap_v3.html'" style="color:var(--gold)">⇄ Swap</div>
+    <div class="more-item" onclick="location.href='index.html'" style="color:var(--muted)">← Home</div>
+    <div class="more-item" onclick="window.open('../pGOLD_whitepaper.html')" style="color:var(--muted)">📖 Whitepaper</div>
+    <div class="more-item" onclick="window.open('../trade_simulation_v5.html')" style="color:var(--muted)">📊 Simulator</div>
   </div>
 </div>
 
 <!-- ═══════════ CONFIRM MODAL ═══════════ -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-box">
-    <h3 id="modalTitle">确认操作</h3>
+    <h3 id="modalTitle" data-i18n="modal.confirm">确认操作</h3>
     <p id="modalMsg" style="color:var(--muted);font-size:.86em;line-height:1.5"></p>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeConfirmModal()">取消</button>
-      <button class="btn btn-gold" id="modalConfirmBtn" onclick="executeConfirmed()"><span class="btn-label">确认</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-ghost" onclick="closeConfirmModal()" data-i18n="modal.cancel">取消</button>
+      <button class="btn btn-gold" id="modalConfirmBtn" onclick="executeConfirmed()"><span class="btn-label" data-i18n="modal.ok">确认</span><span class="btn-spinner"></span></button>
     </div>
   </div>
 </div>
@@ -590,11 +590,23 @@ const I18N = {
     'nav.dashboard':'仪表盘','nav.ico':'创世池 ICO','nav.portfolio':'我的持仓','nav.vesting':'释放计划',
     'nav.ranking':'Top 100','nav.staking':'质押中心','nav.team':'战队中心','nav.history':'交易记录',
     'common.cancel':'取消','common.confirm':'确认','common.copied':'已复制',
+    'dash.pgoldBalance':'pGOLD 余额','dash.netWorth':'净资产','dash.totalRewards':'累计奖励','dash.vestedBalance':'待释放',
+    'dash.trackA':'A轨·持币分红','dash.trackB':'B轨·Top 100','dash.trackC':'C轨·燃烧挖矿','dash.trackD':'D轨·战队返佣',
+    'ico.title':'E轨 · 创世池 ICO',
+    'modal.confirm':'确认操作','modal.cancel':'取消','modal.ok':'确认',
+    'tab.dash':'仪表','tab.ico':'ICO','tab.portfolio':'持仓','tab.staking':'质押','tab.more':'更多',
+    'more.vesting':'🔓 释放','more.ranking':'🏆 排名','more.team':'👥 战队','more.history':'📜 记录',
   },
   en:{
     'nav.dashboard':'Dashboard','nav.ico':'Genesis ICO','nav.portfolio':'Portfolio','nav.vesting':'Vesting',
     'nav.ranking':'Top 100','nav.staking':'Staking','nav.team':'Team','nav.history':'History',
     'common.cancel':'Cancel','common.confirm':'Confirm','common.copied':'Copied',
+    'dash.pgoldBalance':'pGOLD Balance','dash.netWorth':'Net Worth','dash.totalRewards':'Total Rewards','dash.vestedBalance':'Pending Release',
+    'dash.trackA':'Track A · Hold & Earn','dash.trackB':'Track B · Top 100','dash.trackC':'Track C · Burn Mining','dash.trackD':'Track D · Referral',
+    'ico.title':'Track E · Genesis Pool ICO',
+    'modal.confirm':'Confirm Action','modal.cancel':'Cancel','modal.ok':'Confirm',
+    'tab.dash':'Dash','tab.ico':'ICO','tab.portfolio':'Portfolio','tab.staking':'Staking','tab.more':'More',
+    'more.vesting':'🔓 Vesting','more.ranking':'🏆 Ranking','more.team':'👥 Team','more.history':'📜 History',
   },
   _lang:'zh',
   t(k){return(this[this._lang]||this.zh)[k]||k;},
@@ -606,9 +618,8 @@ const t=k=>I18N.t(k);
 let currentPage='dashboard',pendingAction=null;
 
 const PAGE_TITLES = {
-  dashboard:'仪表盘', ico:'创世池 ICO', portfolio:'我的持仓',
-  vesting:'释放计划', ranking:'Top 100', staking:'质押中心',
-  team:'战队中心', history:'交易记录'
+  zh:{ dashboard:'仪表盘', ico:'创世池 ICO', portfolio:'我的持仓', vesting:'释放计划', ranking:'Top 100', staking:'质押中心', team:'战队中心', history:'交易记录' },
+  en:{ dashboard:'Dashboard', ico:'Genesis ICO', portfolio:'Portfolio', vesting:'Vesting', ranking:'Top 100', staking:'Staking', team:'Team', history:'History' }
 };
 
 function switchPage(page){
@@ -619,7 +630,8 @@ function switchPage(page){
   document.querySelectorAll('.bottom-tab').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
   document.getElementById('mainContent').scrollTop=0;
   const titleEl=document.getElementById('topbarTitle');
-  if(titleEl) titleEl.textContent=PAGE_TITLES[page]||'';
+  const lang=I18N.getLang();
+  if(titleEl) titleEl.textContent=(PAGE_TITLES[lang]||PAGE_TITLES.zh)[page]||'';
 }
 
 function toggleSidebar(){
@@ -644,11 +656,16 @@ function closeSidebar(){
 }
 
 function renderI18n(){
+  const lang=I18N.getLang();
+  document.documentElement.lang = lang==='zh'?'zh-CN':'en';
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const key=el.dataset.i18n,text=t(key);
     if(text&&text!==key)el.textContent=text;
   });
-  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===I18N.getLang()));
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  // sync topbar title
+  const titleEl=document.getElementById('topbarTitle');
+  if(titleEl) titleEl.textContent=(PAGE_TITLES[lang]||PAGE_TITLES.zh)[currentPage]||'';
 }
 
 // Toast
@@ -736,9 +753,15 @@ document.getElementById('confirmModal').addEventListener('click',function(e){if(
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSidebar();});
 
 // Lang
-document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{I18N.setLang(b.dataset.lang);renderI18n();});});
+document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{
+  I18N.setLang(b.dataset.lang);
+  localStorage.setItem('pgold_lang',b.dataset.lang);
+  renderI18n();
+});});
 
-// Init
+// Init — restore saved lang
+const _savedLang=localStorage.getItem('pgold_lang');
+if(_savedLang&&(_savedLang==='zh'||_savedLang==='en'))I18N.setLang(_savedLang);
 renderI18n();
 switchPage('dashboard');
 </script>

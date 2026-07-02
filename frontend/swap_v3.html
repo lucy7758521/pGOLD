@@ -405,10 +405,10 @@ body > * { position:relative; z-index:1; }
     <h3 id="modalTitle">确认交易</h3>
     <div class="modal-row"><span class="lbl" id="modalLabelPay">支付</span><span class="val" id="modalPay">-</span></div>
     <div class="modal-row"><span class="lbl" id="modalLabelReceive">获得</span><span class="val" id="modalReceive">-</span></div>
-    <div class="modal-row"><span class="lbl">汇率</span><span class="val" id="modalRate">-</span></div>
-    <div class="modal-row"><span class="lbl">手续费 (0.25%)</span><span class="val" id="modalFee">-</span></div>
+    <div class="modal-row"><span class="lbl" id="modalLabelRate">汇率</span><span class="val" id="modalRate">-</span></div>
+    <div class="modal-row"><span class="lbl" id="modalLabelFee">手续费 (0.25%)</span><span class="val" id="modalFee">-</span></div>
     <div class="modal-row"><span class="lbl" id="modalLabelMin">最少获得</span><span class="val" id="modalMin">-</span></div>
-    <div class="modal-row" id="modalImpactRow" style="display:none"><span class="lbl">价格影响</span><span class="val" style="color:var(--orange)" id="modalImpact">-</span></div>
+    <div class="modal-row" id="modalImpactRow" style="display:none"><span class="lbl" id="modalLabelImpact">价格影响</span><span class="val" style="color:var(--orange)" id="modalImpact">-</span></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeConfirm()" id="btnCancel">取消</button>
       <button class="btn-confirm" onclick="doSwap()" id="btnConfirm">确认交易</button>
@@ -435,8 +435,10 @@ const I18N = {
     'swap.walletRequired':'请先连接钱包','swap.review':'预览交易',
     'swap.swapping':'交易处理中...','swap.youPay':'支付','swap.youReceive':'获得',
     'swap.noTrades':'暂无交易','swap.success':'交易成功',
+    'swap.modalTitle':'确认交易','swap.rate':'汇率','swap.feeLabel':'手续费 (0.25%)',
     'common.connect':'连接钱包','common.cancel':'取消','common.confirm':'确认交易',
     'common.notConnected':'未连接',
+    'nav.home':'← 首页','nav.dapp':'DApp →',
   },
   en: {
     'swap.buy':'Buy pGOLD','swap.sell':'Sell pGOLD',
@@ -449,8 +451,10 @@ const I18N = {
     'swap.walletRequired':'Connect Wallet','swap.review':'Review Swap',
     'swap.swapping':'Swapping...','swap.youPay':'You Pay','swap.youReceive':'You Receive',
     'swap.noTrades':'No trades yet','swap.success':'Swap Successful',
+    'swap.modalTitle':'Confirm Swap','swap.rate':'Rate','swap.feeLabel':'Fee (0.25%)',
     'common.connect':'Connect Wallet','common.cancel':'Cancel','common.confirm':'Confirm Swap',
     'common.notConnected':'Not connected',
+    'nav.home':'← Home','nav.dapp':'DApp →',
   },
   _lang:'zh',
   t(key){ return (this[this._lang]||this.zh)[key] || key; },
@@ -485,6 +489,17 @@ function render(){
   el('labelPrice',t('swap.price'));el('labelFee',t('swap.fee')+' (0.25%)');
   el('labelImpact',t('swap.priceImpact'));el('labelMin',t('swap.minReceived'));
   el('labelRecent',t('swap.recent'));el('slTitle',t('swap.slippageTolerance'));
+
+  // modal labels
+  el('modalTitle',t('swap.modalTitle'));
+  el('modalLabelPay',t('swap.youPay'));
+  el('modalLabelReceive',t('swap.youReceive'));
+  el('modalLabelRate',t('swap.rate'));
+  el('modalLabelFee',t('swap.feeLabel'));
+  el('modalLabelMin',t('swap.minReceived'));
+  el('modalLabelImpact',t('swap.priceImpact'));
+  el('btnCancel',t('common.cancel'));
+  el('btnConfirm',t('common.confirm'));
 
   updateSwapButton();
   el('walletBtn',connected?'0xAbCd...Ef01':t('common.connect'));
@@ -629,9 +644,16 @@ function showToast(msg,type){
 }
 
 // Lang
-document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{I18N.setLang(b.dataset.lang);render();});});
+document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{
+  I18N.setLang(b.dataset.lang);
+  localStorage.setItem('pgold_lang',b.dataset.lang);
+  render();
+});});
 
-// Close slippage on outside click
+// Init — restore saved lang
+const _savedLang=localStorage.getItem('pgold_lang');
+if(_savedLang&&(_savedLang==='zh'||_savedLang==='en'))I18N.setLang(_savedLang);
+render();
 document.addEventListener('click',e=>{
   const panel=el('slippagePanel'),btn=el('settingsBtn');
   if(panel.classList.contains('show')&&!panel.contains(e.target)&&e.target!==btn&&!btn.contains(e.target)){
