@@ -362,7 +362,7 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
       <div class="stat-cell">
         <div class="s-label" data-i18n="stat_circ">pGOLD 流通量</div>
         <div class="s-val" id="cnt-circ">1,248,930</div>
-        <div class="s-sub" data-i18n="stat_circ_sub">克 · 1g 起购</div>
+        <div class="s-sub" data-i18n="stat_circ_sub">克 · 0.001g 起购</div>
       </div>
       <div class="stat-cell">
         <div class="s-label" data-i18n="stat_apy">最高年化奖励</div>
@@ -487,7 +487,7 @@ footer { background: var(--bg-1); border-top: 1px solid var(--line); padding: 60
         <div class="compare-row"><span class="key" data-i18n="cmp_chain">运行链</span><span class="val good">Arbitrum One（Gas ≈$0.02）</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_backing">储备背书</span><span class="val good" data-i18n="cmp_pg_backing">PAXG 100% 链上可验证</span></div>
         <div class="compare-row"><span class="key" data-i18n="cmp_incentive">激励体系</span><span class="val good" data-i18n="cmp_pg_incentive">五轨（A/B/C/D/E），最高 1800%</span></div>
-        <div class="compare-row"><span class="key" data-i18n="cmp_min">最小购买</span><span class="val good" id="cmp-pgold-min">1 pGOLD（≈$93）</span></div>
+        <div class="compare-row"><span class="key" data-i18n="cmp_min">最小购买</span><span class="val good" id="cmp-pgold-min">0.001 pGOLD（≈$0.093）</span></div>
         <div class="compare-win"><span class="ico">✅</span><span data-i18n="cmp_pg_win">更小单位意味着更广泛的用户群、更活跃的流动性、更多手续费、更大的 PAXG 储备增速。</span></div>
       </div>
       <div class="compare-card paxg">
@@ -704,7 +704,7 @@ const I18N = {
     hero_h1:'黄金，<span class="gold">真正流通</span><br>的时代来了',
     hero_sub:'1 pGOLD = 1 克黄金，由链上 PAXG 100% 储备支撑。<br>比 PAXG 单价低 31 倍，专为普通用户与小额支付设计。',
     hero_trade:'立即交易 →', hero_dapp:'进入 DApp',
-    stat_cover:'储备覆盖率', stat_cover_sub:'实时预言机验证', stat_paxg:'PAXG 链上储备', stat_paxg_sub:'oz · 约 1,249 kg', stat_circ:'pGOLD 流通量', stat_circ_sub:'克 · 1g 起购', stat_apy:'最高年化奖励', stat_apy_sub:'10 年线性释放', stat_gas:'链上 Gas 费用',
+    stat_cover:'储备覆盖率', stat_cover_sub:'实时预言机验证', stat_paxg:'PAXG 链上储备', stat_paxg_sub:'oz · 约 1,249 kg', stat_circ:'pGOLD 流通量', stat_circ_sub:'克 · 0.001g 起购', stat_apy:'最高年化奖励', stat_apy_sub:'10 年线性释放', stat_gas:'链上 Gas 费用',
     how_label:'工作原理', how_h2:'手续费如何变成储备？', how_sub:'每一笔交易，协议自动将手续费买入 PAXG，储备持续增厚，奖励通过独立铸币发放，两者互不干扰。',
     how1_title:'用户交易', how1_desc:'用户在内部 AMM（x·y=k）中买入或卖出 pGOLD，收取 <strong style="color:var(--gold)">0.25%</strong> 手续费，往返仅 0.5%。',
     how2_title:'手续费路由', how2_desc:'FeeRouter 硬编码分配：<strong>95%→ 购金储备</strong>，3% 保险，1.5% 流动性，0.5% 应急。',
@@ -753,7 +753,7 @@ const I18N = {
     hero_h1:'Gold, <span class="gold">Finally Spendable</span>',
     hero_sub:'1 pGOLD = 1 gram of gold, 100% backed by on-chain PAXG.<br>31× cheaper than PAXG — built for everyday users and micropayments.',
     hero_trade:'Trade Now →', hero_dapp:'Enter DApp',
-    stat_cover:'Reserve Coverage', stat_cover_sub:'Real-time oracle verified', stat_paxg:'PAXG On-Chain', stat_paxg_sub:'oz · ≈1,249 kg', stat_circ:'pGOLD Supply', stat_circ_sub:'grams · min 1g', stat_apy:'Max APY Reward', stat_apy_sub:'10-year vesting', stat_gas:'On-Chain Gas',
+    stat_cover:'Reserve Coverage', stat_cover_sub:'Real-time oracle verified', stat_paxg:'PAXG On-Chain', stat_paxg_sub:'oz · ≈1,249 kg', stat_circ:'pGOLD Supply', stat_circ_sub:'grams · min 0.001g', stat_apy:'Max APY Reward', stat_apy_sub:'10-year vesting', stat_gas:'On-Chain Gas',
     how_label:'How It Works', how_h2:'How Fees Become Reserves', how_sub:'Every trade auto-converts fees into PAXG reserves. Rewards are minted independently — the two never conflict.',
     how1_title:'User Trades', how1_desc:'Users buy or sell pGOLD via an internal AMM (x·y=k). A <strong style="color:var(--gold)">0.25%</strong> fee is charged — 0.5% round-trip.',
     how2_title:'Fee Routing', how2_desc:'FeeRouter hard-codes: <strong>95% → gold reserve</strong>, 3% insurance, 1.5% liquidity, 0.5% emergency.',
@@ -934,11 +934,12 @@ function updatePriceDisplays() {
   const cmpPaxg = document.getElementById('cmp-paxg-price');
   if (cmpPaxg) cmpPaxg.textContent = `≈ ${paxgStr}`;
 
-  // Compare card — min purchase
+  // Compare card — min purchase (0.001 pGOLD)
+  const minPrice = (pgold * 0.001).toFixed(4);
   const cmpMin = document.getElementById('cmp-pgold-min');
   if (cmpMin) cmpMin.textContent = isEn
-    ? `1 pGOLD (≈${pgoldStr})`
-    : `1 pGOLD（≈${pgoldStr}）`;
+    ? `0.001 pGOLD (≈$${minPrice})`
+    : `0.001 pGOLD（≈$${minPrice}）`;
 
   // Compare section subtitle — embedded prices
   const cmpSub = document.querySelector('[data-i18n="cmp_sub"]');
