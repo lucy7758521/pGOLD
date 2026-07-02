@@ -14,177 +14,186 @@
   --border:rgba(212,168,67,0.1); --border2:rgba(212,168,67,0.18);
   --text:#f0eee6; --text2:#c8c4b8; --muted:#7a7868;
   --green:#10b981; --red:#ef4444; --blue:#3b82f6; --orange:#f59e0b;
-  --purple:#8b5cf6; --sidebar-w:230px; --safe-bottom:env(safe-area-inset-bottom,0px);
+  --purple:#8b5cf6; --sidebar-w:200px; --safe-bottom:env(safe-area-inset-bottom,0px);
   --shadow-card:0 4px 24px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.3);
   --shadow-gold:0 4px 20px rgba(212,168,67,0.18);
+  /* Track accent colours */
+  --track-a:var(--green); --track-b:var(--blue); --track-c:var(--red);
+  --track-d:var(--purple); --track-e:var(--gold);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* ══ Noise ══ */
 body::before{content:'';position:fixed;inset:0;z-index:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");background-size:256px 256px;pointer-events:none;}
-
 body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;position:relative;z-index:1;}
+
+/* ══ APP SHELL ══ */
 .app{display:flex;min-height:100dvh;}
 
-/* ══ SIDEBAR (overlay drawer, all breakpoints) ══ */
+/* ══ SIDEBAR — fixed on desktop, hidden on mobile ══ */
 .sidebar{
-  width:var(--sidebar-w);
-  background:linear-gradient(180deg,rgba(14,13,22,0.99),rgba(10,10,18,0.995));
-  border-right:1px solid rgba(212,168,67,0.1);
-  display:flex;flex-direction:column;padding:18px 0;
+  width:var(--sidebar-w);flex-shrink:0;
+  background:linear-gradient(180deg,rgba(12,11,20,.98),rgba(8,8,16,.99));
+  border-right:1px solid rgba(212,168,67,.1);
+  display:flex;flex-direction:column;padding:0;
   position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;
-  box-shadow:4px 0 32px rgba(0,0,0,0.7);
-  transform:translateX(-100%);
-  transition:transform .25s cubic-bezier(.4,0,.2,1);
 }
-.sidebar.open{transform:translateX(0);}
-.sidebar::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(212,168,67,0.3),transparent);
+.sidebar-brand{
+  display:flex;align-items:center;gap:9px;padding:18px 16px 16px;
+  border-bottom:1px solid rgba(212,168,67,.07);
+  font-size:1em;font-weight:800;color:var(--text);letter-spacing:-.3px;
 }
-
-/* overlay backdrop */
-.nav-backdrop{
-  display:none;position:fixed;inset:0;z-index:49;
-  background:rgba(0,0,0,0);transition:background .25s;
-}
-.nav-backdrop.show{display:block;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);}
-
-/* ══ TOP BAR ══ */
-.topbar{
-  position:sticky;top:0;z-index:40;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px;height:54px;
-  background:rgba(6,6,8,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid rgba(212,168,67,0.07);
-  margin:-28px -32px 24px;
-}
-.topbar-left{display:flex;align-items:center;gap:12px;}
-.topbar-title{font-size:.88em;font-weight:700;color:var(--text2);}
-.hamburger{
-  display:flex;flex-direction:column;justify-content:center;gap:5px;
-  cursor:pointer;padding:8px;background:none;border:none;
-  width:38px;height:38px;border-radius:8px;transition:background .15s;
-}
-.hamburger:hover{background:rgba(255,255,255,.05);}
-.hamburger span{display:block;width:18px;height:1.5px;background:var(--text2);border-radius:1px;transition:all .25s;}
-.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4.5px,4.5px);}
-.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
-.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px);}
-.topbar-logo{
-  font-size:.95em;font-weight:800;color:var(--gold);
-  display:flex;align-items:center;gap:6px;text-decoration:none;
-  letter-spacing:-.2px;
-}
-.topbar-logo::before{content:'◆';font-size:.6em;opacity:.8;}
-.sidebar-logo{
-  padding:0 20px 20px;font-size:1.15em;font-weight:800;
-  color:var(--text);letter-spacing:-.3px;
-  display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid rgba(212,168,67,0.07);
-  margin-bottom:8px;
-  flex-wrap:wrap;
-}
-.sidebar-logo span{color:var(--gold);}
-.sidebar-logo svg{width:26px;height:26px;flex-shrink:0;}
+.sidebar-brand span{color:var(--gold);}
+.sidebar-brand svg{width:24px;height:24px;flex-shrink:0;}
+.nav-section{padding:10px 0;}
+.nav-label{font-size:.62em;color:var(--muted);padding:8px 16px 4px;letter-spacing:.8px;text-transform:uppercase;}
 .nav-item{
-  display:flex;align-items:center;gap:10px;padding:11px 20px;
-  cursor:pointer;font-size:.82em;color:var(--muted);
-  transition:all .18s;border-left:3px solid transparent;min-height:44px;
-  position:relative;
+  display:flex;align-items:center;gap:9px;padding:10px 16px;
+  cursor:pointer;font-size:.81em;color:var(--muted);
+  transition:all .15s;border-left:3px solid transparent;min-height:42px;
 }
 .nav-item:hover{color:var(--text2);background:rgba(255,255,255,.025);}
-.nav-item.active{
-  color:var(--gold);border-left-color:var(--gold);
-  background:linear-gradient(90deg,rgba(212,168,67,.07),transparent);
-}
-.nav-item.active .nav-icon{filter:drop-shadow(0 0 4px rgba(212,168,67,0.5));}
-.nav-icon{font-size:1.1em;width:22px;text-align:center;flex-shrink:0;transition:filter .2s;}
-
-.sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid rgba(212,168,67,0.08);display:flex;flex-direction:column;gap:8px;}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:linear-gradient(90deg,rgba(212,168,67,.08),transparent);}
+.nav-icon{font-size:1em;width:20px;text-align:center;flex-shrink:0;}
+.sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(212,168,67,.08);display:flex;flex-direction:column;gap:8px;}
 .lang-row{display:flex;gap:1px;border-radius:7px;overflow:hidden;border:1px solid rgba(255,255,255,.05);}
 .lang-row button{flex:1;padding:6px 0;border:none;cursor:pointer;font-size:.7em;font-weight:700;background:rgba(255,255,255,.02);color:var(--muted);transition:all .15s;min-height:30px;}
 .lang-row button.active{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;}
-.wallet-info{font-size:.68em;color:var(--muted);word-break:break-all;font-family:'SF Mono',monospace;}
+.wallet-info{font-size:.65em;color:var(--muted);word-break:break-all;font-family:'SF Mono',monospace;}
+.sidebar-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.sidebar-links a{font-size:.68em;color:var(--muted);text-decoration:none;transition:color .15s;}
+.sidebar-links a:hover{color:var(--gold);}
+
+/* ══ MOBILE TOPBAR ══ */
+.topbar{
+  display:none;position:sticky;top:0;z-index:40;
+  align-items:center;justify-content:space-between;
+  padding:0 16px;height:50px;
+  background:rgba(6,6,8,.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(212,168,67,.07);
+}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.topbar-title{font-size:.86em;font-weight:700;color:var(--text2);}
+.topbar-logo{font-size:.92em;font-weight:800;color:var(--gold);text-decoration:none;}
+.hamburger{display:flex;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:8px;background:none;border:none;width:36px;height:36px;border-radius:8px;}
+.hamburger span{display:block;width:18px;height:1.5px;background:var(--text2);border-radius:1px;transition:all .25s;}
+
+/* ══ MOBILE DRAWER (overlay) ══ */
+.nav-backdrop{display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);}
+.nav-backdrop.show{display:block;}
+.sidebar-drawer{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 32px rgba(0,0,0,.7);}
+.sidebar-drawer.open{transform:translateX(0);}
 
 /* ══ MAIN ══ */
-.main{flex:1;margin-left:0;padding:28px 32px;overflow-y:auto;}
-.page{display:none;max-width:960px;}
+.main{flex:1;margin-left:var(--sidebar-w);padding:0;overflow-y:auto;min-width:0;}
+.page{display:none;padding:28px 32px;max-width:1040px;}
 .page.active{display:block;animation:fadeIn .2s;}
-.page-header{display:none;align-items:center;gap:8px;margin-bottom:14px;font-size:.82em;color:var(--muted);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
-/* ══ CARDS ══ */
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;}
-.card h3{font-size:.92em;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-weight:700;}
+/* ══ PRICE BAR ══ */
+.price-bar{
+  display:flex;align-items:center;gap:0;
+  background:rgba(212,168,67,.04);border-bottom:1px solid rgba(212,168,67,.1);
+  padding:10px 32px;flex-wrap:wrap;gap:24px;
+}
+.price-bar-item{display:flex;align-items:center;gap:8px;font-size:.78em;}
+.price-bar-item .pb-label{color:var(--muted);}
+.price-bar-item .pb-val{font-weight:700;color:var(--text);}
+.price-bar-item .pb-change{font-size:.85em;}
+
+/* ══ PAGE HEADER ══ */
+.page-title{font-size:1.1em;font-weight:700;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.page-title .pt-badge{font-size:.65em;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(212,168,67,.1);color:var(--gold);}
+
+/* ══ STAT ROW ══ */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold));}
+.stat-card .sc-label{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.stat-card .sc-val{font-size:1.6em;font-weight:800;color:var(--text);line-height:1;}
+.stat-card .sc-sub{font-size:.72em;color:var(--muted);margin-top:6px;}
+
+/* ══ TRACK CARDS ══ */
+.track-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s;}
+.tcard:hover{transform:translateY(-2px);}
+.tcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--tc,var(--gold));opacity:.7;}
+.tcard .tc-track{font-size:.62em;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tc,var(--gold));margin-bottom:6px;}
+.tcard .tc-name{font-size:.78em;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1.3;}
+.tcard .tc-val{font-size:1.25em;font-weight:800;color:var(--tc,var(--gold));}
+.tcard .tc-label{font-size:.65em;color:var(--muted);margin-top:3px;}
+.tcard .tc-btn{margin-top:14px;width:100%;padding:8px;border:1px solid var(--tc,var(--gold));border-radius:8px;background:transparent;color:var(--tc,var(--gold));font-size:.72em;font-weight:600;cursor:pointer;transition:all .15s;}
+.tcard .tc-btn:hover{background:rgba(255,255,255,.05);}
+.tcard-a{--tc:var(--track-a);} .tcard-b{--tc:var(--track-b);} .tcard-c{--tc:var(--track-c);}
+.tcard-d{--tc:var(--track-d);} .tcard-e{--tc:var(--track-e);}
+
+/* ══ GRID LAYOUT ══ */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid2-3{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
 
+/* ══ CARDS ══ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;}
+.card h3{font-size:.88em;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-weight:700;}
+.card h3 .ch-accent{color:var(--gold);}
+.card-accent{border-top:2px solid var(--accent,var(--gold));}
+
 /* ══ KPI ══ */
-.kpi{text-align:center;padding:18px 12px;background:rgba(255,255,255,.015);border-radius:10px;border:1px solid rgba(255,255,255,.03);}
-.kpi .l{font-size:.72em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;}
-.kpi .v{font-size:1.3em;font-weight:700;}
+.kpi{text-align:center;padding:16px 10px;background:rgba(255,255,255,.015);border-radius:10px;border:1px solid rgba(255,255,255,.03);}
+.kpi .l{font-size:.7em;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.kpi .v{font-size:1.2em;font-weight:700;}
 .kpi .v.pos{color:var(--green);}.kpi .v.pur{color:var(--purple);}.kpi .v.gold{color:var(--gold);}.kpi .v.red{color:var(--red);}.kpi .v.blue{color:var(--blue);}
-.kpi .u{font-size:.68em;color:var(--muted);margin-top:3px;}
 
 /* ══ BUTTONS ══ */
-.btn{padding:11px 22px;border:none;border-radius:9px;cursor:pointer;font-weight:600;font-size:.84em;transition:all .15s;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
-.btn:active{transform:scale(.97);}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn{padding:10px 20px;border:none;border-radius:9px;cursor:pointer;font-weight:600;font-size:.82em;transition:all .15s;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn:active{transform:scale(.97);}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
 .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;box-shadow:0 4px 16px rgba(212,168,67,.12);}
 .btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold);}
-.btn-purple{background:var(--purple);color:#fff;}
-.btn-green{background:var(--green);color:#fff;}
-.btn-red{background:var(--red);color:#fff;}
+.btn-purple{background:var(--purple);color:#fff;}.btn-green{background:var(--green);color:#fff;}.btn-red{background:var(--red);color:#fff;}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
-.btn-sm{padding:6px 14px;font-size:.73em;min-height:32px;border-radius:7px;}
+.btn-sm{padding:6px 12px;font-size:.72em;min-height:30px;border-radius:7px;}
 .btn-full{width:100%;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.btn-spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.25);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;display:none;}
-.btn.loading .btn-spinner{display:inline-block;}
-.btn.loading .btn-label{opacity:.5;}
-.btn.loading{pointer-events:none;}
+.btn-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.25);border-top-color:currentColor;border-radius:50%;animation:spin .6s linear infinite;display:none;}
+.btn.loading .btn-spinner{display:inline-block;}.btn.loading .btn-label{opacity:.5;}.btn.loading{pointer-events:none;}
 
 /* ══ FORM ══ */
 .form-row{margin-bottom:14px;}
-.form-row label{display:block;font-size:.75em;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
-.form-row input,.form-row select{width:100%;padding:13px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px;color:var(--text);font-size:.92em;font-family:inherit;transition:border-color .15s;}
+.form-row label{display:block;font-size:.72em;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.form-row input,.form-row select{width:100%;padding:11px 13px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px;color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .15s;}
 .form-row input:focus,.form-row select:focus{outline:none;border-color:rgba(212,168,67,.4);box-shadow:0 0 0 3px rgba(212,168,67,.04);}
-.form-row input.error{border-color:var(--red);}
 .form-hint{font-size:.68em;color:var(--muted);margin-top:4px;}
 .form-error{font-size:.68em;color:var(--red);margin-top:4px;display:none;}
 .form-error.show{display:block;}
 
 /* ══ TABS ══ */
 .tab-bar{display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.02);border-radius:10px;padding:4px;}
-.tab-btn{flex:1;padding:10px 14px;border:none;border-radius:7px;cursor:pointer;font-size:.8em;font-weight:600;background:transparent;color:var(--muted);transition:all .15s;min-height:38px;}
+.tab-btn{flex:1;padding:9px 12px;border:none;border-radius:7px;cursor:pointer;font-size:.78em;font-weight:600;background:transparent;color:var(--muted);transition:all .15s;min-height:36px;}
 .tab-btn.active{background:var(--gold);color:#000;}
 
 /* ══ TABLE ══ */
 table{width:100%;border-collapse:collapse;font-size:.8em;}
-th{text-align:left;color:var(--muted);font-weight:600;padding:11px 10px;border-bottom:1px solid var(--border);font-size:.76em;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
-td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.02);white-space:nowrap;}
+th{text-align:left;color:var(--muted);font-weight:600;padding:10px 10px;border-bottom:1px solid var(--border);font-size:.74em;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
+td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.02);white-space:nowrap;}
 tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ══ VESTING ══ */
-.vest-item{padding:13px 14px;border-radius:9px;background:rgba(255,255,255,.015);margin-bottom:8px;border:1px solid rgba(255,255,255,.03);}
+.vest-item{padding:12px 14px;border-radius:9px;background:rgba(255,255,255,.015);margin-bottom:8px;border:1px solid rgba(255,255,255,.03);}
 .vest-item .top{display:flex;justify-content:space-between;font-size:.8em;font-weight:600;margin-bottom:8px;}
-.vest-bar{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:5px;}
-.vest-fill{height:100%;border-radius:3px;transition:width .3s;}
-.vest-info{display:flex;justify-content:space-between;font-size:.7em;color:var(--muted);}
-.vest-actions{display:flex;gap:6px;margin-top:8px;}
+.vest-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;}
+.vest-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+.vest-info{display:flex;justify-content:space-between;font-size:.68em;color:var(--muted);margin-top:6px;}
+.vest-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
 
-/* ══ BOTTOM TABS (MOBILE) ══ */
-.bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:10;background:var(--card);border-top:1px solid var(--border);justify-content:space-around;padding:6px 0 var(--safe-bottom);}
-.bottom-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 2px;cursor:pointer;color:var(--muted);font-size:.6em;transition:color .15s;gap:2px;}
+/* ══ BOTTOM TABS (mobile) ══ */
+.bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(8,8,14,.97);border-top:1px solid rgba(212,168,67,.08);padding-bottom:var(--safe-bottom);}
+.bottom-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;font-size:.58em;color:var(--muted);gap:3px;transition:color .15s;min-height:52px;}
 .bottom-tab.active{color:var(--gold);}
-.bottom-tab .icon{font-size:1.2em;}
-
-/* ══ MORE PANEL (mobile) ══ */
-.more-panel{display:none;position:fixed;bottom:60px;left:0;right:0;background:var(--card);border-top:1px solid var(--border);z-index:9;padding:12px 16px 18px;flex-wrap:wrap;gap:8px;}
+.bottom-tab .icon{font-size:1.5em;}
+.more-panel{display:none;position:fixed;bottom:60px;left:0;right:0;z-index:39;background:rgba(8,8,14,.97);border-top:1px solid rgba(212,168,67,.08);padding:12px 16px;flex-wrap:wrap;gap:8px;}
 .more-panel.show{display:flex;}
-.more-item{padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.78em;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;}
+.more-item{padding:9px 14px;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.76em;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:6px;}
 .more-item:active{border-color:var(--gold);}
 
 /* ══ MODAL ══ */
@@ -197,31 +206,45 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ══ TOAST ══ */
 .toast-area{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;}
-.toast{padding:12px 22px;border-radius:10px;font-weight:600;font-size:.84em;opacity:0;transform:translateY(-12px);transition:all .3s;max-width:90vw;text-align:center;pointer-events:auto;}
+.toast{padding:11px 20px;border-radius:10px;font-weight:600;font-size:.82em;opacity:0;transform:translateY(-12px);transition:all .3s;max-width:90vw;text-align:center;}
 .toast.show{opacity:1;transform:translateY(0);}
-.toast-success{background:rgba(16,185,129,.9);color:#fff;}
-.toast-error{background:rgba(239,68,68,.9);color:#fff;}
-.toast-warning{background:rgba(245,158,11,.9);color:#000;}
-.toast-info{background:rgba(59,130,246,.9);color:#fff;}
+.toast-success{background:rgba(16,185,129,.9);color:#fff;}.toast-error{background:rgba(239,68,68,.9);color:#fff;}
+.toast-warning{background:rgba(245,158,11,.9);color:#000;}.toast-info{background:rgba(59,130,246,.9);color:#fff;}
 
 /* ══ BADGES ══ */
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7em;font-weight:700;}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.68em;font-weight:700;}
 .badge-green{background:rgba(16,185,129,.1);color:var(--green);}
 .badge-red{background:rgba(239,68,68,.1);color:var(--red);}
 .badge-blue{background:rgba(59,130,246,.1);color:var(--blue);}
 
 /* ══ RESPONSIVE ══ */
-@media (max-width:768px){
-  .main{padding:16px;padding-bottom:24px;}
-  .grid2,.grid3,.grid4{grid-template-columns:1fr;}
-  .topbar{margin:-16px -16px 18px;}
+@media (max-width:960px){
+  .track-row{grid-template-columns:repeat(3,1fr);}
+  .stat-row{grid-template-columns:repeat(3,1fr);}
 }
-@media (min-width:769px){.bottom-tabs,.more-panel{display:none!important;}}
+@media (max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+  .sidebar.open{transform:translateX(0);}
+  .topbar{display:flex;}
+  .main{margin-left:0;}
+  .page{padding:14px 16px 80px;}
+  .track-row{grid-template-columns:1fr 1fr;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .grid2,.grid3,.grid4{grid-template-columns:1fr;}
+  .grid2-3{grid-template-columns:1fr;}
+  .price-bar{padding:8px 16px;gap:14px;}
+  .bottom-tabs{display:flex;}
+}
+@media (max-width:480px){
+  .track-row{grid-template-columns:1fr 1fr;}
+  .stat-row{grid-template-columns:1fr;}
+}
 
 /* ══ UTILS ══ */
 .flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;}
 .gap8{gap:8px;}.mt12{margin-top:12px;}.mb12{margin-bottom:12px;}
 .empty{text-align:center;color:var(--muted);padding:32px 0;font-size:.82em;}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
 </style>
 </head>
 <body>
@@ -231,81 +254,172 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <div class="nav-backdrop" id="navBackdrop" onclick="closeSidebar()"></div>
 
   <!-- ═══════════ SIDEBAR ═══════════ -->
-  <nav class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <a href="index.html" id="sbHome" style="display:inline-flex;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-size:.72em;margin-bottom:6px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">← Home</a>
-      <a href="swap_v3.html" id="sbSwap" style="display:inline-flex;align-items:center;gap:4px;color:var(--gold);text-decoration:none;font-size:.72em;margin-bottom:6px;margin-left:12px;padding:2px 8px;border:1px solid rgba(212,168,67,.15);border-radius:4px;transition:all .2s;" onmouseover="this.style.background='rgba(212,168,67,.08)'" onmouseout="this.style.background='transparent'">⇄ Swap</a>
-      <br>
-      <svg viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="12" fill="url(#gd)" stroke="var(--gold)" stroke-width="1.2"/><circle cx="13" cy="13" r="7" fill="none" stroke="var(--gold)" stroke-width=".6" stroke-dasharray="2 2"/><circle cx="13" cy="13" r="3" fill="var(--gold)"/><defs><radialGradient id="gd"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs></svg>
+  <nav class="sidebar sidebar-drawer" id="sidebar">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="url(#gd2)" stroke="var(--gold)" stroke-width="1.2"/><circle cx="12" cy="12" r="3" fill="var(--gold)"/><defs><radialGradient id="gd2"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs></svg>
       <span>pGOLD</span> DApp
     </div>
-    <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard');closeSidebar()"><span class="nav-icon">📊</span> <span data-i18n="nav.dashboard">仪表盘</span></div>
-    <div class="nav-item" data-page="ico" onclick="switchPage('ico');closeSidebar()"><span class="nav-icon">🚀</span> <span data-i18n="nav.ico">创世池 ICO</span></div>
-    <div class="nav-item" data-page="portfolio" onclick="switchPage('portfolio');closeSidebar()"><span class="nav-icon">💼</span> <span data-i18n="nav.portfolio">我的持仓</span></div>
-    <div class="nav-item" data-page="vesting" onclick="switchPage('vesting');closeSidebar()"><span class="nav-icon">🔓</span> <span data-i18n="nav.vesting">释放计划</span></div>
-    <div class="nav-item" data-page="ranking" onclick="switchPage('ranking');closeSidebar()"><span class="nav-icon">🏆</span> <span data-i18n="nav.ranking">Top 100</span></div>
-    <div class="nav-item" data-page="staking" onclick="switchPage('staking');closeSidebar()"><span class="nav-icon">💎</span> <span data-i18n="nav.staking">质押中心</span></div>
-    <div class="nav-item" data-page="team" onclick="switchPage('team');closeSidebar()"><span class="nav-icon">👥</span> <span data-i18n="nav.team">战队中心</span></div>
-    <div class="nav-item" data-page="history" onclick="switchPage('history');closeSidebar()"><span class="nav-icon">📜</span> <span data-i18n="nav.history">交易记录</span></div>
+    <div class="nav-section">
+      <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard');closeSidebar()"><span class="nav-icon">📊</span><span data-i18n="nav.dashboard">总览</span></div>
+      <div class="nav-item" data-page="ico" onclick="switchPage('ico');closeSidebar()"><span class="nav-icon">🚀</span><span data-i18n="nav.ico">创世池 ICO</span></div>
+      <div class="nav-item" data-page="staking" onclick="switchPage('staking');closeSidebar()"><span class="nav-icon">💎</span><span data-i18n="nav.staking">质押中心</span></div>
+      <div class="nav-item" data-page="vesting" onclick="switchPage('vesting');closeSidebar()"><span class="nav-icon">🔓</span><span data-i18n="nav.vesting">释放计划</span></div>
+      <div class="nav-item" data-page="ranking" onclick="switchPage('ranking');closeSidebar()"><span class="nav-icon">🏆</span><span data-i18n="nav.ranking">Top 100</span></div>
+      <div class="nav-item" data-page="team" onclick="switchPage('team');closeSidebar()"><span class="nav-icon">👥</span><span data-i18n="nav.team">战队中心</span></div>
+      <div class="nav-item" data-page="history" onclick="switchPage('history');closeSidebar()"><span class="nav-icon">📜</span><span data-i18n="nav.history">交易记录</span></div>
+    </div>
     <div class="sidebar-footer">
       <div class="lang-row">
         <button class="lang-btn active" data-lang="zh">中</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
       <div class="wallet-info" id="walletInfo">0x0000...0000</div>
-      <a href="swap_v3.html" id="sbSwap2" style="font-size:12px;color:var(--gold);text-align:center;display:block;padding:8px 0;text-decoration:none;">⇄ Swap</a>
-      <a href="index.html" id="sbHome2" style="font-size:11.5px;color:var(--muted);text-align:center;display:block;text-decoration:none;">← Home</a>
-      <div style="display:flex;justify-content:center;gap:10px;margin-top:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.05);padding-top:10px;">
-        <a href="../pGOLD_whitepaper.html" id="sbWp" target="_blank" style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📖 Whitepaper</a>
-        <a href="../pGOLD_Roadshow_V3.pptx" id="sbPpt" download style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📑 Deck</a>
-        <a href="../trade_simulation_v5.html" id="sbSim" target="_blank" style="color:var(--muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">📊 Simulator</a>
+      <div class="sidebar-links">
+        <a href="swap_v3.html">⇄ Swap</a>
+        <a href="index.html">← Home</a>
+        <a href="../pGOLD_whitepaper.html" target="_blank">📖 WP</a>
       </div>
     </div>
   </nav>
 
   <!-- ═══════════ MAIN ═══════════ -->
   <div class="main" id="mainContent">
-    <!-- ── TOPBAR ── -->
-    <div class="topbar">
+    <!-- ── MOBILE TOPBAR ── -->
+    <div class="topbar" id="topbar">
       <div class="topbar-left">
         <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
-        <span class="topbar-title" id="topbarTitle">仪表盘</span>
+        <span class="topbar-title" id="topbarTitle">总览</span>
       </div>
-      <a class="topbar-logo" href="index.html">pGOLD</a>
+      <a class="topbar-logo" href="index.html">◆ pGOLD</a>
     </div>
-    <div class="page-header" id="pageHeader"></div>
+
+    <!-- ── PRICE BAR ── -->
+    <div class="price-bar" id="priceBar">
+      <div class="price-bar-item">
+        <span class="pb-label">pGOLD</span>
+        <span class="pb-val" id="dapp-pgold-price">$—</span>
+        <span class="pb-change" id="dapp-pgold-change" style="color:var(--muted)">—</span>
+      </div>
+      <div class="price-bar-item">
+        <span class="pb-label" data-i18n="dash.netWorth">净资产</span>
+        <span class="pb-val" id="bar-net-worth">$348,075</span>
+      </div>
+      <div class="price-bar-item">
+        <span class="pb-label" data-i18n="dash.totalRewards">累计奖励</span>
+        <span class="pb-val" style="color:var(--green)">1,245 pGOLD</span>
+      </div>
+      <div style="margin-left:auto">
+        <a href="swap_v3.html" class="btn btn-gold btn-sm">⇄ Swap</a>
+      </div>
+    </div>
 
     <!-- ── DASHBOARD ── -->
     <div class="page active" id="page-dashboard">
-      <div class="grid4">
-        <div class="kpi"><div class="l" data-i18n="dash.pgoldBalance">pGOLD 余额</div><div class="v gold">800</div></div>
-        <div class="kpi"><div class="l" data-i18n="dash.netWorth">净资产</div><div class="v">$68,000</div></div>
-        <div class="kpi"><div class="l" data-i18n="dash.totalRewards">累计奖励</div><div class="v pos">1,245 pGOLD</div></div>
-        <div class="kpi"><div class="l" data-i18n="dash.vestedBalance">待释放</div><div class="v pur">2,455 pGOLD</div></div>
+      <div class="page-title" data-i18n="nav.dashboard">总览 <span class="pt-badge">DEMO</span></div>
+
+      <!-- Stat row -->
+      <div class="stat-row">
+        <div class="stat-card" style="--accent:var(--gold)">
+          <div class="sc-label" data-i18n="dash.pgoldBalance">pGOLD 余额</div>
+          <div class="sc-val">1,400</div>
+          <div class="sc-sub" id="dash-balance-usd">≈ $119,000</div>
+        </div>
+        <div class="stat-card" style="--accent:var(--purple)">
+          <div class="sc-label" data-i18n="dash.vestedBalance">待释放</div>
+          <div class="sc-val" style="color:var(--purple)">2,455</div>
+          <div class="sc-sub">pGOLD · 10yr vesting</div>
+        </div>
+        <div class="stat-card" style="--accent:var(--green)">
+          <div class="sc-label" data-i18n="dash.pendingDiv">待领分红</div>
+          <div class="sc-val" style="color:var(--green)">12.5</div>
+          <div class="sc-sub">pGOLD · A轨</div>
+        </div>
       </div>
+
+      <!-- Five-track cards -->
+      <div class="track-row">
+        <div class="tcard tcard-a">
+          <div class="tc-track">A TRACK</div>
+          <div class="tc-name" data-i18n="dash.trackA">持币分红</div>
+          <div class="tc-val">800</div>
+          <div class="tc-label">pGOLD staked · 3.5% APY</div>
+          <button class="tc-btn" onclick="switchPage('staking')" data-i18n="dash.goStake">去质押</button>
+        </div>
+        <div class="tcard tcard-b">
+          <div class="tc-track">B TRACK</div>
+          <div class="tc-name" data-i18n="dash.trackB">Top 100</div>
+          <div class="tc-val">#12</div>
+          <div class="tc-label" data-i18n="dash.monthRank">月榜排名</div>
+          <button class="tc-btn" onclick="switchPage('ranking')">查看榜单</button>
+        </div>
+        <div class="tcard tcard-c">
+          <div class="tc-track">C TRACK</div>
+          <div class="tc-name" data-i18n="dash.trackC">燃烧挖矿</div>
+          <div class="tc-val">150</div>
+          <div class="tc-label">pGOLD · <span data-i18n="dash.totalComp">累计补偿</span></div>
+          <button class="tc-btn" onclick="switchPage('history')">查看记录</button>
+        </div>
+        <div class="tcard tcard-d">
+          <div class="tc-track">D TRACK</div>
+          <div class="tc-name" data-i18n="dash.trackD">战队返佣</div>
+          <div class="tc-val">$340</div>
+          <div class="tc-label">8 直邀 · 23 间邀</div>
+          <button class="tc-btn" onclick="switchPage('team')" data-i18n="nav.team">战队中心</button>
+        </div>
+        <div class="tcard tcard-e">
+          <div class="tc-track">E TRACK</div>
+          <div class="tc-name" data-i18n="ico.title">创世池 ICO</div>
+          <div class="tc-val">420</div>
+          <div class="tc-label">pGOLD · <span data-i18n="ico.poolAlloc">池分配</span></div>
+          <button class="tc-btn" onclick="switchPage('ico')">去认购</button>
+        </div>
+      </div>
+
+      <!-- Portfolio + recent trades -->
       <div class="grid2">
         <div class="card">
-          <h3>📈 <span data-i18n="dash.trackA">A轨·持币分红</span><span class="badge badge-green" style="margin-left:auto" data-i18n="dash.apy35">年化 3.5%</span></h3>
-          <div class="flex-between gap8"><span data-i18n="dash.staked">质押量</span><b>800 pGOLD</b></div>
-          <div class="flex-between gap8 mt12"><span data-i18n="dash.pendingDiv">待领分红</span><b style="color:var(--green)">12.5 pGOLD</b></div>
-          <button class="btn btn-gold btn-full mt12" onclick="switchPage('staking')" data-i18n="dash.goStake">去质押</button>
+          <h3>💼 <span class="ch-accent" data-i18n="port.assets">资产明细</span></h3>
+          <div class="flex-between gap8" style="font-size:.82em;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <span data-i18n="port.price">当前 pGOLD 价格</span>
+            <b style="color:var(--gold)" id="dash-price-inline">$—</b>
+          </div>
+          <div class="mt12">
+            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0">
+              <span data-i18n="port.liquid">流通 pGOLD</span><b>600</b>
+              <span style="color:var(--muted);font-size:.85em" id="port-liquid-usd">$51,000</span>
+            </div>
+            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0;border-top:1px solid rgba(255,255,255,.03)">
+              <span data-i18n="port.staked">质押中 pGOLD</span><b>800</b>
+              <span style="color:var(--muted);font-size:.85em" id="port-staked-usd">$68,000</span>
+            </div>
+            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0;border-top:1px solid rgba(255,255,255,.03)">
+              <span data-i18n="port.vesting">待释放 pGOLD</span><b style="color:var(--purple)">2,455</b>
+              <span style="color:var(--muted);font-size:.85em" id="port-vesting-usd">$208,675</span>
+            </div>
+            <div class="flex-between gap8" style="font-size:.83em;padding:8px 0;border-top:1px solid rgba(255,255,255,.03)">
+              <span data-i18n="port.vpBalance">vPGOLD 余额</span><b>240</b>
+              <span style="color:var(--muted);font-size:.85em" id="port-vp-usd">$20,400</span>
+            </div>
+            <div class="flex-between gap8" style="font-size:.86em;padding:12px 0 0;border-top:1px solid var(--border);font-weight:700">
+              <span data-i18n="port.totalValue">持仓总价值</span>
+              <b style="color:var(--gold);font-size:1.1em" id="port-total-usd">$348,075</b>
+            </div>
+          </div>
         </div>
         <div class="card">
-          <h3>🏆 <span data-i18n="dash.trackB">B轨·Top 100</span><span class="badge badge-blue" style="margin-left:auto" data-i18n="dash.trackBBadge">月300% 季500% 年1000%</span></h3>
-          <div class="flex-between gap8"><span data-i18n="dash.monthRank">月榜排名</span><b style="color:var(--gold)">#12</b></div>
-          <div class="flex-between gap8 mt12"><span data-i18n="dash.monthReward">月榜奖励</span><b style="color:var(--blue)">240 pGOLD</b></div>
-        </div>
-        <div class="card">
-          <h3>🔥 <span data-i18n="dash.trackC">C轨·燃烧挖矿</span><span class="badge badge-red" style="margin-left:auto" data-i18n="dash.fee10x">手续费×10</span></h3>
-          <div class="flex-between gap8"><span data-i18n="dash.totalFee">累计手续费</span><b style="color:var(--red)">$1,250</b></div>
-          <div class="flex-between gap8 mt12"><span data-i18n="dash.totalComp">累计补偿</span><b style="color:var(--orange)">150 pGOLD</b></div>
-        </div>
-        <div class="card">
-          <h3>👥 <span data-i18n="dash.trackD">D轨·战队返佣</span><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple);margin-left:auto" data-i18n="dash.trackDBadge">直20% 间5%</span></h3>
-          <div class="flex-between gap8"><span data-i18n="dash.referrals">直邀/间邀</span><b>8 / 23</b></div>
-          <div class="flex-between gap8 mt12"><span data-i18n="dash.pendingComm">待领返佣</span><b style="color:var(--purple)">$340</b></div>
+          <h3>📜 <span class="ch-accent" data-i18n="nav.history">近期交易</span></h3>
+          <table>
+            <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th></tr></thead>
+            <tbody id="hist-tbody">
+              <tr><td>06-26 09:15</td><td><span class="badge badge-green">BUY</span></td><td>50</td><td class="hist-price">$85.20</td></tr>
+              <tr><td>06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20</td><td class="hist-price">$84.80</td></tr>
+              <tr><td>06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100</td><td class="hist-price">$85.00</td></tr>
+              <tr><td>06-24 16:45</td><td><span class="badge badge-blue">STAKE</span></td><td>200</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <button class="btn btn-ghost btn-sm btn-full mt12" onclick="switchPage('history')" data-i18n="nav.history">全部记录</button>
         </div>
       </div>
     </div>
@@ -336,30 +450,6 @@ tr:hover td{background:rgba(255,255,255,.015);}
             <div class="form-hint" id="ico-hint-text" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
           </div>
           <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()"><span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PORTFOLIO ── -->
-    <div class="page" id="page-portfolio">
-      <div class="grid2">
-        <div class="card">
-          <h3>💼 <span data-i18n="port.assets">资产明细</span></h3>
-          <div class="flex-between gap8"><span data-i18n="port.price">当前 pGOLD 价格</span><b style="color:var(--gold)" id="dapp-pgold-price">$85.00</b></div>
-          <div class="mt12" style="border-top:1px solid var(--border);padding-top:14px">
-            <div class="flex-between gap8"><span data-i18n="port.liquid">流通 pGOLD</span><b>600</b><span style="color:var(--muted);font-size:.75em" id="port-liquid-usd">$51,000</span></div>
-            <div class="flex-between gap8 mt12"><span data-i18n="port.staked">质押中 pGOLD</span><b>800</b><span style="color:var(--muted);font-size:.75em" id="port-staked-usd">$68,000</span></div>
-            <div class="flex-between gap8 mt12"><span data-i18n="port.vesting">待释放 pGOLD</span><b style="color:var(--purple)">2,455</b><span style="color:var(--muted);font-size:.75em" id="port-vesting-usd">$208,675</span></div>
-            <div class="flex-between gap8 mt12"><span data-i18n="port.vpBalance">vPGOLD 余额</span><b>240</b><span style="color:var(--muted);font-size:.75em" id="port-vp-usd">$20,400</span></div>
-            <div class="flex-between gap8 mt12" style="border-top:1px solid var(--border);padding-top:14px;font-weight:700"><span data-i18n="port.totalValue">持仓总价值</span><b style="color:var(--gold);font-size:1.1em" id="port-total-usd">$348,075</b></div>
-          </div>
-        </div>
-        <div class="card">
-          <h3>📈 <span data-i18n="port.allocation">资产占比</span></h3>
-          <div class="vest-item" style="border-left:3px solid var(--green)"><div class="top"><span data-i18n="port.liquid">流通 pGOLD</span><span>14.7%</span></div><div class="vest-bar"><div class="vest-fill" style="width:14.7%;background:var(--green)"></div></div></div>
-          <div class="vest-item" style="border-left:3px solid var(--gold)"><div class="top"><span data-i18n="port.stakedLabel">质押中</span><span>19.5%</span></div><div class="vest-bar"><div class="vest-fill" style="width:19.5%;background:var(--gold)"></div></div></div>
-          <div class="vest-item" style="border-left:3px solid var(--purple)"><div class="top"><span data-i18n="port.vestingLabel">待释放</span><span>59.9%</span></div><div class="vest-bar"><div class="vest-fill" style="width:59.9%;background:var(--purple)"></div></div></div>
-          <div class="vest-item" style="border-left:3px solid var(--blue)"><div class="top"><span>vPGOLD</span><span>5.9%</span></div><div class="vest-bar"><div class="vest-fill" style="width:5.9%;background:var(--blue)"></div></div></div>
         </div>
       </div>
     </div>
@@ -551,22 +641,13 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
   <!-- ═══════════ BOTTOM TABS (MOBILE) ═══════════ -->
   <nav class="bottom-tabs" id="bottomTabs">
-    <div class="bottom-tab active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="icon">📊</span><span data-i18n="tab.dash">仪表</span></div>
+    <div class="bottom-tab active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="icon">📊</span><span data-i18n="tab.dash">总览</span></div>
     <div class="bottom-tab" data-page="ico" onclick="switchPage('ico')"><span class="icon">🚀</span><span data-i18n="tab.ico">ICO</span></div>
-    <div class="bottom-tab" data-page="portfolio" onclick="switchPage('portfolio')"><span class="icon">💼</span><span data-i18n="tab.portfolio">持仓</span></div>
     <div class="bottom-tab" data-page="staking" onclick="switchPage('staking')"><span class="icon">💎</span><span data-i18n="tab.staking">质押</span></div>
-    <div class="bottom-tab" data-page="_more" onclick="toggleMore()" id="btnMore"><span class="icon">⋯</span><span data-i18n="tab.more">更多</span></div>
+    <div class="bottom-tab" data-page="vesting" onclick="switchPage('vesting')"><span class="icon">🔓</span><span data-i18n="tab.vesting">释放</span></div>
+    <div class="bottom-tab" data-page="ranking" onclick="switchPage('ranking')"><span class="icon">🏆</span><span data-i18n="tab.ranking">排名</span></div>
+    <div class="bottom-tab" data-page="team" onclick="switchPage('team')"><span class="icon">👥</span><span data-i18n="tab.team">战队</span></div>
   </nav>
-  <div class="more-panel" id="morePanel">
-    <div class="more-item" onclick="switchPage('vesting');toggleMore()" data-i18n="more.vesting">🔓 释放</div>
-    <div class="more-item" onclick="switchPage('ranking');toggleMore()" data-i18n="more.ranking">🏆 排名</div>
-    <div class="more-item" onclick="switchPage('team');toggleMore()" data-i18n="more.team">👥 战队</div>
-    <div class="more-item" onclick="switchPage('history');toggleMore()" data-i18n="more.history">📜 记录</div>
-    <div class="more-item" onclick="location.href='swap_v3.html'" style="color:var(--gold)">⇄ Swap</div>
-    <div class="more-item" onclick="location.href='index.html'" style="color:var(--muted)">← Home</div>
-    <div class="more-item" onclick="window.open('../pGOLD_whitepaper.html')" style="color:var(--muted)">📖 Whitepaper</div>
-    <div class="more-item" onclick="window.open('../trade_simulation_v5.html')" style="color:var(--muted)">📊 Simulator</div>
-  </div>
 </div>
 
 <!-- ═══════════ CONFIRM MODAL ═══════════ -->
@@ -750,15 +831,12 @@ const I18N = {
     'modal.joinTeam':'确认加入战队',
     'modal.claimTeamReward':'确认领取',
     'modal.claimCommission':'确认领取返佣',
-    'tab.dash':'仪表',
+    'tab.dash':'总览',
     'tab.ico':'ICO',
-    'tab.portfolio':'持仓',
     'tab.staking':'质押',
-    'tab.more':'更多',
-    'more.vesting':'🔓 释放',
-    'more.ranking':'🏆 排名',
-    'more.team':'👥 战队',
-    'more.history':'📜 记录',
+    'tab.vesting':'释放',
+    'tab.ranking':'排名',
+    'tab.team':'战队',
   },
   en:{
     'nav.dashboard':'Dashboard',
@@ -923,13 +1001,12 @@ const I18N = {
     'modal.claimCommission':'Confirm Claim Commission',
     'tab.dash':'Dash',
     'tab.ico':'ICO',
-    'tab.portfolio':'Portfolio',
+    'tab.dash':'Overview',
+    'tab.ico':'ICO',
     'tab.staking':'Staking',
-    'tab.more':'More',
-    'more.vesting':'🔓 Vesting',
-    'more.ranking':'🏆 Ranking',
-    'more.team':'👥 Team',
-    'more.history':'📜 History',
+    'tab.vesting':'Vesting',
+    'tab.ranking':'Ranking',
+    'tab.team':'Team',
   },
   _lang:'zh',
   t(k){return(this[this._lang]||this.zh)[k]||k;},
@@ -941,8 +1018,8 @@ const t=k=>I18N.t(k);
 let currentPage='dashboard',pendingAction=null;
 
 const PAGE_TITLES = {
-  zh:{ dashboard:'仪表盘', ico:'创世池 ICO', portfolio:'我的持仓', vesting:'释放计划', ranking:'Top 100', staking:'质押中心', team:'战队中心', history:'交易记录' },
-  en:{ dashboard:'Dashboard', ico:'Genesis ICO', portfolio:'Portfolio', vesting:'Vesting', ranking:'Top 100', staking:'Staking', team:'Team', history:'History' }
+  zh:{ dashboard:'总览', ico:'创世池 ICO', vesting:'释放计划', ranking:'Top 100', staking:'质押中心', team:'战队中心', history:'交易记录' },
+  en:{ dashboard:'Overview', ico:'Genesis ICO', vesting:'Vesting', ranking:'Top 100', staking:'Staking', team:'Team', history:'History' }
 };
 
 function switchPage(page){
@@ -1103,9 +1180,11 @@ function updateDappPriceDisplays(pgoldPrice) {
   const fmt = v => '$' + Math.round(v).toLocaleString('en-US');
   const p = pgoldPrice;
 
-  // Portfolio price label
+  // Price bar
   const priceEl = document.getElementById('dapp-pgold-price');
   if (priceEl) priceEl.textContent = '$' + p.toFixed(2);
+  const inlineEl = document.getElementById('dash-price-inline');
+  if (inlineEl) inlineEl.textContent = '$' + p.toFixed(2);
 
   // Portfolio USD values
   const liquidUsd  = PORTFOLIO.liquid  * p;
@@ -1120,6 +1199,13 @@ function updateDappPriceDisplays(pgoldPrice) {
   set('port-vesting-usd', vestingUsd);
   set('port-vp-usd',      vpUsd);
   set('port-total-usd',   totalUsd);
+
+  // Dashboard stat cards
+  const balanceTotal = PORTFOLIO.liquid + PORTFOLIO.staked;
+  const dashBalEl = document.getElementById('dash-balance-usd');
+  if (dashBalEl) dashBalEl.textContent = '≈ ' + fmt(balanceTotal * p);
+  const barNetEl = document.getElementById('bar-net-worth');
+  if (barNetEl) barNetEl.textContent = fmt(totalUsd);
 
   // ICO cap: 1,000 pGOLD × price
   const icoMaxUsdc = Math.round(ICO_CAP_PGOLD * p);
@@ -1153,7 +1239,15 @@ async function fetchPAXGPrice() {
     const data = await res.json();
     if (data['pax-gold'] && data['pax-gold'].usd) {
       const pgoldPrice = data['pax-gold'].usd / 31.1035;
+      const change24h = data['pax-gold'].usd_24h_change || 0;
       updateDappPriceDisplays(pgoldPrice);
+      // price bar 24h change badge
+      const changeEl = document.getElementById('dapp-pgold-change');
+      if (changeEl) {
+        const sign = change24h >= 0 ? '+' : '';
+        changeEl.textContent = `${sign}${change24h.toFixed(2)}%`;
+        changeEl.style.color = change24h >= 0 ? 'var(--green)' : 'var(--red)';
+      }
     }
   } catch (err) {
     console.warn('PAXG price fetch failed:', err);
