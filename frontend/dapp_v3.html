@@ -290,7 +290,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <button class="btn btn-gold btn-full mt12" onclick="switchPage('staking')" data-i18n="dash.goStake">去质押</button>
         </div>
         <div class="card">
-          <h3>🏆 <span data-i18n="dash.trackB">B轨·Top 100</span><span class="badge badge-blue" style="margin-left:auto">月300% 季500% 年1000%</span></h3>
+          <h3>🏆 <span data-i18n="dash.trackB">B轨·Top 100</span><span class="badge badge-blue" style="margin-left:auto" data-i18n="dash.trackBBadge">月300% 季500% 年1000%</span></h3>
           <div class="flex-between gap8"><span data-i18n="dash.monthRank">月榜排名</span><b style="color:var(--gold)">#12</b></div>
           <div class="flex-between gap8 mt12"><span data-i18n="dash.monthReward">月榜奖励</span><b style="color:var(--blue)">240 pGOLD</b></div>
         </div>
@@ -300,7 +300,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="flex-between gap8 mt12"><span data-i18n="dash.totalComp">累计补偿</span><b style="color:var(--orange)">150 pGOLD</b></div>
         </div>
         <div class="card">
-          <h3>👥 <span data-i18n="dash.trackD">D轨·战队返佣</span><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple);margin-left:auto">直20% 间5%</span></h3>
+          <h3>👥 <span data-i18n="dash.trackD">D轨·战队返佣</span><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple);margin-left:auto" data-i18n="dash.trackDBadge">直20% 间5%</span></h3>
           <div class="flex-between gap8"><span data-i18n="dash.referrals">直邀/间邀</span><b>8 / 23</b></div>
           <div class="flex-between gap8 mt12"><span data-i18n="dash.pendingComm">待领返佣</span><b style="color:var(--purple)">$340</b></div>
         </div>
@@ -379,7 +379,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="vest-item" style="border-left:3px solid var(--purple)">
             <div class="top"><span data-i18n="vest.trackE">E轨 · 创世池</span><span>2,400 pGOLD</span></div>
             <div class="vest-bar"><div class="vest-fill" style="width:5.8%;background:var(--purple)"></div></div>
-            <div class="vest-info"><span data-i18n="vest.linear3y">3年线性</span><span>剩余 35/36 期</span></div>
+            <div class="vest-info"><span data-i18n="vest.linear3y">3年线性</span><span data-i18n="vest.remain3y">剩余 35/36 期</span></div>
             <div class="vest-actions">
               <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','E')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
               <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
@@ -388,7 +388,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="vest-item" style="border-left:3px solid var(--blue)">
             <div class="top"><span data-i18n="vest.trackB">B轨 · 月榜奖励</span><span>180 pGOLD</span></div>
             <div class="vest-bar"><div class="vest-fill" style="width:2.5%;background:var(--blue)"></div></div>
-            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span>剩余 118/120 期</span></div>
+            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span data-i18n="vest.remain10y">剩余 118/120 期</span></div>
             <div class="vest-actions">
               <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
               <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','B')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
@@ -397,7 +397,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
           <div class="vest-item" style="border-left:3px solid var(--orange)">
             <div class="top"><span data-i18n="vest.trackC">C轨 · 燃烧补偿</span><span>120 pGOLD</span></div>
             <div class="vest-bar"><div class="vest-fill" style="width:1.7%;background:var(--orange)"></div></div>
-            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span>剩余 118/120 期</span></div>
+            <div class="vest-info"><span data-i18n="vest.linear">10年线性</span><span data-i18n="vest.remain10y">剩余 118/120 期</span></div>
             <div class="vest-actions">
               <button class="btn btn-purple btn-sm" onclick="withConfirm('claim','C')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
               <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','C')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
@@ -693,6 +693,8 @@ const I18N = {
     'stake.withdrawBtn':'取出',
     'stake.claimAll':'领取奖励',
     'stake.formulaVal':'存入×倍数',
+    'dash.trackBBadge':'月300% 季500% 年1000%','dash.trackDBadge':'直20% 间5%',
+    'vest.remain3y':'剩余 35/36 期','vest.remain10y':'剩余 118/120 期',
     'stake.errZero':'请输入大于 0 的数量',
     'team.myTeam':'我的战队',
     'team.invite':'邀请返佣',
@@ -862,6 +864,8 @@ const I18N = {
     'stake.withdrawBtn':'Withdraw',
     'stake.claimAll':'Claim Rewards',
     'stake.formulaVal':'Deposit × Multiplier',
+    'dash.trackBBadge':'M300% Q500% Y1000%','dash.trackDBadge':'Direct 20% Indirect 5%',
+    'vest.remain3y':'35/36 periods left','vest.remain10y':'118/120 periods left',
     'stake.errZero':'Enter an amount greater than 0',
     'team.myTeam':'My Team',
     'team.invite':'Referral Rewards',
@@ -1083,3 +1087,4 @@ switchPage('dashboard');
 </script>
 </body>
 </html>
+
