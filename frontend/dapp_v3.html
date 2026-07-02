@@ -23,19 +23,57 @@ body::before{content:'';position:fixed;inset:0;z-index:0;opacity:.025;background
 body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;position:relative;z-index:1;}
 .app{display:flex;min-height:100dvh;}
 
-/* ══ SIDEBAR ══ */
+/* ══ SIDEBAR (overlay drawer, all breakpoints) ══ */
 .sidebar{
   width:var(--sidebar-w);
-  background:linear-gradient(180deg,rgba(14,13,22,0.98),rgba(10,10,18,0.99));
+  background:linear-gradient(180deg,rgba(14,13,22,0.99),rgba(10,10,18,0.995));
   border-right:1px solid rgba(212,168,67,0.1);
   display:flex;flex-direction:column;padding:18px 0;
-  position:fixed;top:0;left:0;bottom:0;z-index:10;overflow-y:auto;
-  box-shadow:2px 0 24px rgba(0,0,0,0.5);
+  position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;
+  box-shadow:4px 0 32px rgba(0,0,0,0.7);
+  transform:translateX(-100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
 }
+.sidebar.open{transform:translateX(0);}
 .sidebar::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(212,168,67,0.3),transparent);
 }
+
+/* overlay backdrop */
+.nav-backdrop{
+  display:none;position:fixed;inset:0;z-index:49;
+  background:rgba(0,0,0,0);transition:background .25s;
+}
+.nav-backdrop.show{display:block;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);}
+
+/* ══ TOP BAR ══ */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:54px;
+  background:rgba(6,6,8,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(212,168,67,0.07);
+  margin:-28px -32px 24px;
+}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-title{font-size:.88em;font-weight:700;color:var(--text2);}
+.hamburger{
+  display:flex;flex-direction:column;justify-content:center;gap:5px;
+  cursor:pointer;padding:8px;background:none;border:none;
+  width:38px;height:38px;border-radius:8px;transition:background .15s;
+}
+.hamburger:hover{background:rgba(255,255,255,.05);}
+.hamburger span{display:block;width:18px;height:1.5px;background:var(--text2);border-radius:1px;transition:all .25s;}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4.5px,4.5px);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px);}
+.topbar-logo{
+  font-size:.95em;font-weight:800;color:var(--gold);
+  display:flex;align-items:center;gap:6px;text-decoration:none;
+  letter-spacing:-.2px;
+}
+.topbar-logo::before{content:'◆';font-size:.6em;opacity:.8;}
 .sidebar-logo{
   padding:0 20px 20px;font-size:1.15em;font-weight:800;
   color:var(--text);letter-spacing:-.3px;
@@ -67,7 +105,7 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .wallet-info{font-size:.68em;color:var(--muted);word-break:break-all;font-family:'SF Mono',monospace;}
 
 /* ══ MAIN ══ */
-.main{flex:1;margin-left:var(--sidebar-w);padding:28px 32px;overflow-y:auto;}
+.main{flex:1;margin-left:0;padding:28px 32px;overflow-y:auto;}
 .page{display:none;max-width:960px;}
 .page.active{display:block;animation:fadeIn .2s;}
 .page-header{display:none;align-items:center;gap:8px;margin-bottom:14px;font-size:.82em;color:var(--muted);}
@@ -171,11 +209,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ══ RESPONSIVE ══ */
 @media (max-width:768px){
-  .sidebar{display:none;}
-  .main{margin-left:0;padding:16px;padding-bottom:100px;}
+  .main{padding:16px;padding-bottom:24px;}
   .grid2,.grid3,.grid4{grid-template-columns:1fr;}
-  .bottom-tabs{display:flex;}
-  .page-header{display:flex;}
+  .topbar{margin:-16px -16px 18px;}
 }
 @media (min-width:769px){.bottom-tabs,.more-panel{display:none!important;}}
 
@@ -188,6 +224,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <body>
 
 <div class="app">
+  <!-- ═══════════ NAV BACKDROP ═══════════ -->
+  <div class="nav-backdrop" id="navBackdrop" onclick="closeSidebar()"></div>
+
   <!-- ═══════════ SIDEBAR ═══════════ -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -197,14 +236,14 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <svg viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="12" fill="url(#gd)" stroke="var(--gold)" stroke-width="1.2"/><circle cx="13" cy="13" r="7" fill="none" stroke="var(--gold)" stroke-width=".6" stroke-dasharray="2 2"/><circle cx="13" cy="13" r="3" fill="var(--gold)"/><defs><radialGradient id="gd"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs></svg>
       <span>pGOLD</span> DApp
     </div>
-    <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')"><span class="nav-icon">📊</span> <span data-i18n="nav.dashboard">仪表盘</span></div>
-    <div class="nav-item" data-page="ico" onclick="switchPage('ico')"><span class="nav-icon">🚀</span> <span data-i18n="nav.ico">创世池 ICO</span></div>
-    <div class="nav-item" data-page="portfolio" onclick="switchPage('portfolio')"><span class="nav-icon">💼</span> <span data-i18n="nav.portfolio">我的持仓</span></div>
-    <div class="nav-item" data-page="vesting" onclick="switchPage('vesting')"><span class="nav-icon">🔓</span> <span data-i18n="nav.vesting">释放计划</span></div>
-    <div class="nav-item" data-page="ranking" onclick="switchPage('ranking')"><span class="nav-icon">🏆</span> <span data-i18n="nav.ranking">Top 100</span></div>
-    <div class="nav-item" data-page="staking" onclick="switchPage('staking')"><span class="nav-icon">💎</span> <span data-i18n="nav.staking">质押中心</span></div>
-    <div class="nav-item" data-page="team" onclick="switchPage('team')"><span class="nav-icon">👥</span> <span data-i18n="nav.team">战队中心</span></div>
-    <div class="nav-item" data-page="history" onclick="switchPage('history')"><span class="nav-icon">📜</span> <span data-i18n="nav.history">交易记录</span></div>
+    <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard');closeSidebar()"><span class="nav-icon">📊</span> <span data-i18n="nav.dashboard">仪表盘</span></div>
+    <div class="nav-item" data-page="ico" onclick="switchPage('ico');closeSidebar()"><span class="nav-icon">🚀</span> <span data-i18n="nav.ico">创世池 ICO</span></div>
+    <div class="nav-item" data-page="portfolio" onclick="switchPage('portfolio');closeSidebar()"><span class="nav-icon">💼</span> <span data-i18n="nav.portfolio">我的持仓</span></div>
+    <div class="nav-item" data-page="vesting" onclick="switchPage('vesting');closeSidebar()"><span class="nav-icon">🔓</span> <span data-i18n="nav.vesting">释放计划</span></div>
+    <div class="nav-item" data-page="ranking" onclick="switchPage('ranking');closeSidebar()"><span class="nav-icon">🏆</span> <span data-i18n="nav.ranking">Top 100</span></div>
+    <div class="nav-item" data-page="staking" onclick="switchPage('staking');closeSidebar()"><span class="nav-icon">💎</span> <span data-i18n="nav.staking">质押中心</span></div>
+    <div class="nav-item" data-page="team" onclick="switchPage('team');closeSidebar()"><span class="nav-icon">👥</span> <span data-i18n="nav.team">战队中心</span></div>
+    <div class="nav-item" data-page="history" onclick="switchPage('history');closeSidebar()"><span class="nav-icon">📜</span> <span data-i18n="nav.history">交易记录</span></div>
     <div class="sidebar-footer">
       <div class="lang-row">
         <button class="lang-btn active" data-lang="zh">中</button>
@@ -223,6 +262,16 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
   <!-- ═══════════ MAIN ═══════════ -->
   <div class="main" id="mainContent">
+    <!-- ── TOPBAR ── -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="菜单">
+          <span></span><span></span><span></span>
+        </button>
+        <span class="topbar-title" id="topbarTitle">仪表盘</span>
+      </div>
+      <a class="topbar-logo" href="index.html">pGOLD</a>
+    </div>
     <div class="page-header" id="pageHeader"></div>
 
     <!-- ── DASHBOARD ── -->
@@ -556,6 +605,12 @@ const t=k=>I18N.t(k);
 
 let currentPage='dashboard',pendingAction=null;
 
+const PAGE_TITLES = {
+  dashboard:'仪表盘', ico:'创世池 ICO', portfolio:'我的持仓',
+  vesting:'释放计划', ranking:'Top 100', staking:'质押中心',
+  team:'战队中心', history:'交易记录'
+};
+
 function switchPage(page){
   currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -563,10 +618,29 @@ function switchPage(page){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
   document.querySelectorAll('.bottom-tab').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
   document.getElementById('mainContent').scrollTop=0;
-  if(window.innerWidth<=768){
-    const titles={dashboard:'📊 仪表盘',ico:'🚀 ICO',portfolio:'💼 持仓',vesting:'🔓 释放',ranking:'🏆 排名',staking:'💎 质押',team:'👥 战队',history:'📜 记录'};
-    document.getElementById('pageHeader').textContent=titles[page]||'';
+  const titleEl=document.getElementById('topbarTitle');
+  if(titleEl) titleEl.textContent=PAGE_TITLES[page]||'';
+}
+
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const hb=document.getElementById('hamburger');
+  const bd=document.getElementById('navBackdrop');
+  const isOpen=sb.classList.contains('open');
+  if(isOpen){closeSidebar();}
+  else{
+    sb.classList.add('open');
+    hb.classList.add('open');
+    bd.classList.add('show');
+    document.body.style.overflow='hidden';
   }
+}
+
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('navBackdrop').classList.remove('show');
+  document.body.style.overflow='';
 }
 
 function renderI18n(){
@@ -658,12 +732,15 @@ function toggleMore(){document.getElementById('morePanel').classList.toggle('sho
 // Modal overlay click close
 document.getElementById('confirmModal').addEventListener('click',function(e){if(e.target===this)closeConfirmModal();});
 
+// ESC closes sidebar
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSidebar();});
+
 // Lang
 document.querySelectorAll('.lang-btn').forEach(b=>{b.addEventListener('click',()=>{I18N.setLang(b.dataset.lang);renderI18n();});});
 
 // Init
 renderI18n();
-if(window.innerWidth<=768)document.getElementById('pageHeader').textContent='📊 仪表盘';
+switchPage('dashboard');
 </script>
 </body>
 </html>
