@@ -774,7 +774,7 @@ lv_card1_label:'储备快照',lv_card2_label:'最近链上活动',lv_reserve_rat
 st_1:'Treasury 合约',st_1v:'公开可查',st_2:'底层资产',st_2v:'Paxos PAXG',st_3:'代码审计',st_3v:'完全开源',
 hw_kicker:'How It Works',hw_title:'三层飞轮，互锁驱动',hw_sub:'从你点击交易的那一秒开始，整个循环自动运行。',
 hw_1_title:'交易产生手续费',hw_1_desc:'每笔 Swap 收取 0.25% 手续费，其中 <b>95%</b> 以 USDC 形式由智能合约自动兑换为 PAXG 黄金，5% 分配至稳定基金、流动性与应急储备。无人工干预，每一分钱都有链上记录。',hw_1_flow:'USDC → PAXG（链上自动兑换）',
-hw_2_title:'储备自动增厚',hw_2_desc:'PAXG 实时存入 Treasury 合约，储备覆盖率在每笔交易后即时更新。储备越厚，每一枚 pGOLD 背后的黄金支撑就越坚实。',hw_2_flow:'PAXG → Treasury 储备池（公开可查）',
+hw_2_title:'储备自动增厚',hw_2_desc:'手续费的 <b>95%</b> 自动兑换为 PAXG 实时存入 Treasury 合约，5% 进入稳定基金、流动性与应急储备账户。储备覆盖率在每笔交易后即时更新，储备越厚，每一枚 pGOLD 背后的黄金支撑就越坚实。',hw_2_flow:'95% 手续费 → PAXG → Treasury 储备池（公开可查）',
 hw_3_title:'激励反哺用户',hw_3_desc:'五轨激励体系向活跃用户分发 pGOLD 奖励。奖励来源为协议铸币，不消耗储备——用户获益同时，储备不动分毫。',hw_3_flow:'协议铸币 → 五轨激励（储备零消耗）',
 tr_kicker:'Incentives',tr_title:'五轨激励，利益一体',tr_sub:'全部轨道独立并行、可叠加领取。所有奖励来自协议铸币，不从手续费或储备支出。',
 tr_a_title:'A 持有分红',tr_a_tag:'3.5% 年化',tr_a_desc:'持有 <b>100 pGOLD</b> 以上可获 <b>3.5% 年化分红</b>。质押即挖矿，每日自动领取。',
@@ -804,7 +804,7 @@ lv_card1_label:'Reserve Snapshot',lv_card2_label:'Recent On-Chain Activity',lv_r
 st_1:'Treasury Contract',st_1v:'Publicly Auditable',st_2:'Underlying Asset',st_2v:'Paxos PAXG',st_3:'Code Audit',st_3v:'Fully Open Source',
 hw_kicker:'How It Works',hw_title:'Three-Layer Flywheel',hw_sub:'From the second you click trade, the entire loop runs autonomously.',
 hw_1_title:'Trading Generates Fees',hw_1_desc:'Each swap charges 0.25%. <b>95%</b> of fees auto-convert to PAXG gold on-chain via smart contracts; 5% goes to stability, liquidity and emergency accounts. Zero human intervention. Every cent is traceable.',hw_1_flow:'USDC → PAXG (on-chain auto-conversion)',
-hw_2_title:'Reserves Auto-Accumulate',hw_2_desc:'PAXG deposits into the Treasury contract in real time. Reserve coverage updates after every trade. The thicker the reserve, the stronger every pGOLD.',hw_2_flow:'PAXG → Treasury Pool (publicly auditable)',
+hw_2_title:'Reserves Auto-Accumulate',hw_2_desc:'<b>95%</b> of fees auto-convert to PAXG and deposit into the Treasury contract in real time; 5% goes to stability, liquidity and emergency accounts. Reserve coverage updates after every trade. The thicker the reserve, the stronger every pGOLD.',hw_2_flow:'95% Fee → PAXG → Treasury Pool (publicly auditable)',
 hw_3_title:'Rewards Flow to Users',hw_3_desc:'The five-track incentive system distributes pGOLD rewards to active users. Rewards come from protocol minting — reserves are never touched.',hw_3_flow:'Protocol Minting → Five Tracks (zero reserve cost)',
 tr_kicker:'Incentives',tr_title:'Five Tracks, One Interest',tr_sub:'All tracks run independently and stack. Rewards from protocol minting — never from fees or reserves.',
 tr_a_title:'A Holding Dividends',tr_a_tag:'3.5% APY',tr_a_desc:'Hold <b>100+ pGOLD</b> to earn <b>3.5% APY</b>. Stake to mine, daily auto-claim.',
@@ -862,9 +862,9 @@ function RU(){
 function RF(){
   const txs=[
     {type:'fee',amt:'1,247',unit:'USDC',subT:'fee_to_gold',tAgo:'2m'},
-    {type:'buy',amt:'14.6',unit:'PAXG',subT:'gold_bought',tAgo:'3m'},
+    {type:'buy',amt:'13.9',unit:'PAXG',subT:'gold_bought',tAgo:'3m'},
     {type:'fee',amt:'3,892',unit:'USDC',subT:'fee_to_gold',tAgo:'8m'},
-    {type:'buy',amt:'45.8',unit:'PAXG',subT:'gold_bought',tAgo:'8m'},
+    {type:'buy',amt:'43.5',unit:'PAXG',subT:'gold_bought',tAgo:'8m'},
     {type:'fee',amt:'856',unit:'USDC',subT:'fee_to_gold',tAgo:'14m'}
   ];
   const lv=T;
@@ -886,7 +886,7 @@ function RF(){
 D.zh.ago='分钟前';D.en.ago='min ago';
 D.zh.tx_fee='手续费';D.en.tx_fee='Fee';
 D.zh.tx_gold='购金';D.en.tx_gold='Gold Bought';
-D.zh.fee_to_gold='手续费 → 购金';D.en.fee_to_gold='Fee → Gold Purchase';
+D.zh.fee_to_gold='手续费 → 95% 购金';D.en.fee_to_gold='Fee → 95% to Gold';
 D.zh.gold_bought='合约购金';D.en.gold_bought='Gold Purchased';
 
 // ===== FADE-IN OBSERVER =====
