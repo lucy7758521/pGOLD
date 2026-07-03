@@ -18,7 +18,15 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-serif;
-  background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;}
+  background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  background-size:400px 400px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(212,168,67,.15);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(212,168,67,.28);}
 
 /* NAV */
 .topnav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);
@@ -131,7 +139,7 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .sec-hd a:hover,.sec-hd button:hover{color:var(--gold);}
 
 /* TRACK LIST */
-.track-list{border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.track-list{border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 .track-row{
   display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);
   cursor:pointer;transition:background .15s;gap:14px;position:relative;
@@ -238,6 +246,7 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .btn-blue:hover{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.35);}
 .btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
 .btn-danger:hover{background:rgba(239,68,68,.18);}
+.row-highlight td{background:rgba(212,168,67,.04);}
 .btn-sm{padding:7px 14px;font-size:.75em;min-height:32px;border-radius:7px;}
 .btn-full{width:100%;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -247,33 +256,47 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .btn.loading .btn-label{opacity:.5;}
 .btn.loading{pointer-events:none;}
 
-/* TABS */
-.tab-bar{display:flex;gap:2px;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:20px;}
-.tab-btn{flex:1;padding:9px 12px;border:none;border-radius:7px;cursor:pointer;font-size:.78em;
-  font-weight:600;background:transparent;color:var(--text2);transition:all .15s;font-family:inherit;}
-.tab-btn.active{background:rgba(255,255,255,.08);color:var(--text);}
-
 /* TABLE */
 table{width:100%;border-collapse:collapse;font-size:.8em;}
 th{text-align:left;color:var(--muted);font-weight:600;padding:12px 14px;
   border-bottom:1px solid var(--border);font-size:.72em;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
 td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.025);white-space:nowrap;}
-tr:hover td{background:rgba(255,255,255,.015);}
-.tbl-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.tbl-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);}
 .tbl-wrap table th:first-child,.tbl-wrap table td:first-child{padding-left:20px;}
 .tbl-wrap table th:last-child,.tbl-wrap table td:last-child{padding-right:20px;}
 .tbl-note{font-size:.72em;color:var(--muted);padding:14px 20px;border-top:1px solid var(--border);}
 
+/* TABS */
+.tab-bar{display:flex;gap:2px;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:20px;
+  border:1px solid var(--border);}
+.tab-btn{flex:1;padding:9px 12px;border:none;border-radius:7px;cursor:pointer;font-size:.78em;
+  font-weight:600;background:transparent;color:var(--text2);transition:all .15s;font-family:inherit;}
+.tab-btn.active{background:rgba(255,255,255,.08);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+
 /* VEST */
-.vest-block{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;}
-.vest-row{display:flex;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border);}
-.vest-row:last-child{border-bottom:none;}
-.vr-name{flex:1;font-size:.84em;font-weight:500;color:var(--text);}
-.vr-amt{font-size:.88em;font-weight:600;margin-right:20px;}
-.vr-progress{width:80px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-right:16px;}
-.vr-fill{height:100%;border-radius:2px;}
-.vr-pct{font-size:.7em;color:var(--muted);width:36px;text-align:right;}
-.vest-actions-row{display:flex;gap:8px;padding:16px 20px;border-top:1px solid var(--border);}
+.vest-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+.vest-item{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  background:linear-gradient(150deg,var(--surface),var(--surface2));
+  box-shadow:0 4px 20px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.02) inset;
+  position:relative;
+}
+.vest-item::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,.2),transparent);
+}
+.vest-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;}
+.vest-name{font-size:.86em;font-weight:600;color:var(--text);margin-bottom:3px;}
+.vest-meta{font-size:.72em;color:var(--muted);}
+.vest-pct{font-size:.82em;font-weight:700;color:var(--purple);}
+.vest-foot{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;
+  border-top:1px solid var(--border);background:rgba(0,0,0,.15);font-size:.75em;color:var(--text2);}
+.btn-row-sm{display:flex;gap:8px;}
+.btn-purple{background:rgba(139,92,246,.12);color:var(--purple);border:1px solid rgba(139,92,246,.22);}
+.btn-purple:hover{background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.35);}
 
 /* BADGE */
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.68em;font-weight:700;}
@@ -287,10 +310,24 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
   z-index:300;justify-content:center;align-items:flex-end;}
 .modal-overlay.show{display:flex;animation:fadeUp .15s;}
-.modal-box{background:var(--surface2);border:1px solid var(--border);border-top:1px solid rgba(212,168,67,.15);
-  border-radius:16px 16px 0 0;padding:28px 24px calc(24px + var(--safe-bottom));width:100%;max-width:480px;max-height:80dvh;overflow-y:auto;}
-.modal-box h3{font-size:.9em;font-weight:700;color:var(--text);margin-bottom:10px;}
+.modal-box{
+  background:linear-gradient(160deg,var(--surface),var(--surface2));
+  border:1px solid var(--border);border-top:1px solid rgba(212,168,67,.2);
+  border-radius:16px 16px 0 0;padding:28px 24px calc(24px + var(--safe-bottom));
+  width:100%;max-width:480px;max-height:80dvh;overflow-y:auto;
+  box-shadow:0 -8px 40px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.02) inset;
+  position:relative;
+}
+.modal-box::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,.5),transparent);
+}
+.modal-box h3{font-size:.9em;font-weight:700;color:var(--text);margin-bottom:14px;}
 .modal-box p{font-size:.82em;color:var(--text2);line-height:1.6;}
+.modal-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.78em;border-bottom:1px solid rgba(255,255,255,.04);}
+.modal-row:last-of-type{border-bottom:none;}
+.modal-row .label{color:var(--muted);}
+.modal-row .value{font-weight:700;color:var(--text);}
 .modal-actions{display:flex;gap:10px;margin-top:20px;}
 .modal-actions button{flex:1;}
 
@@ -307,10 +344,17 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* INFO CARD (staking/ICO form cards) */
 .info-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:22px;margin-bottom:16px;transition:border-color .2s;
+  background:linear-gradient(150deg,var(--surface),var(--surface2));
+  border:1px solid var(--border);border-radius:12px;
+  padding:22px;margin-bottom:16px;transition:border-color .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.02) inset;
 }
-.info-card:hover{border-color:rgba(212,168,67,.15);}
+.info-card::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,.3),transparent);
+}
+.info-card:hover{border-color:rgba(212,168,67,.22);box-shadow:0 12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.03) inset;}
 .card-desc{font-size:.82em;color:var(--text2);line-height:1.55;margin-bottom:18px;}
 .info-row{display:flex;justify-content:space-between;align-items:center;
   font-size:.8em;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
@@ -327,11 +371,15 @@ tr:hover td{background:rgba(255,255,255,.015);}
   border:1px solid var(--border);border-radius:9px;
   color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .18s;
 }
-.form-row input:focus,.form-row select:focus{outline:none;border-color:rgba(212,168,67,.4);background:rgba(212,168,67,.02);}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:rgba(212,168,67,.4);background:rgba(212,168,67,.02);box-shadow:0 0 0 3px rgba(212,168,67,.07);}
 .form-error{font-size:.7em;color:var(--red);margin-top:5px;display:none;}
 .form-error.show{display:block;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 .btn-row .btn{flex:1;min-width:80px;}
+
+/* PROGRESS BAR */
+.progress-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin:12px 0;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#9a7620,#d4a843,#f0d078);border-radius:2px;transition:width .8s cubic-bezier(.16,1,.3,1);}
 
 /* ICO HIGHLIGHTS */
 .ico-highlights{
@@ -410,7 +458,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .btn.loading{pointer-events:none;}
 
 /* ASSET LIST */
-.asset-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px;}
+.asset-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px;box-shadow:0 4px 20px rgba(0,0,0,.25);}
 .asset-row{
   display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04);
   transition:background .15s;
@@ -640,15 +688,15 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <div class="tr-badge">E</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="ico.title">创世池 ICO</div>
-        <div class="tr-desc">E 轨 · 创世池，10 年线性释放</div>
+        <div class="tr-desc">E 轨 · 创世池，3 年线性释放</div>
       </div>
-      <div class="tr-val" style="color:var(--gold)">420 pGOLD</div>
+      <div class="tr-val" style="color:var(--gold)"><span id="dash-trackE-amount">420</span> pGOLD</div>
       <div class="tr-chevron" id="chev-tE">›</div>
     </div>
     <div class="track-detail" id="tE">
       <div class="td-grid">
-        <div class="td-item"><div class="td-l" data-i18n="ico.yourSub">你的认购</div><div class="td-v">420 pGOLD</div></div>
-        <div class="td-item"><div class="td-l" data-i18n="ico.yourPts">积分</div><div class="td-v" style="color:var(--gold)">8,400</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="ico.yourSub">你的认购</div><div class="td-v"><span id="dash-trackE-sub">420</span> pGOLD</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="ico.yourPts">积分</div><div class="td-v" style="color:var(--gold)"><span id="dash-trackE-points">8,400</span></div></div>
         <div class="td-item"><div class="td-l" data-i18n="vest.released">已释放</div><div class="td-v" style="color:var(--green)">20 pGOLD</div></div>
       </div>
       <div class="td-actions">
@@ -1026,7 +1074,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="divider"></div>
     <div class="info-row"><span class="info-label" data-i18n="team.reward">竞赛奖励</span><span class="info-val" style="color:var(--green)">2,400 pGOLD</span></div>
     <div class="btn-row" style="margin-top:16px">
-      <button class="btn btn-outline" onclick="withConfirm('joinTeam')" style="flex:1"><span class="btn-label" data-i18n="team.joinBtn">加入战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline btn-danger" onclick="withConfirm('leaveTeam')" style="flex:1"><span class="btn-label" data-i18n="team.leaveBtn">退出战队</span><span class="btn-spinner"></span></button>
       <button class="btn btn-gold" onclick="withConfirm('claimTeamReward')" style="flex:1"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
     </div>
   </div>
@@ -1039,7 +1087,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     </div>
   </div>
   <div id="teamTab-leaderboard" style="display:none">
-    <div class="table-wrap">
+    <div class="tbl-wrap">
       <table>
         <thead><tr><th>#</th><th data-i18n="team.thTeam">战队</th><th data-i18n="team.thLeader">队长</th><th data-i18n="team.thMembers">成员</th><th data-i18n="team.thVol">交易量</th><th data-i18n="team.thReward">奖励</th></tr></thead>
         <tbody>
@@ -1066,7 +1114,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
     <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
   </div>
-  <div class="table-wrap">
+  <div class="tbl-wrap">
     <table>
       <thead><tr><th data-i18n="hist.thTime">时间</th><th data-i18n="hist.thType">类型</th><th data-i18n="hist.thAmt">数量</th><th data-i18n="hist.thPrice">价格</th><th data-i18n="hist.thFee">手续费</th></tr></thead>
       <tbody id="hist-tbody">
@@ -1074,7 +1122,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
         <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red">SELL</span></td><td>20 pGOLD</td><td class="hist-price">$84.80</td><td>$4.24</td></tr>
         <tr><td>2026-06-25 10:15</td><td><span class="badge badge-green">BUY</span></td><td>100 pGOLD</td><td class="hist-price">$85.00</td><td>$21.25</td></tr>
         <tr><td>2026-06-24 16:45</td><td><span class="badge badge-blue">STAKE</span></td><td>200 pGOLD</td><td>—</td><td>—</td></tr>
-        <tr><td>2026-06-24 08:00</td><td><span class="badge" style="background:rgba(139,92,246,.1);color:var(--purple)">CLAIM</span></td><td>12.5 pGOLD</td><td>—</td><td>—</td></tr>
+        <tr><td>2026-06-24 08:00</td><td><span class="badge badge-purple">CLAIM</span></td><td>12.5 pGOLD</td><td>—</td><td>—</td></tr>
       </tbody>
     </table>
   </div>
@@ -1145,7 +1193,7 @@ const I18N = {
     'stake.formulaVal':'存入×倍数','stake.errZero':'请输入大于 0 的数量',
     'team.myTeam':'我的战队','team.invite':'邀请返佣','team.leaderboard':'战队竞赛榜',
     'team.name':'战队名称','team.members':'成员','team.volume':'战队交易量',
-    'team.reward':'竞赛奖励','team.createBtn':'创建战队','team.joinBtn':'加入战队',
+    'team.reward':'竞赛奖励','team.createBtn':'创建战队','team.joinBtn':'加入战队','team.leaveBtn':'退出战队',
     'team.inviteLink':'你的邀请链接','team.direct':'直邀人数','team.indirect':'间邀人数',
     'team.pendingComm':'待领返佣','team.claimComm':'领取返佣','team.bindInviter':'绑定邀请人',
     'team.thTeam':'战队','team.thLeader':'队长','team.thMembers':'成员',
@@ -1205,7 +1253,7 @@ const I18N = {
     'stake.formulaVal':'Deposit × Multiplier','stake.errZero':'Enter an amount greater than 0',
     'team.myTeam':'My Team','team.invite':'Referral','team.leaderboard':'Leaderboard',
     'team.name':'Team Name','team.members':'Members','team.volume':'Team Volume',
-    'team.reward':'Contest Reward','team.createBtn':'Create Team','team.joinBtn':'Join Team',
+    'team.reward':'Contest Reward','team.createBtn':'Create Team','team.joinBtn':'Join Team','team.leaveBtn':'Leave Team',
     'team.inviteLink':'Your Invite Link','team.direct':'Direct Referrals','team.indirect':'Indirect Referrals',
     'team.pendingComm':'Pending Commission','team.claimComm':'Claim Commission','team.bindInviter':'Bind Inviter',
     'team.thTeam':'Team','team.thLeader':'Leader','team.thMembers':'Members',
@@ -1388,6 +1436,10 @@ function updateICODisplays(p){
   set('ico-pool-alloc', ICO_DATA.yourAmount.toLocaleString('en-US'));
   set('ico-limit-usd', fmt(1000 * p));
   set('icoPreviewPrice', p.toFixed(2));
+
+  set('dash-trackE-amount', ICO_DATA.yourAmount.toLocaleString('en-US'));
+  set('dash-trackE-sub', ICO_DATA.yourAmount.toLocaleString('en-US'));
+  set('dash-trackE-points', ICO_DATA.yourPoints.toLocaleString('en-US'));
 
   const progressBar = document.getElementById('ico-progress-bar');
   if(progressBar) progressBar.style.width = progressPct + '%';
