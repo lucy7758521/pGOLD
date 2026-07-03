@@ -448,8 +448,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <div class="nw-block">
     <div class="nw-label" data-i18n="dash.netWorth">净资产</div>
     <div style="display:flex;align-items:center;gap:12px;">
+      <span id="nw-approx" style="opacity:.6;margin-right:4px;font-size:3.2em;font-weight:800;color:var(--text);">≈</span>
       <div class="nw-value">
-        <span id="nw-approx" style="opacity:.6;margin-right:4px;">≈</span>
         <span id="nw-total" data-value="348075">$348,075</span>
       </div>
       <button class="eye-toggle" onclick="toggleBalance()" aria-label="Toggle balance visibility" style="align-self:flex-start;margin-top:8px;">
@@ -1317,14 +1317,14 @@ function toggleBalance(){
   if(balanceVisible){
     // 显示数字
     nwTotal.textContent = formatCurrency(valueText);
-    nwApprox.style.display = '';
+    nwApprox.style.visibility = 'visible';
     nwTotal.parentElement.classList.remove('masked');
     eyeOpen.forEach(el=>el.style.display='');
     eyeClosed.forEach(el=>el.style.display='none');
   }else{
     // 隐藏为星号
     nwTotal.textContent = '******';
-    nwApprox.style.display = 'none';
+    nwApprox.style.visibility = 'hidden';
     nwTotal.parentElement.classList.add('masked');
     eyeOpen.forEach(el=>el.style.display='none');
     eyeClosed.forEach(el=>el.style.display='');
@@ -1354,7 +1354,7 @@ function animateCounter(element, start, end, duration){
       requestAnimationFrame(update);
     }else{
       // 动画完成后确保显示约等于号
-      document.getElementById('nw-approx').style.display = '';
+      document.getElementById('nw-approx').style.visibility = 'visible';
     }
   }
 
