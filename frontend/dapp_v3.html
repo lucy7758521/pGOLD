@@ -941,6 +941,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <input type="number" id="stakeAmount" placeholder="100" min="1" oninput="validateStake()">
       <div class="form-error" id="stakeError"></div>
     </div>
+    <div class="form-row">
+      <label data-i18n="stake.unstakeAmt">解质押数量</label>
+      <input type="number" id="unstakeAmount" placeholder="100" min="1">
+    </div>
     <div class="btn-row" style="flex-wrap:nowrap">
       <button class="btn btn-gold" onclick="withConfirm('stake','A')" style="flex:1;min-width:0"><span class="btn-label" data-i18n="stake.stakeBtn">质押</span><span class="btn-spinner"></span></button>
       <button class="btn btn-outline" onclick="withConfirm('unstake')" style="flex:1;min-width:0"><span class="btn-label" data-i18n="stake.unstakeBtn">解质押</span><span class="btn-spinner"></span></button>
@@ -960,6 +964,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="form-row">
       <label data-i18n="stake.depositAmt">存入数量</label>
       <input type="number" id="depositAmount" placeholder="100" min="1">
+    </div>
+    <div class="form-row">
+      <label data-i18n="stake.withdrawAmt">取出数量</label>
+      <input type="number" id="withdrawAmount" placeholder="100" min="1">
     </div>
     <div class="btn-row">
       <button class="btn btn-blue" onclick="withConfirm('deposit','B')" style="flex:1"><span class="btn-label" data-i18n="stake.depositBtn">存入锚定</span><span class="btn-spinner"></span></button>
@@ -1267,6 +1275,7 @@ const I18N = {
     'stake.trackBDesc':'存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小',
     'stake.staked':'已质押','stake.pending':'待领分红','stake.deposited':'B轨存入',
     'stake.stakeAmt':'质押数量','stake.depositAmt':'存入数量',
+    'stake.unstakeAmt':'解质押数量','stake.withdrawAmt':'取出数量',
     'stake.stakeBtn':'质押','stake.unstakeBtn':'解质押','stake.claimDiv':'领取分红',
     'stake.depositBtn':'存入锚定','stake.withdrawBtn':'取出','stake.claimAll':'领取奖励',
     'stake.formulaVal':'存入×倍数','stake.errZero':'请输入大于 0 的数量',
@@ -1327,6 +1336,7 @@ const I18N = {
     'stake.trackBDesc':'Deposit pGOLD to lock reward base. Rank determines eligibility, deposit determines reward',
     'stake.staked':'Staked','stake.pending':'Pending Dividend','stake.deposited':'Track B Deposit',
     'stake.stakeAmt':'Stake Amount','stake.depositAmt':'Deposit Amount',
+    'stake.unstakeAmt':'Unstake Amount','stake.withdrawAmt':'Withdraw Amount',
     'stake.stakeBtn':'Stake','stake.unstakeBtn':'Unstake','stake.claimDiv':'Claim Dividend',
     'stake.depositBtn':'Deposit','stake.withdrawBtn':'Withdraw','stake.claimAll':'Claim Rewards',
     'stake.formulaVal':'Deposit × Multiplier','stake.errZero':'Enter an amount greater than 0',
@@ -1447,20 +1457,25 @@ function withConfirm(action,track){
         <span style="color:var(--green)">预计日收益：${dailyReward} pGOLD / 天</span>`;
 
   } else if(action==='unstake'){
-    const staked=STAKE_DATA.staked;
+    amount=parseFloat(document.getElementById('unstakeAmount')?.value)||0;
+    if(amount<=0){showToast(isEn?'Enter unstake amount':'请输入解质押数量','error');return;}
+    amount=Math.min(amount,STAKE_DATA.staked);
     const pending=STAKE_DATA.pending;
-    const annualLoss=fmt(staked*0.035,2);
-    pendingAction={action,track};
+    const lostDiv=fmt(pending*(amount/Math.max(STAKE_DATA.staked,1)),2);
+    const annualLoss=fmt(amount*0.035,2);
+    pendingAction={action,track,amount};
     titleTxt=isEn?'Confirm Unstake':'确认解质押';
     details=isEn
-      ?`<b>Unstake all ${fmtN(staked)} pGOLD</b><br><br>
-        <span style="color:var(--red)">⚠ Forfeited pending dividend: ${fmtN(pending)} pGOLD</span><br>
-        <span style="color:var(--red)">≈ $${fmtN(pending*p)} USD</span><br>
+      ?`<b>Unstake ${fmtN(amount)} pGOLD</b><br>
+        Remaining staked: ${fmtN(STAKE_DATA.staked-amount)} pGOLD<br><br>
+        <span style="color:var(--red)">⚠ Forfeited pending dividend: ~${lostDiv} pGOLD</span><br>
+        <span style="color:var(--red)">≈ $${fmtN(parseFloat(lostDiv)*p)} USD</span><br>
         <span style="color:var(--text2)">Annual yield lost: ${annualLoss} pGOLD / yr</span><br><br>
         <span style="color:var(--muted)">Tip: Claim dividends before unstaking.</span>`
-      :`<b>解除全部质押 ${fmtN(staked)} pGOLD</b><br><br>
-        <span style="color:var(--red)">⚠ 将损失待领分红：${fmtN(pending)} pGOLD</span><br>
-        <span style="color:var(--red)">≈ $${fmtN(pending*p)} USD</span><br>
+      :`<b>解质押 ${fmtN(amount)} pGOLD</b><br>
+        解质押后剩余：${fmtN(STAKE_DATA.staked-amount)} pGOLD<br><br>
+        <span style="color:var(--red)">⚠ 预计损失待领分红：~${lostDiv} pGOLD</span><br>
+        <span style="color:var(--red)">≈ $${fmtN(parseFloat(lostDiv)*p)} USD</span><br>
         <span style="color:var(--text2)">年化收益损失：${annualLoss} pGOLD / 年</span><br><br>
         <span style="color:var(--muted)">建议先领取分红再解质押</span>`;
 
@@ -1499,8 +1514,8 @@ function withConfirm(action,track){
         <span style="color:var(--green)">日收益估算：${daily} pGOLD / 天</span>`;
 
   } else if(action==='withdraw'){
-    amount=parseFloat(document.getElementById('depositAmount')?.value)||STAKE_DATA.deposited;
-    if(amount<=0){showToast(t('stake.errZero'),'error');return;}
+    amount=parseFloat(document.getElementById('withdrawAmount')?.value)||0;
+    if(amount<=0){showToast(isEn?'Enter withdraw amount':'请输入取出数量','error');return;}
     amount=Math.min(amount,STAKE_DATA.deposited);
     const remaining=Math.max(0,STAKE_DATA.deposited-amount);
     pendingAction={action,track,amount};
@@ -1580,10 +1595,12 @@ function execAction(){
       showToast(isEn?`Staked ${amt.toFixed(2)} pGOLD successfully`:`成功质押 ${amt.toFixed(2)} pGOLD`,'success');
 
     } else if(action==='unstake'){
-      STAKE_DATA.staked=0;
-      STAKE_DATA.pending=0;
+      const amt=parseFloat(actionData.amount)||0;
+      STAKE_DATA.staked=Math.max(0,STAKE_DATA.staked-amt);
+      STAKE_DATA.pending=Math.max(0,STAKE_DATA.pending*(STAKE_DATA.staked/Math.max(STAKE_DATA.staked+amt,1)));
+      document.getElementById('unstakeAmount').value='';
       updateStakeDisplays();
-      showToast(isEn?'Unstaked successfully':'解质押成功','success');
+      showToast(isEn?`Unstaked ${amt.toFixed(2)} pGOLD successfully`:`成功解质押 ${amt.toFixed(2)} pGOLD`,'success');
 
     } else if(action==='claimReward'){
       const claimed=STAKE_DATA.pending;
@@ -1601,7 +1618,7 @@ function execAction(){
     } else if(action==='withdraw'){
       const amt=parseFloat(actionData.amount)||0;
       STAKE_DATA.deposited=Math.max(0,STAKE_DATA.deposited-amt);
-      document.getElementById('depositAmount').value='';
+      document.getElementById('withdrawAmount').value='';
       updateStakeDisplays();
       showToast(isEn?`Withdrew ${amt.toFixed(2)} pGOLD from Track B`:`已从 B轨取出 ${amt.toFixed(2)} pGOLD`,'success');
 
