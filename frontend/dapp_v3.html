@@ -332,6 +332,53 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .form-error.show{display:block;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 .btn-row .btn{flex:1;min-width:80px;}
+
+/* ICO HIGHLIGHTS */
+.ico-highlights{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;
+}
+.highlight-item{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px;display:flex;align-items:center;gap:12px;transition:all .2s;
+}
+.highlight-item:hover{
+  border-color:rgba(212,168,67,.3);background:rgba(212,168,67,.03);transform:translateY(-2px);
+}
+.highlight-icon{
+  font-size:1.8em;flex-shrink:0;
+}
+.highlight-text{flex:1;}
+.highlight-label{
+  font-size:.85em;font-weight:600;color:var(--text);margin-bottom:2px;
+}
+.highlight-desc{
+  font-size:.7em;color:var(--muted);
+}
+
+/* QUICK AMOUNT BUTTONS */
+.quick-amounts{
+  display:flex;gap:8px;margin-bottom:16px;
+}
+.quick-amt-btn{
+  flex:1;background:rgba(212,168,67,.08);border:1px solid rgba(212,168,67,.2);
+  border-radius:8px;padding:10px 12px;font-size:.8em;font-weight:600;
+  color:var(--gold);cursor:pointer;transition:all .2s;
+}
+.quick-amt-btn:hover{
+  background:rgba(212,168,67,.15);border-color:rgba(212,168,67,.35);transform:translateY(-1px);
+}
+.quick-amt-btn:active{transform:translateY(0);}
+
+/* PULSE DOT (for Active status) */
+.pulse-dot{
+  width:8px;height:8px;background:var(--gold);border-radius:50%;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.5;transform:scale(1.2);}
+}
+
 .btn-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.15);border-top-color:currentColor;
   border-radius:50%;animation:spin .6s linear infinite;display:none;}
 .btn.loading .btn-spinner{display:inline-block;}
@@ -376,6 +423,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
   .btn-row{gap:6px;}
   .asset-amt{min-width:80px;}
   .asset-usd{min-width:60px;}
+  .ico-highlights{grid-template-columns:1fr;gap:10px;}
+  .highlight-item{padding:12px;gap:10px;}
+  .quick-amounts{flex-wrap:wrap;}
+  .quick-amt-btn{min-width:60px;}
 }
 </style>
 </head>
@@ -620,9 +671,41 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <div class="page" id="page-ico">
   <div class="nw-block">
     <div class="nw-label" data-i18n="ico.title">E轨 · 创世池 ICO</div>
-    <div class="nw-value">168,500 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
-    <div class="nw-sub" data-i18n="ico.remaining">剩余可认购</div>
+    <div class="nw-value">
+      <span id="ico-remaining">168,500</span>
+      <span style="font-size:.4em;color:var(--text2)">pGOLD</span>
+    </div>
+    <div class="nw-sub">
+      <span data-i18n="ico.remaining">剩余可认购</span>
+      <span style="margin-left:8px;color:var(--gold)">≈ <span id="ico-remaining-usd">$14,322,500</span></span>
+    </div>
   </div>
+
+  <!-- 关键优势展示 -->
+  <div class="ico-highlights">
+    <div class="highlight-item">
+      <div class="highlight-icon">⚡</div>
+      <div class="highlight-text">
+        <div class="highlight-label" data-i18n="ico.weight7x">7x 权重加成</div>
+        <div class="highlight-desc" data-i18n="ico.weight7xDesc">第2档优惠期</div>
+      </div>
+    </div>
+    <div class="highlight-item">
+      <div class="highlight-icon">🎯</div>
+      <div class="highlight-text">
+        <div class="highlight-label" data-i18n="ico.backing">23.5% 背书率</div>
+        <div class="highlight-desc" data-i18n="ico.backingDesc">实物黄金支持</div>
+      </div>
+    </div>
+    <div class="highlight-item">
+      <div class="highlight-icon">💎</div>
+      <div class="highlight-text">
+        <div class="highlight-label" data-i18n="ico.vesting">10年线性释放</div>
+        <div class="highlight-desc" data-i18n="ico.vestingDesc">长期价值保障</div>
+      </div>
+    </div>
+  </div>
+
   <div class="stats-row">
     <div class="stat-cell">
       <div class="sc-l" data-i18n="ico.poolTotal">池子总量</div>
@@ -630,31 +713,45 @@ tr:hover td{background:rgba(255,255,255,.015);}
     </div>
     <div class="stat-cell">
       <div class="sc-l" data-i18n="ico.subscribed">已认购</div>
-      <div class="sc-v" style="color:var(--green)">31,500</div>
-      <div class="sc-h">15.75%</div>
+      <div class="sc-v" style="color:var(--green)"><span id="ico-subscribed">31,500</span></div>
+      <div class="sc-h"><span id="ico-progress-pct">15.75%</span></div>
     </div>
     <div class="stat-cell">
-      <div class="sc-l" data-i18n="ico.backingRate">背书率</div>
-      <div class="sc-v" style="color:var(--gold)">23.5%</div>
+      <div class="sc-l" data-i18n="ico.yourSub">你的认购</div>
+      <div class="sc-v" style="color:var(--gold)"><span id="ico-your-amount">420</span> pGOLD</div>
+      <div class="sc-h">≈ <span id="ico-your-usd">$35,700</span></div>
     </div>
   </div>
+
   <div class="sec-hd"><h2 data-i18n="ico.currentPhase">当前阶段</h2></div>
   <div class="info-card">
     <div class="info-row">
       <span class="info-label" data-i18n="ico.phase2">第2档 · D31-60 · 7x 权重</span>
-      <span class="info-val" style="color:var(--gold)">Active</span>
+      <span class="info-val" style="color:var(--gold);display:flex;align-items:center;gap:6px">
+        <span class="pulse-dot"></span>Active
+      </span>
     </div>
-    <div class="progress-bar"><div class="progress-fill" style="width:15.75%"></div></div>
+    <div class="progress-bar" style="margin-top:16px"><div class="progress-fill" id="ico-progress-bar" style="width:15.75%"></div></div>
     <div style="display:flex;justify-content:space-between;font-size:.68em;color:var(--muted);margin-top:8px">
-      <span>0</span><span>200,000 pGOLD</span>
+      <span>0</span>
+      <span style="color:var(--text2)"><span id="ico-subscribed-2">31,500</span> / 200,000</span>
+      <span>200,000 pGOLD</span>
     </div>
   </div>
-  <div class="sec-hd"><h2 data-i18n="ico.yourSub">你的认购</h2></div>
+
+  <div class="sec-hd"><h2 data-i18n="ico.yourStatus">你的参与状态</h2></div>
   <div class="info-card">
-    <div class="info-row"><span class="info-label" data-i18n="ico.yourPts">你的积分</span><span class="info-val" style="color:var(--gold)">8,400</span></div>
+    <div class="info-row">
+      <span class="info-label" data-i18n="ico.yourPts">你的积分</span>
+      <span class="info-val" style="color:var(--gold);font-size:1.3em;font-weight:700">8,400</span>
+    </div>
     <div class="divider"></div>
-    <div class="info-row"><span class="info-label" data-i18n="ico.poolAlloc">池分配估算</span><span class="info-val">420 pGOLD</span></div>
+    <div class="info-row">
+      <span class="info-label" data-i18n="ico.poolAlloc">池分配估算</span>
+      <span class="info-val" style="font-size:1.2em">420 pGOLD</span>
+    </div>
   </div>
+
   <div class="sec-hd"><h2 data-i18n="ico.subscribBtn">立即认购</h2></div>
   <div class="info-card">
     <div class="form-row">
@@ -662,6 +759,14 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO()">
       <div class="form-error" id="icoError"></div>
       <div class="form-hint" id="ico-hint-text" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
+    </div>
+    <!-- 快捷金额按钮 -->
+    <div class="quick-amounts">
+      <button class="quick-amt-btn" onclick="setICOAmount(100)">$100</button>
+      <button class="quick-amt-btn" onclick="setICOAmount(500)">$500</button>
+      <button class="quick-amt-btn" onclick="setICOAmount(1000)">$1,000</button>
+      <button class="quick-amt-btn" onclick="setICOAmount(5000)">$5,000</button>
+      <button class="quick-amt-btn" onclick="setICOAmountMax()">MAX</button>
     </div>
     <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()">
       <span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span>
@@ -974,8 +1079,11 @@ const I18N = {
     'dash.assets':'资产明细',
     'ico.title':'E轨 · 创世池 ICO','ico.poolTotal':'池子总量','ico.remaining':'剩余可认购',
     'ico.subscribed':'已认购','ico.backingRate':'背书率','ico.currentPhase':'当前阶段',
-    'ico.phase2':'第2档 · D31-60 · 7x 权重','ico.yourSub':'你的认购',
+    'ico.phase2':'第2档 · D31-60 · 7x 权重','ico.yourSub':'你的认购','ico.yourStatus':'你的参与状态',
     'ico.yourPts':'你的积分','ico.poolAlloc':'池分配估算',
+    'ico.weight7x':'7x 权重加成','ico.weight7xDesc':'第2档优惠期',
+    'ico.backing':'23.5% 背书率','ico.backingDesc':'实物黄金支持',
+    'ico.vesting':'10年线性释放','ico.vestingDesc':'长期价值保障',
     'ico.amountLabel':'认购金额 (USDC)','ico.hint':'个人上限 1,000 pGOLD',
     'ico.subscribBtn':'立即认购','ico.errMin':'最低 100 USDC','ico.errMax':'超过个人上限',
     'ico.errInvalid':'请输入有效金额','ico.success':'认购成功！',
@@ -1030,8 +1138,11 @@ const I18N = {
     'dash.assets':'Assets',
     'ico.title':'Track E · Genesis ICO','ico.poolTotal':'Pool Total','ico.remaining':'Remaining',
     'ico.subscribed':'Subscribed','ico.backingRate':'Backing Rate','ico.currentPhase':'Current Phase',
-    'ico.phase2':'Tier 2 · D31-60 · 7x Weight','ico.yourSub':'Your Subscription',
+    'ico.phase2':'Tier 2 · D31-60 · 7x Weight','ico.yourSub':'Your Subscription','ico.yourStatus':'Your Status',
     'ico.yourPts':'Your Points','ico.poolAlloc':'Pool Allocation',
+    'ico.weight7x':'7x Weight Bonus','ico.weight7xDesc':'Tier 2 Bonus Period',
+    'ico.backing':'23.5% Backing','ico.backingDesc':'Physical Gold Backed',
+    'ico.vesting':'10-Year Vesting','ico.vestingDesc':'Long-term Value',
     'ico.amountLabel':'Subscribe Amount (USDC)','ico.hint':'Personal cap: 1,000 pGOLD',
     'ico.subscribBtn':'Subscribe Now','ico.errMin':'Minimum 100 USDC','ico.errMax':'Exceeds personal cap',
     'ico.errInvalid':'Enter a valid amount','ico.success':'Subscribed!',
@@ -1171,6 +1282,45 @@ function confirmAction(){
 }
 
 /* ── ICO ── */
+const ICO_DATA = {
+  poolTotal: 200000,
+  subscribed: 31500,
+  yourAmount: 420,
+  yourPoints: 8400
+};
+
+function updateICODisplays(p){
+  const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+
+  const remaining = ICO_DATA.poolTotal - ICO_DATA.subscribed;
+  const progressPct = ((ICO_DATA.subscribed / ICO_DATA.poolTotal) * 100).toFixed(2);
+
+  set('ico-remaining', remaining.toLocaleString('en-US'));
+  set('ico-remaining-usd', fmt(remaining * p));
+  set('ico-subscribed', ICO_DATA.subscribed.toLocaleString('en-US'));
+  set('ico-subscribed-2', ICO_DATA.subscribed.toLocaleString('en-US'));
+  set('ico-progress-pct', progressPct + '%');
+  set('ico-your-amount', ICO_DATA.yourAmount.toLocaleString('en-US'));
+  set('ico-your-usd', fmt(ICO_DATA.yourAmount * p));
+
+  const progressBar = document.getElementById('ico-progress-bar');
+  if(progressBar) progressBar.style.width = progressPct + '%';
+}
+
+function setICOAmount(amount){
+  const input = document.getElementById('icoAmount');
+  if(input){
+    input.value = amount;
+    validateICO();
+  }
+}
+
+function setICOAmountMax(){
+  const maxAmount = Math.floor(dappPgoldPrice * 1000);
+  setICOAmount(maxAmount);
+}
+
 function validateICO(){
   const v=parseFloat(document.getElementById('icoAmount')?.value);
   const err=document.getElementById('icoError');
@@ -1276,6 +1426,9 @@ function updateDappPriceDisplays(p){
   set('port-vesting-usd',fmt(PORTFOLIO.vesting*p));
   set('port-vp-usd',fmt(PORTFOLIO.vp*p));
   set('port-total-usd','≈ '+fmt(total));
+
+  // 更新 ICO 页面数据
+  updateICODisplays(p);
 
   const icoMax=Math.round(ICO_CAP_PGOLD*p);
   const icoEl=document.getElementById('icoAmount');
