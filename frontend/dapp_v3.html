@@ -93,6 +93,12 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   background:radial-gradient(ellipse,rgba(212,168,67,.04) 0%,transparent 65%);
   pointer-events:none;
 }
+.nw-block .lock-bg{
+  position:absolute;right:24px;top:50%;transform:translateY(-50%);
+  font-size:7.5em;opacity:.045;color:var(--gold);
+  pointer-events:none;user-select:none;line-height:1;
+  filter:drop-shadow(0 0 18px rgba(212,168,67,.35));
+}
 .nw-label{font-size:.68em;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;}
 .nw-value{
   font-size:3.2em;font-weight:800;letter-spacing:-1.5px;line-height:1;
@@ -912,6 +918,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <!-- ══ STAKING ══ -->
 <div class="page" id="page-staking">
   <div class="nw-block">
+    <span class="lock-bg">🔒</span>
     <div class="nw-label" data-i18n="nav.staking">质押中心</div>
     <div class="nw-value" id="stake-staked-val">800 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
     <div class="nw-sub" data-i18n="stake.staked">已质押 · A轨</div>
