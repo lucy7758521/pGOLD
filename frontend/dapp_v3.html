@@ -364,6 +364,8 @@ tr:hover td{background:rgba(212,168,67,.03);}
 .btn-row-sm{display:flex;gap:8px;}
 .btn-purple{background:rgba(139,92,246,.12);color:var(--purple);border:1px solid rgba(139,92,246,.22);}
 .btn-purple:hover{background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.35);}
+.btn-green{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.22);}
+.btn-green:hover{background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.35);}
 
 /* BADGE */
 .badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.68em;font-weight:700;}
@@ -1028,27 +1030,27 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <div class="nw-block">
     <span class="faucet-bg">🚰</span>
     <div class="nw-label" data-i18n="nav.vesting">释放计划</div>
-    <div class="nw-value">2,455 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
+    <div class="nw-value" id="vest-total-val">2,455 <span style="font-size:.4em;color:var(--gold)">pGOLD</span></div>
     <div class="nw-sub" data-i18n="vest.pending">待释放总量</div>
   </div>
   <div class="stats-row">
     <div class="stat-cell">
       <div class="sc-l" data-i18n="vest.released">已释放</div>
-      <div class="sc-v" style="color:var(--green)">245 pGOLD</div>
+      <div class="sc-v" id="vest-released-val" style="color:var(--green)">245 pGOLD</div>
     </div>
     <div class="stat-cell">
       <div class="sc-l" data-i18n="vest.nextRelease">下次释放</div>
-      <div class="sc-v">+68 pGOLD</div>
+      <div class="sc-v" id="vest-next-val" style="color:var(--blue)">+68 pGOLD</div>
     </div>
     <div class="stat-cell">
       <div class="sc-l" data-i18n="vest.annualRelease">年化释放</div>
-      <div class="sc-v">~820 pGOLD</div>
+      <div class="sc-v" id="vest-annual-val" style="color:var(--red)">~820 pGOLD</div>
     </div>
   </div>
 
   <div class="sec-hd">
     <h2 data-i18n="vest.progress">各轨释放进度</h2>
-    <button class="btn btn-gold btn-sm" onclick="withConfirm('claimAll')"><span class="btn-label" data-i18n="vest.claimAll">一键领取全部</span><span class="btn-spinner"></span></button>
+    <button class="btn btn-outline btn-sm" onclick="withConfirm('claimAll')"><span class="btn-label" data-i18n="vest.claimAll">一键领取全部</span><span class="btn-spinner"></span></button>
   </div>
 
   <div class="vest-list">
@@ -1058,14 +1060,14 @@ tr:hover td{background:rgba(212,168,67,.03);}
           <div class="vest-name" data-i18n="vest.trackE">E轨 · 创世池</div>
           <div class="vest-meta">2,400 pGOLD · <span data-i18n="vest.linear3y">3年线性</span></div>
         </div>
-        <span class="vest-pct" style="color:var(--purple)">5.8%</span>
+        <span class="vest-pct" id="vest-e-pct" style="color:var(--purple)">5.8%</span>
       </div>
-      <div class="progress-bar" style="margin:0 20px 0"><div class="progress-fill" style="width:5.8%;background:var(--purple)"></div></div>
+      <div class="progress-bar" style="margin:0 20px 0"><div class="progress-fill" id="vest-e-bar" style="width:5.8%;background:var(--purple)"></div></div>
       <div class="vest-foot">
-        <span data-i18n="vest.remain3y">剩余 35/36 期</span>
+        <span id="vest-e-remain">剩余 35/36 期</span>
         <div class="btn-row-sm">
-          <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','E')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
-          <button class="btn btn-outline btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-ghost btn-sm" style="font-size:.82em" onclick="withConfirm('claim','E')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+          <button class="btn btn-green btn-sm" onclick="withConfirm('wrap','E')"><span class="btn-label" data-i18n="vest.wrap">包装为 vPGOLD</span><span class="btn-spinner"></span></button>
         </div>
       </div>
     </div>
@@ -1075,12 +1077,12 @@ tr:hover td{background:rgba(212,168,67,.03);}
           <div class="vest-name" data-i18n="vest.trackB">B轨 · 月榜奖励</div>
           <div class="vest-meta">180 pGOLD · <span data-i18n="vest.linear">10年线性</span></div>
         </div>
-        <span class="vest-pct" style="color:var(--blue)">2.5%</span>
+        <span class="vest-pct" id="vest-b-pct" style="color:var(--blue)">2.5%</span>
       </div>
-      <div class="progress-bar" style="margin:0 20px 0"><div class="progress-fill" style="width:2.5%;background:var(--blue)"></div></div>
+      <div class="progress-bar" style="margin:0 20px 0"><div class="progress-fill" id="vest-b-bar" style="width:2.5%;background:var(--blue)"></div></div>
       <div class="vest-foot">
-        <span data-i18n="vest.remain10y">剩余 118/120 期</span>
-        <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+        <span id="vest-b-remain">剩余 118/120 期</span>
+        <button class="btn btn-ghost btn-sm" style="font-size:.82em" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
       </div>
     </div>
     <div class="vest-item vest-c">
@@ -1089,12 +1091,12 @@ tr:hover td{background:rgba(212,168,67,.03);}
           <div class="vest-name" data-i18n="vest.trackC">C轨 · 燃烧补偿</div>
           <div class="vest-meta">150 pGOLD · <span data-i18n="vest.linear">10年线性</span></div>
         </div>
-        <span class="vest-pct" style="color:var(--red)">1.8%</span>
+        <span class="vest-pct" id="vest-c-pct" style="color:var(--red)">1.8%</span>
       </div>
-      <div class="progress-bar" style="margin:0 20px 0"><div class="progress-fill" style="width:1.8%;background:var(--red)"></div></div>
+      <div class="progress-bar" style="margin:0 20px 0"><div class="progress-fill" id="vest-c-bar" style="width:1.8%;background:var(--red)"></div></div>
       <div class="vest-foot">
-        <span data-i18n="vest.remain10y">剩余 118/120 期</span>
-        <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','C')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
+        <span id="vest-c-remain">剩余 118/120 期</span>
+        <button class="btn btn-ghost btn-sm" style="font-size:.82em" onclick="withConfirm('claim','C')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
       </div>
     </div>
   </div>
@@ -1104,20 +1106,30 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <p class="card-desc" data-i18n="vest.vpDesc">vPGOLD 是你锁仓释放权益的代币化凭证。可转让、可在二级市场交易。</p>
     <div class="info-row" style="margin-bottom:16px">
       <span class="info-label" data-i18n="vest.vpBalance">vPGOLD 余额</span>
-      <span class="info-val data-highlight" style="color:var(--purple)">240 vPGOLD</span>
+      <span class="info-val data-highlight" id="vest-vp-balance" style="color:var(--purple)">240 vPGOLD</span>
     </div>
     <div class="form-row">
       <label data-i18n="vest.toAddr">接收地址</label>
-      <input type="text" id="vpAddr" placeholder="0x...">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="vpAddr" placeholder="0x..." style="flex:1">
+        <button class="btn btn-ghost btn-sm" onclick="openQRScanner()" title="扫码填入地址" style="padding:8px 10px;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+            <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+          </svg>
+        </button>
+      </div>
     </div>
     <div class="form-row">
       <label data-i18n="vest.amount">数量</label>
       <input type="number" id="vpAmount" placeholder="10">
     </div>
     <div class="btn-row">
-      <button class="btn btn-purple" onclick="withConfirm('transferVp')" style="flex:1"><span class="btn-label" data-i18n="vest.send">发送</span><span class="btn-spinner"></span></button>
-      <button class="btn btn-outline" onclick="withConfirm('claimVp')" style="flex:1"><span class="btn-label" data-i18n="vest.redeem">赎回底层 pGOLD</span><span class="btn-spinner"></span></button>
-      <button class="btn btn-ghost" onclick="withConfirm('unwrapVp')" style="flex:1"><span class="btn-label" data-i18n="vest.unwrap">解包</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-danger" onclick="withConfirm('transferVp')" style="flex:1"><span class="btn-label" data-i18n="vest.send">发送</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-purple" onclick="withConfirm('claimVp')" style="flex:1"><span class="btn-label" data-i18n="vest.redeem">赎回底层 pGOLD</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-green" onclick="withConfirm('unwrapVp')" style="flex:1"><span class="btn-label" data-i18n="vest.unwrap">解包</span><span class="btn-spinner"></span></button>
     </div>
   </div>
 </div>
@@ -1582,13 +1594,122 @@ function withConfirm(action,track){
         <span style="color:var(--red)">⚠ 取出将降低你的奖励基数</span><br>
         <span style="color:var(--text2)">奖励资格由排名+存入量共同决定</span>`;
 
+  } else if(action==='claim'){
+    const tr=VEST_DATA.tracks[track];
+    const amt=tr?tr.perPeriod:0;
+    const pct=tr?(tr.released/tr.total*100).toFixed(1):0;
+    pendingAction={action,track,amount:amt};
+    titleTxt=isEn?`Claim Track ${track} Reward`:`领取 ${track} 轨奖励`;
+    details=isEn
+      ?`<b>Claim Track ${track} · This Period</b><br>
+        Amount: <span style="color:var(--green)">${fmt(amt,2)} pGOLD</span><br>
+        ≈ $${fmtN(amt*p)} USD<br>
+        ≈ ${fmt(amt/(p*31.1035)*31.1035,4)} PAXG<br><br>
+        <span style="color:var(--text2)">Release progress: ${pct}% · Remaining: ${tr.periodsLeft}/${tr.periods} periods</span>`
+      :`<b>领取 ${track} 轨 · 本期释放</b><br>
+        金额：<span style="color:var(--green)">${fmt(amt,2)} pGOLD</span><br>
+        ≈ $${fmtN(amt*p)} USD<br>
+        ≈ ${fmt(amt/(p*31.1035)*31.1035,4)} PAXG<br><br>
+        <span style="color:var(--text2)">释放进度：${pct}% · 剩余 ${tr.periodsLeft}/${tr.periods} 期</span>`;
+
+  } else if(action==='wrap'){
+    const tr=VEST_DATA.tracks[track];
+    const amt=tr?parseFloat((tr.perPeriod*2).toFixed(2)):0;
+    pendingAction={action,track,amount:amt};
+    titleTxt=isEn?'Wrap to vPGOLD':'包装为 vPGOLD';
+    details=isEn
+      ?`<b>Wrap ${fmt(amt,2)} pGOLD → vPGOLD</b><br><br>
+        <span style="color:var(--green)">✓ vPGOLD is a tradeable on-chain vesting certificate</span><br>
+        <span style="color:var(--green)">✓ Can be transferred or sold on secondary markets</span><br>
+        <span style="color:var(--green)">✓ Underlying release schedule continues unchanged</span><br><br>
+        <span style="color:var(--red)">⚠ Wrapping is irreversible — you can only unwrap back</span>`
+      :`<b>包装 ${fmt(amt,2)} pGOLD → vPGOLD</b><br><br>
+        <span style="color:var(--green)">✓ vPGOLD 是可转让的链上锁仓凭证</span><br>
+        <span style="color:var(--green)">✓ 可在二级市场转让或出售</span><br>
+        <span style="color:var(--green)">✓ 底层释放计划继续按原节奏执行</span><br><br>
+        <span style="color:var(--red)">⚠ 包装操作不可撤销，只能解包恢复</span>`;
+
+  } else if(action==='claimAll'){
+    const eAmt=VEST_DATA.tracks.E.perPeriod;
+    const bAmt=VEST_DATA.tracks.B.perPeriod;
+    const cAmt=VEST_DATA.tracks.C.perPeriod;
+    const total=parseFloat((eAmt+bAmt+cAmt).toFixed(2));
+    pendingAction={action,track,eAmt,bAmt,cAmt,total};
+    titleTxt=isEn?'Claim All Rewards':'一键领取全部';
+    details=isEn
+      ?`<b>Claim All Tracks · This Period</b><br><br>
+        Track E (Genesis): <span style="color:var(--purple)">${fmt(eAmt,2)} pGOLD</span><br>
+        Track B (Monthly): <span style="color:var(--blue)">${fmt(bAmt,2)} pGOLD</span><br>
+        Track C (Burn):    <span style="color:var(--red)">${fmt(cAmt,2)} pGOLD</span><br>
+        <hr style="border-color:var(--border);margin:8px 0">
+        Total: <span style="color:var(--green);font-weight:700">${fmtN(total)} pGOLD</span><br>
+        ≈ $${fmtN(total*p)} USD`
+      :`<b>一键领取全部 · 本期</b><br><br>
+        E轨（创世池）：<span style="color:var(--purple)">${fmt(eAmt,2)} pGOLD</span><br>
+        B轨（月榜）：  <span style="color:var(--blue)">${fmt(bAmt,2)} pGOLD</span><br>
+        C轨（燃烧）：  <span style="color:var(--red)">${fmt(cAmt,2)} pGOLD</span><br>
+        <hr style="border-color:var(--border);margin:8px 0">
+        合计：<span style="color:var(--green);font-weight:700">${fmtN(total)} pGOLD</span><br>
+        ≈ $${fmtN(total*p)} USD`;
+
+  } else if(action==='transferVp'){
+    const addr=document.getElementById('vpAddr')?.value?.trim()||'';
+    const amt=parseFloat(document.getElementById('vpAmount')?.value)||0;
+    if(!addr){showToast(isEn?'Enter recipient address':'请输入接收地址','error');return;}
+    if(amt<=0){showToast(isEn?'Enter amount':'请输入数量','error');return;}
+    if(amt>VEST_DATA.vp){showToast(isEn?'Insufficient vPGOLD balance':'vPGOLD 余额不足','error');return;}
+    pendingAction={action,track,addr,amount:amt};
+    titleTxt=isEn?'Send vPGOLD':'发送 vPGOLD';
+    const shortAddr=addr.length>12?`${addr.slice(0,8)}...${addr.slice(-6)}`:addr;
+    details=isEn
+      ?`<b style="color:var(--red)">⚠ HIGH RISK — Cannot be reversed</b><br><br>
+        Recipient: <span style="color:var(--text);font-family:monospace;font-size:.9em">${addr}</span><br>
+        Amount: <span style="color:var(--red);font-weight:700">${fmtN(amt)} vPGOLD</span><br>
+        ≈ $${fmtN(amt*p)} USD<br><br>
+        <span style="color:var(--text2)">Remaining after send: ${fmtN(VEST_DATA.vp-amt)} vPGOLD</span><br>
+        <span style="color:var(--muted)">Please verify the address carefully. Once confirmed, this action cannot be undone.</span>`
+      :`<b style="color:var(--red)">⚠ 高风险操作 — 不可撤回</b><br><br>
+        接收地址：<span style="color:var(--text);font-family:monospace;font-size:.9em">${addr}</span><br>
+        发送数量：<span style="color:var(--red);font-weight:700">${fmtN(amt)} vPGOLD</span><br>
+        ≈ $${fmtN(amt*p)} USD<br><br>
+        <span style="color:var(--text2)">发送后余额：${fmtN(VEST_DATA.vp-amt)} vPGOLD</span><br>
+        <span style="color:var(--muted)">请仔细核对地址，确认后无法撤回。</span>`;
+
+  } else if(action==='claimVp'){
+    const amt=parseFloat(document.getElementById('vpAmount')?.value)||VEST_DATA.vp;
+    const claimAmt=Math.min(amt,VEST_DATA.vp);
+    pendingAction={action,track,amount:claimAmt};
+    titleTxt=isEn?'Redeem vPGOLD → pGOLD':'赎回底层 pGOLD';
+    details=isEn
+      ?`<b>Redeem ${fmtN(claimAmt)} vPGOLD → pGOLD</b><br>
+        Expected receipt: <span style="color:var(--green)">${fmtN(claimAmt)} pGOLD</span><br>
+        ≈ $${fmtN(claimAmt*p)} USD<br><br>
+        <span style="color:var(--red)">⚠ Redeemed vPGOLD will be burned and the vesting schedule terminated.</span>`
+      :`<b>赎回 ${fmtN(claimAmt)} vPGOLD → pGOLD</b><br>
+        预计到账：<span style="color:var(--green)">${fmtN(claimAmt)} pGOLD</span><br>
+        ≈ $${fmtN(claimAmt*p)} USD<br><br>
+        <span style="color:var(--red)">⚠ 赎回后 vPGOLD 将被销毁，对应释放计划终止。</span>`;
+
+  } else if(action==='unwrapVp'){
+    const amt=parseFloat(document.getElementById('vpAmount')?.value)||VEST_DATA.vp;
+    const unwrapAmt=Math.min(amt,VEST_DATA.vp);
+    pendingAction={action,track,amount:unwrapAmt};
+    titleTxt=isEn?'Unwrap vPGOLD':'解包 vPGOLD';
+    details=isEn
+      ?`<b>Unwrap ${fmtN(unwrapAmt)} vPGOLD → Vesting Plan</b><br><br>
+        <span style="color:var(--green)">✓ Restores original 10-year linear release schedule</span><br>
+        <span style="color:var(--green)">✓ Release continues at the original pace</span><br>
+        <span style="color:var(--text2)">Remaining vPGOLD after unwrap: ${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`
+      :`<b>解包 ${fmtN(unwrapAmt)} vPGOLD → 释放计划</b><br><br>
+        <span style="color:var(--green)">✓ 恢复原始 10 年线性释放计划</span><br>
+        <span style="color:var(--green)">✓ 释放将继续按原节奏执行</span><br>
+        <span style="color:var(--text2)">解包后剩余 vPGOLD：${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`;
+
   } else {
     // 其余操作保持原逻辑
     pendingAction={action,track};
     const msgs={
-      claim:`${t('modal.claim')} ${track||''}`,wrap:t('modal.wrap'),claimAll:t('modal.claimAll'),
-      claimReward:t('modal.claimReward'),transferVp:t('modal.transferVp'),claimVp:t('modal.claimVp'),
-      unwrapVp:t('modal.unwrapVp'),createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),
+      createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),
       claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission'),
     };
     titleTxt=t('modal.default');
@@ -1624,7 +1745,12 @@ function execAction(){
     const success = action==='subscribe' || Math.random()>0.1;
 
     if(!success){
-      showToast(isEn?'Transaction failed, please try again':'操作失败，请稍后重试','error');
+      const claimActions=['claim','claimAll'];
+      if(claimActions.includes(action)){
+        showToast(isEn?'Reward claim failed, please retry':'领取奖励失败，请重试','error');
+      } else {
+        showToast(isEn?'Transaction failed, please try again':'操作失败，请稍后重试','error');
+      }
       return;
     }
 
@@ -1674,6 +1800,61 @@ function execAction(){
       updateStakeDisplays();
       showToast(isEn?`Withdrew ${amt.toFixed(2)} pGOLD from Track B`:`已从 B轨取出 ${amt.toFixed(2)} pGOLD`,'success');
 
+    } else if(action==='claim'){
+      const tr=VEST_DATA.tracks[actionData.track];
+      if(tr&&tr.periodsLeft>0){
+        tr.released+=tr.perPeriod;
+        tr.periodsLeft-=1;
+        VEST_DATA.released+=tr.perPeriod;
+        VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
+      }
+      updateVestingDisplays();
+      showToast(isEn?'Reward claimed successfully':'领取奖励成功','success');
+
+    } else if(action==='claimAll'){
+      ['E','B','C'].forEach(k=>{
+        const tr=VEST_DATA.tracks[k];
+        if(tr&&tr.periodsLeft>0){
+          tr.released+=tr.perPeriod;
+          tr.periodsLeft-=1;
+          VEST_DATA.released+=tr.perPeriod;
+          VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
+        }
+      });
+      updateVestingDisplays();
+      showToast(isEn?'All rewards claimed successfully':'全部奖励领取成功','success');
+
+    } else if(action==='wrap'){
+      const amt=parseFloat(actionData.amount)||0;
+      VEST_DATA.vp+=amt;
+      VEST_DATA.total=Math.max(0,VEST_DATA.total-amt);
+      updateVestingDisplays();
+      showToast(isEn?'Wrapped to vPGOLD successfully':'已成功包装为 vPGOLD','success');
+
+    } else if(action==='transferVp'){
+      const amt=parseFloat(actionData.amount)||0;
+      VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
+      document.getElementById('vpAddr').value='';
+      document.getElementById('vpAmount').value='';
+      updateVestingDisplays();
+      showToast(isEn?'vPGOLD sent successfully':'vPGOLD 已发送','success');
+
+    } else if(action==='claimVp'){
+      const amt=parseFloat(actionData.amount)||0;
+      VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
+      PORTFOLIO.liquid+=amt;
+      document.getElementById('vpAmount').value='';
+      updateVestingDisplays();
+      showToast(isEn?'Redeemed successfully, pGOLD credited':'赎回成功，pGOLD 已到账','success');
+
+    } else if(action==='unwrapVp'){
+      const amt=parseFloat(actionData.amount)||0;
+      VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
+      VEST_DATA.total+=amt;
+      document.getElementById('vpAmount').value='';
+      updateVestingDisplays();
+      showToast(isEn?'Unwrapped successfully, vesting plan restored':'解包成功，释放计划已恢复','success');
+
     } else {
       showToast(t('common.confirm')+'!','success');
     }
@@ -1687,6 +1868,15 @@ function confirmAction(){
 
 /* ── STAKING STATE ── */
 const STAKE_DATA={staked:800,pending:12.5,deposited:800};
+const VEST_DATA={
+  total:2455,released:245,nextRelease:68,annual:820,
+  vp:240,
+  tracks:{
+    E:{total:2400,released:138,periods:36,periodsLeft:35,perPeriod:68.6},
+    B:{total:180,released:4.5,periods:120,periodsLeft:118,perPeriod:1.5},
+    C:{total:150,released:2.7,periods:120,periodsLeft:118,perPeriod:1.25},
+  }
+};
 
 function updateStakeDisplays(){
   const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
@@ -1697,6 +1887,36 @@ function updateStakeDisplays(){
   set('stake-pending-val',fmtN(STAKE_DATA.pending));
   set('stake-deposit-stat',fmtN(STAKE_DATA.deposited));
   set('stake-deposit-val',fmtN(STAKE_DATA.deposited));
+}
+
+function updateVestingDisplays(){
+  const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  const tvEl=document.getElementById('vest-total-val');
+  if(tvEl)tvEl.innerHTML=`${fmtN(VEST_DATA.total)} <span style="font-size:.4em;color:var(--gold)">pGOLD</span>`;
+  set('vest-released-val',`${fmtN(VEST_DATA.released)} pGOLD`);
+  set('vest-next-val',`+${fmtN(VEST_DATA.nextRelease)} pGOLD`);
+  set('vest-annual-val',`~${fmtN(VEST_DATA.annual)} pGOLD`);
+  const vpEl=document.getElementById('vest-vp-balance');
+  if(vpEl)vpEl.textContent=`${fmtN(VEST_DATA.vp)} vPGOLD`;
+  ['E','B','C'].forEach(t=>{
+    const tr=VEST_DATA.tracks[t];
+    const pct=(tr.released/tr.total*100).toFixed(1);
+    const pctEl=document.getElementById(`vest-${t.toLowerCase()}-pct`);
+    const barEl=document.getElementById(`vest-${t.toLowerCase()}-bar`);
+    const remEl=document.getElementById(`vest-${t.toLowerCase()}-remain`);
+    if(pctEl)pctEl.textContent=pct+'%';
+    if(barEl)barEl.style.width=pct+'%';
+    if(remEl)remEl.textContent=`剩余 ${tr.periodsLeft}/${tr.periods} 期`;
+  });
+  PORTFOLIO.vesting=VEST_DATA.total;
+  PORTFOLIO.vp=VEST_DATA.vp;
+  updateDappPriceDisplays(dappPgoldPrice||85);
+}
+
+function openQRScanner(){
+  const isEn=I18N.getLang()==='en';
+  showToast(isEn?'QR scanner requires camera permission (demo mode)':'扫码需要摄像头权限（演示模式）','info');
 }
 
 /* ── ICO ── */
