@@ -1312,6 +1312,32 @@ function closeModal(){
   document.getElementById('confirmModal').classList.remove('show');
   pendingAction=null;
 }
+
+function execAction(){
+  if(!pendingAction) return;
+
+  const action = pendingAction.action;
+  closeModal();
+
+  // 显示加载状态
+  const btn = document.getElementById('icoBtn');
+  if(btn && action === 'subscribe'){
+    btn.classList.add('loading');
+  }
+
+  // 模拟异步操作
+  setTimeout(() => {
+    if(btn) btn.classList.remove('loading');
+
+    // 根据不同操作显示不同的成功消息
+    if(action === 'subscribe'){
+      showToast(t('common.confirm') + '! ' + (I18N.getLang() === 'en' ? 'Subscription successful' : '认购成功'), 'success');
+    } else {
+      showToast(t('common.confirm') + '!', 'success');
+    }
+  }, 1500);
+}
+
 function confirmAction(){
   closeModal();
   showToast(t('common.confirm')+'!','success');
