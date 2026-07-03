@@ -99,13 +99,6 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.25);color:var(--gold);
 }
 .eye-toggle:active{transform:scale(.95);}
-@keyframes countUp{
-  from{opacity:0;transform:translateY(8px);}
-  to{opacity:1;transform:translateY(0);}
-}
-.nw-value span[data-value]{
-  display:inline-block;animation:countUp .6s cubic-bezier(.34,1.56,.64,1);
-}
 .nw-sub{font-size:.78em;color:var(--text2);margin-top:10px;display:flex;align-items:center;gap:8px;}
 .stats-row{
   display:grid;grid-template-columns:repeat(3,1fr);
@@ -598,8 +591,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <div class="asset-list">
     <div class="asset-row">
       <span class="asset-label" data-i18n="port.liquid">流通 pGOLD</span>
-      <span class="asset-amt">600</span>
-      <span class="asset-usd" id="port-liquid-usd">$51,000</span>
+      <span class="asset-amt">1,400</span>
+      <span class="asset-usd" id="port-liquid-usd">$119,000</span>
     </div>
     <div class="asset-row">
       <span class="asset-label" data-i18n="port.staked">质押中 pGOLD</span>
@@ -1268,9 +1261,22 @@ function updateDappPriceDisplays(p){
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
   set('nw-price','$'+p.toFixed(2));
   const total=(PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp)*p;
-  set('nw-total',fmt(total));
+
+  // 更新净资产（只在余额可见时更新）
+  const nwTotal = document.getElementById('nw-total');
+  if(nwTotal && balanceVisible){
+    nwTotal.textContent = fmt(total);
+    nwTotal.setAttribute('data-value', Math.round(total));
+  }
+
+  // 更新统计卡片和持仓明细
   set('stat-balance-usd','≈ '+fmt((PORTFOLIO.liquid+PORTFOLIO.staked)*p));
+  set('port-liquid-usd',fmt(PORTFOLIO.liquid*p));
+  set('port-staked-usd',fmt(PORTFOLIO.staked*p));
+  set('port-vesting-usd',fmt(PORTFOLIO.vesting*p));
+  set('port-vp-usd',fmt(PORTFOLIO.vp*p));
   set('port-total-usd','≈ '+fmt(total));
+
   const icoMax=Math.round(ICO_CAP_PGOLD*p);
   const icoEl=document.getElementById('icoAmount');
   if(icoEl)icoEl.max=icoMax;
@@ -1336,39 +1342,6 @@ function toggleBalance(){
 function formatCurrency(val){
   return '$' + parseInt(val).toLocaleString('en-US');
 }
-
-/* ════ NUMBER COUNTER ANIMATION ════ */
-function animateCounter(element, start, end, duration){
-  const startTime = performance.now();
-  const range = end - start;
-
-  function update(currentTime){
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const easeOut = 1 - Math.pow(1 - progress, 3);
-    const current = Math.floor(start + range * easeOut);
-
-    if(balanceVisible){
-      element.textContent = formatCurrency(current);
-    }
-
-    if(progress < 1){
-      requestAnimationFrame(update);
-    }else{
-      // 动画完成后确保显示约等于号
-      document.getElementById('nw-approx').style.visibility = 'visible';
-    }
-  }
-
-  requestAnimationFrame(update);
-}
-
-// 页面加载时触发数字滚动动画
-window.addEventListener('load', ()=>{
-  const nwTotal = document.getElementById('nw-total');
-  const finalValue = parseInt(nwTotal.getAttribute('data-value'));
-  animateCounter(nwTotal, 0, finalValue, 1500);
-});
 </script>
 </body>
 </html>
