@@ -335,25 +335,49 @@ tr:hover td{background:rgba(255,255,255,.015);}
 
 /* ICO HIGHLIGHTS */
 .ico-highlights{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;
 }
 .highlight-item{
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:16px;display:flex;align-items:center;gap:12px;transition:all .2s;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:12px;display:flex;align-items:center;gap:10px;transition:all .2s;
 }
 .highlight-item:hover{
-  border-color:rgba(212,168,67,.3);background:rgba(212,168,67,.03);transform:translateY(-2px);
+  border-color:rgba(212,168,67,.3);background:rgba(212,168,67,.03);transform:translateY(-1px);
 }
 .highlight-icon{
-  font-size:1.8em;flex-shrink:0;
+  font-size:1.5em;flex-shrink:0;
 }
 .highlight-text{flex:1;}
 .highlight-label{
-  font-size:.85em;font-weight:600;color:var(--text);margin-bottom:2px;
+  font-size:.9em;font-weight:600;color:var(--text);margin-bottom:2px;
 }
 .highlight-desc{
-  font-size:.7em;color:var(--muted);
+  font-size:.75em;color:var(--muted);
 }
+
+/* ICO PREVIEW */
+.ico-preview{
+  background:linear-gradient(135deg, rgba(212,168,67,.08) 0%, rgba(212,168,67,.03) 100%);
+  border:1px solid rgba(212,168,67,.2);border-radius:10px;
+  padding:16px;margin-bottom:16px;text-align:center;
+}
+.ico-preview-label{
+  font-size:.75em;color:var(--muted);margin-bottom:6px;
+}
+.ico-preview-value{
+  font-size:2em;font-weight:700;color:var(--gold);margin-bottom:6px;
+}
+.ico-preview-note{
+  font-size:.7em;color:var(--text2);
+}
+
+/* ICO LIMIT HINT */
+.ico-limit-hint{
+  background:rgba(212,168,67,.05);border:1px solid rgba(212,168,67,.15);
+  border-radius:8px;padding:10px 14px;margin-bottom:16px;
+  font-size:.8em;color:var(--text2);text-align:center;
+}
+.ico-limit-hint span{color:var(--gold);font-weight:600;}
 
 /* QUICK AMOUNT BUTTONS */
 .quick-amounts{
@@ -700,8 +724,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="highlight-item">
       <div class="highlight-icon">💎</div>
       <div class="highlight-text">
-        <div class="highlight-label" data-i18n="ico.vesting">10年线性释放</div>
-        <div class="highlight-desc" data-i18n="ico.vestingDesc">长期价值保障</div>
+        <div class="highlight-label" data-i18n="ico.vesting">3年线性释放</div>
+        <div class="highlight-desc" data-i18n="ico.vestingDesc">E轨释放计划</div>
       </div>
     </div>
   </div>
@@ -756,9 +780,16 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <div class="info-card">
     <div class="form-row">
       <label data-i18n="ico.amountLabel">认购金额 (USDC)</label>
-      <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO()">
+      <input type="number" id="icoAmount" placeholder="1,000" min="100" max="85000" oninput="validateICO();updateICOPreview()">
       <div class="form-error" id="icoError"></div>
-      <div class="form-hint" id="ico-hint-text" data-i18n="ico.hint">个人上限 1,000 pGOLD ($85,000)</div>
+    </div>
+    <!-- pGOLD 预览 -->
+    <div class="ico-preview" id="icoPreview" style="display:none;">
+      <div class="ico-preview-label">预计获得</div>
+      <div class="ico-preview-value">
+        <span id="icoPreviewAmount">0</span> <span style="opacity:.7;font-size:.85em">pGOLD</span>
+      </div>
+      <div class="ico-preview-note">按当前金价 $<span id="icoPreviewPrice">85.00</span>/pGOLD 计算</div>
     </div>
     <!-- 快捷金额按钮 -->
     <div class="quick-amounts">
@@ -767,6 +798,9 @@ tr:hover td{background:rgba(255,255,255,.015);}
       <button class="quick-amt-btn" onclick="setICOAmount(1000)">$1,000</button>
       <button class="quick-amt-btn" onclick="setICOAmount(5000)">$5,000</button>
       <button class="quick-amt-btn" onclick="setICOAmountMax()">MAX</button>
+    </div>
+    <div class="ico-limit-hint">
+      <span data-i18n="ico.limitHint">个人上限</span>: 1,000 pGOLD (≈ <span id="ico-limit-usd">$85,000</span>)
     </div>
     <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()">
       <span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span>
@@ -1083,7 +1117,8 @@ const I18N = {
     'ico.yourPts':'你的积分','ico.poolAlloc':'池分配估算',
     'ico.weight7x':'7x 权重加成','ico.weight7xDesc':'第2档优惠期',
     'ico.backing':'23.5% 背书率','ico.backingDesc':'实物黄金支持',
-    'ico.vesting':'10年线性释放','ico.vestingDesc':'长期价值保障',
+    'ico.vesting':'3年线性释放','ico.vestingDesc':'E轨释放计划',
+    'ico.limitHint':'个人上限',
     'ico.amountLabel':'认购金额 (USDC)','ico.hint':'个人上限 1,000 pGOLD',
     'ico.subscribBtn':'立即认购','ico.errMin':'最低 100 USDC','ico.errMax':'超过个人上限',
     'ico.errInvalid':'请输入有效金额','ico.success':'认购成功！',
@@ -1142,7 +1177,8 @@ const I18N = {
     'ico.yourPts':'Your Points','ico.poolAlloc':'Pool Allocation',
     'ico.weight7x':'7x Weight Bonus','ico.weight7xDesc':'Tier 2 Bonus Period',
     'ico.backing':'23.5% Backing','ico.backingDesc':'Physical Gold Backed',
-    'ico.vesting':'10-Year Vesting','ico.vestingDesc':'Long-term Value',
+    'ico.vesting':'3-Year Vesting','ico.vestingDesc':'Track E Release',
+    'ico.limitHint':'Personal Limit',
     'ico.amountLabel':'Subscribe Amount (USDC)','ico.hint':'Personal cap: 1,000 pGOLD',
     'ico.subscribBtn':'Subscribe Now','ico.errMin':'Minimum 100 USDC','ico.errMax':'Exceeds personal cap',
     'ico.errInvalid':'Enter a valid amount','ico.success':'Subscribed!',
@@ -1303,9 +1339,32 @@ function updateICODisplays(p){
   set('ico-progress-pct', progressPct + '%');
   set('ico-your-amount', ICO_DATA.yourAmount.toLocaleString('en-US'));
   set('ico-your-usd', fmt(ICO_DATA.yourAmount * p));
+  set('ico-limit-usd', fmt(1000 * p));
+  set('icoPreviewPrice', p.toFixed(2));
 
   const progressBar = document.getElementById('ico-progress-bar');
   if(progressBar) progressBar.style.width = progressPct + '%';
+
+  // 更新当前输入的预览
+  updateICOPreview();
+}
+
+function updateICOPreview(){
+  const input = document.getElementById('icoAmount');
+  const preview = document.getElementById('icoPreview');
+  const previewAmount = document.getElementById('icoPreviewAmount');
+
+  if(!input || !preview || !previewAmount) return;
+
+  const usdcAmount = parseFloat(input.value);
+
+  if(usdcAmount && usdcAmount > 0 && !isNaN(usdcAmount)){
+    const pgoldAmount = (usdcAmount / dappPgoldPrice).toFixed(2);
+    previewAmount.textContent = pgoldAmount;
+    preview.style.display = 'block';
+  }else{
+    preview.style.display = 'none';
+  }
 }
 
 function setICOAmount(amount){
@@ -1313,6 +1372,7 @@ function setICOAmount(amount){
   if(input){
     input.value = amount;
     validateICO();
+    updateICOPreview();
   }
 }
 
@@ -1333,10 +1393,39 @@ function validateICO(){
 function confirmSubscribe(){
   const v=parseFloat(document.getElementById('icoAmount')?.value);
   if(!v||v<100){validateICO();return;}
-  pendingAction={action:'subscribe'};
+
+  const pgoldAmount = (v / dappPgoldPrice).toFixed(2);
+  const weight = 7;
+  const points = Math.round(parseFloat(pgoldAmount) * weight);
+
+  pendingAction={action:'subscribe', usdc: v, pgold: pgoldAmount, points: points};
   const modal=document.getElementById('confirmModal');
   document.getElementById('modalTitle').textContent=t('modal.subscribe');
-  document.getElementById('modalMsg').textContent=`${v.toLocaleString()} USDC`;
+
+  const isEn = I18N.getLang() === 'en';
+  const details = isEn
+    ? `You are subscribing to Genesis ICO with:<br><br>
+       <strong style="color:var(--gold);font-size:1.1em">${v.toLocaleString('en-US')} USDC</strong><br>
+       <span style="font-size:.85em;color:var(--text2)">≈ ${pgoldAmount} pGOLD</span><br><br>
+       You will receive:<br>
+       <strong style="color:var(--gold)">${points.toLocaleString('en-US')} Points</strong> (${pgoldAmount} pGOLD × 7x weight)<br><br>
+       <span style="font-size:.8em;color:var(--muted)">
+       • Track E: 3-year linear vesting<br>
+       • Tier 2 active: 7x weight bonus<br>
+       • Final allocation based on total points
+       </span>`
+    : `您正在认购创世池 ICO:<br><br>
+       <strong style="color:var(--gold);font-size:1.1em">${v.toLocaleString('en-US')} USDC</strong><br>
+       <span style="font-size:.85em;color:var(--text2)">≈ ${pgoldAmount} pGOLD</span><br><br>
+       您将获得:<br>
+       <strong style="color:var(--gold)">${points.toLocaleString('en-US')} 积分</strong> (${pgoldAmount} pGOLD × 7倍权重)<br><br>
+       <span style="font-size:.8em;color:var(--muted)">
+       • E轨：3年线性释放<br>
+       • 第2档激活：7倍权重加成<br>
+       • 最终分配基于总积分占比
+       </span>`;
+
+  document.getElementById('modalMsg').innerHTML = details;
   modal.classList.add('show');
 }
 
