@@ -449,10 +449,10 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="nw-label" data-i18n="dash.netWorth">净资产</div>
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="nw-value">
-        <span style="opacity:.6;margin-right:4px;">≈</span>
+        <span id="nw-approx" style="opacity:.6;margin-right:4px;">≈</span>
         <span id="nw-total" data-value="348075">$348,075</span>
       </div>
-      <button class="eye-toggle" onclick="toggleBalance()" aria-label="Toggle balance visibility">
+      <button class="eye-toggle" onclick="toggleBalance()" aria-label="Toggle balance visibility" style="align-self:flex-start;margin-top:8px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle class="eye-open" cx="12" cy="12" r="3"></circle>
@@ -1308,6 +1308,7 @@ let balanceVisible = true;
 function toggleBalance(){
   balanceVisible = !balanceVisible;
   const nwTotal = document.getElementById('nw-total');
+  const nwApprox = document.getElementById('nw-approx');
   const valueText = nwTotal.getAttribute('data-value');
   const eyeBtn = document.querySelector('.eye-toggle');
   const eyeOpen = eyeBtn.querySelectorAll('.eye-open');
@@ -1316,12 +1317,14 @@ function toggleBalance(){
   if(balanceVisible){
     // 显示数字
     nwTotal.textContent = formatCurrency(valueText);
+    nwApprox.style.display = '';
     nwTotal.parentElement.classList.remove('masked');
     eyeOpen.forEach(el=>el.style.display='');
     eyeClosed.forEach(el=>el.style.display='none');
   }else{
     // 隐藏为星号
     nwTotal.textContent = '******';
+    nwApprox.style.display = 'none';
     nwTotal.parentElement.classList.add('masked');
     eyeOpen.forEach(el=>el.style.display='none');
     eyeClosed.forEach(el=>el.style.display='');
@@ -1349,6 +1352,9 @@ function animateCounter(element, start, end, duration){
 
     if(progress < 1){
       requestAnimationFrame(update);
+    }else{
+      // 动画完成后确保显示约等于号
+      document.getElementById('nw-approx').style.display = '';
     }
   }
 
