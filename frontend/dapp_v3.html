@@ -767,12 +767,12 @@ tr:hover td{background:rgba(255,255,255,.015);}
   <div class="info-card">
     <div class="info-row">
       <span class="info-label" data-i18n="ico.yourPts">你的积分</span>
-      <span class="info-val" style="color:var(--gold);font-size:1.3em;font-weight:700">8,400</span>
+      <span class="info-val" style="color:var(--gold);font-size:1.3em;font-weight:700"><span id="ico-your-points">8,400</span></span>
     </div>
     <div class="divider"></div>
     <div class="info-row">
       <span class="info-label" data-i18n="ico.poolAlloc">池分配估算</span>
-      <span class="info-val" style="font-size:1.2em">420 pGOLD</span>
+      <span class="info-val" style="font-size:1.2em"><span id="ico-pool-alloc">420</span> pGOLD</span>
     </div>
   </div>
 
@@ -1317,6 +1317,7 @@ function execAction(){
   if(!pendingAction) return;
 
   const action = pendingAction.action;
+  const actionData = pendingAction;
   closeModal();
 
   // 显示加载状态
@@ -1329,8 +1330,26 @@ function execAction(){
   setTimeout(() => {
     if(btn) btn.classList.remove('loading');
 
-    // 根据不同操作显示不同的成功消息
+    // 根据不同操作显示不同的成功消息并更新数据
     if(action === 'subscribe'){
+      // 更新 ICO 数据
+      const pgoldAmount = parseFloat(actionData.pgold);
+      const points = actionData.points;
+
+      ICO_DATA.yourAmount += pgoldAmount;
+      ICO_DATA.yourPoints += points;
+      ICO_DATA.subscribed += pgoldAmount;
+
+      // 更新显示
+      updateICODisplays(dappPgoldPrice);
+
+      // 清空输入框
+      const input = document.getElementById('icoAmount');
+      if(input) {
+        input.value = '';
+        updateICOPreview();
+      }
+
       showToast(t('common.confirm') + '! ' + (I18N.getLang() === 'en' ? 'Subscription successful' : '认购成功'), 'success');
     } else {
       showToast(t('common.confirm') + '!', 'success');
@@ -1365,6 +1384,8 @@ function updateICODisplays(p){
   set('ico-progress-pct', progressPct + '%');
   set('ico-your-amount', ICO_DATA.yourAmount.toLocaleString('en-US'));
   set('ico-your-usd', fmt(ICO_DATA.yourAmount * p));
+  set('ico-your-points', ICO_DATA.yourPoints.toLocaleString('en-US'));
+  set('ico-pool-alloc', ICO_DATA.yourAmount.toLocaleString('en-US'));
   set('ico-limit-usd', fmt(1000 * p));
   set('icoPreviewPrice', p.toFixed(2));
 
