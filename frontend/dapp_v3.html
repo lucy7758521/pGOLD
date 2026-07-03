@@ -86,6 +86,26 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   background:linear-gradient(135deg,#f0ede5 30%,#d4a843 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
+.nw-value.masked{
+  background:none;-webkit-text-fill-color:var(--text);
+}
+.eye-toggle{
+  background:rgba(255,255,255,.02);border:1px solid var(--border);
+  border-radius:8px;width:36px;height:36px;cursor:pointer;
+  color:var(--muted);transition:all .2s;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;padding:0;
+}
+.eye-toggle:hover{
+  background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.25);color:var(--gold);
+}
+.eye-toggle:active{transform:scale(.95);}
+@keyframes countUp{
+  from{opacity:0;transform:translateY(8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.nw-value span[data-value]{
+  display:inline-block;animation:countUp .6s cubic-bezier(.34,1.56,.64,1);
+}
 .nw-sub{font-size:.78em;color:var(--text2);margin-top:10px;display:flex;align-items:center;gap:8px;}
 .stats-row{
   display:grid;grid-template-columns:repeat(3,1fr);
@@ -427,7 +447,20 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <div class="page active" id="page-dashboard">
   <div class="nw-block">
     <div class="nw-label" data-i18n="dash.netWorth">净资产</div>
-    <div class="nw-value" id="nw-total">$348,075</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="nw-value">
+        <span style="opacity:.6;margin-right:4px;">≈</span>
+        <span id="nw-total" data-value="348075">$348,075</span>
+      </div>
+      <button class="eye-toggle" onclick="toggleBalance()" aria-label="Toggle balance visibility">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle class="eye-open" cx="12" cy="12" r="3"></circle>
+          <path class="eye-closed" style="display:none;" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line class="eye-closed" style="display:none;" x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      </button>
+    </div>
     <div class="nw-sub" id="nw-price-sub">pGOLD <span id="nw-price">$85.00</span> <span id="nw-change" style="color:var(--muted)">—</span></div>
   </div>
   <div class="stats-row">
@@ -1269,6 +1302,65 @@ renderI18n();
 switchPage('dashboard');
 fetchPAXGPrice();
 setInterval(fetchPAXGPrice,5*60*1000);
+
+/* ════ BALANCE VISIBILITY TOGGLE ════ */
+let balanceVisible = true;
+function toggleBalance(){
+  balanceVisible = !balanceVisible;
+  const nwTotal = document.getElementById('nw-total');
+  const valueText = nwTotal.getAttribute('data-value');
+  const eyeBtn = document.querySelector('.eye-toggle');
+  const eyeOpen = eyeBtn.querySelectorAll('.eye-open');
+  const eyeClosed = eyeBtn.querySelectorAll('.eye-closed');
+
+  if(balanceVisible){
+    // 显示数字
+    nwTotal.textContent = formatCurrency(valueText);
+    nwTotal.parentElement.classList.remove('masked');
+    eyeOpen.forEach(el=>el.style.display='');
+    eyeClosed.forEach(el=>el.style.display='none');
+  }else{
+    // 隐藏为星号
+    nwTotal.textContent = '******';
+    nwTotal.parentElement.classList.add('masked');
+    eyeOpen.forEach(el=>el.style.display='none');
+    eyeClosed.forEach(el=>el.style.display='');
+  }
+}
+
+function formatCurrency(val){
+  return '$' + parseInt(val).toLocaleString('en-US');
+}
+
+/* ════ NUMBER COUNTER ANIMATION ════ */
+function animateCounter(element, start, end, duration){
+  const startTime = performance.now();
+  const range = end - start;
+
+  function update(currentTime){
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(start + range * easeOut);
+
+    if(balanceVisible){
+      element.textContent = formatCurrency(current);
+    }
+
+    if(progress < 1){
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+// 页面加载时触发数字滚动动画
+window.addEventListener('load', ()=>{
+  const nwTotal = document.getElementById('nw-total');
+  const finalValue = parseInt(nwTotal.getAttribute('data-value'));
+  animateCounter(nwTotal, 0, finalValue, 1500);
+});
 </script>
 </body>
 </html>
