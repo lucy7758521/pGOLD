@@ -619,7 +619,7 @@ tr:hover td{background:rgba(255,255,255,.015);}
     <div class="asset-row asset-total">
       <span class="asset-label" data-i18n="port.totalValue">持仓总价值</span>
       <span></span>
-      <span class="asset-usd" id="port-total-usd" style="color:var(--gold);font-size:1.05em">$348,075</span>
+      <span class="asset-usd" id="port-total-usd" style="color:var(--gold);font-size:1.05em">≈ $348,075</span>
     </div>
   </div>
 </div>
@@ -1270,7 +1270,7 @@ function updateDappPriceDisplays(p){
   const total=(PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp)*p;
   set('nw-total',fmt(total));
   set('stat-balance-usd','≈ '+fmt((PORTFOLIO.liquid+PORTFOLIO.staked)*p));
-  set('port-total-usd',fmt(total));
+  set('port-total-usd','≈ '+fmt(total));
   const icoMax=Math.round(ICO_CAP_PGOLD*p);
   const icoEl=document.getElementById('icoAmount');
   if(icoEl)icoEl.max=icoMax;
