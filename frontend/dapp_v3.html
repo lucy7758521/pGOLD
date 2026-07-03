@@ -447,12 +447,14 @@ tr:hover td{background:rgba(255,255,255,.015);}
 <div class="page active" id="page-dashboard">
   <div class="nw-block">
     <div class="nw-label" data-i18n="dash.netWorth">净资产</div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span id="nw-approx" style="opacity:.6;margin-right:4px;font-size:3.2em;font-weight:800;color:var(--text);">≈</span>
-      <div class="nw-value">
-        <span id="nw-total" data-value="348075">$348,075</span>
+    <div style="position:relative;">
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span id="nw-approx" style="opacity:.6;font-size:3.2em;font-weight:800;color:var(--text);">≈</span>
+        <div class="nw-value">
+          <span id="nw-total" data-value="348075">$348,075</span>
+        </div>
       </div>
-      <button class="eye-toggle" onclick="toggleBalance()" aria-label="Toggle balance visibility" style="align-self:flex-start;margin-top:8px;">
+      <button class="eye-toggle" onclick="toggleBalance()" aria-label="Toggle balance visibility" style="position:absolute;right:0;top:8px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path class="eye-open" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle class="eye-open" cx="12" cy="12" r="3"></circle>
