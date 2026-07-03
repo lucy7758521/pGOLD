@@ -135,6 +135,9 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   filter:drop-shadow(0 0 12px rgba(212,168,67,.9)) drop-shadow(0 0 28px rgba(255,210,80,.6));
   animation:lockGlow 3s ease-in-out infinite;
 }
+@keyframes qrScan{
+  0%{top:0;opacity:1;}50%{opacity:.6;}100%{top:calc(100% - 2px);opacity:1;}
+}
 @keyframes lockGlow{
   0%,100%{filter:drop-shadow(0 0 10px rgba(212,168,67,.8)) drop-shadow(0 0 24px rgba(255,210,80,.5));}
   50%{filter:drop-shadow(0 0 18px rgba(255,215,80,1)) drop-shadow(0 0 40px rgba(212,168,67,.8));}
@@ -1281,6 +1284,29 @@ tr:hover td{background:rgba(212,168,67,.03);}
 
 </div><!-- /main -->
 
+<!-- ══ QR SCANNER MODAL ══ -->
+<div class="modal-overlay" id="qrModal">
+  <div class="modal-box" style="padding:0;overflow:hidden;max-width:360px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+      <span style="font-weight:600;font-size:.95em">扫描钱包地址二维码</span>
+      <button onclick="closeQRScanner()" style="background:none;border:none;color:var(--text2);font-size:1.4em;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div style="position:relative;width:100%;background:#000">
+      <video id="qrVideo" style="width:100%;display:block;max-height:300px;object-fit:cover" playsinline autoplay muted></video>
+      <canvas id="qrCanvas" style="display:none"></canvas>
+      <!-- 扫描框 -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;pointer-events:none">
+        <div style="position:absolute;top:0;left:0;width:28px;height:28px;border-top:3px solid var(--gold);border-left:3px solid var(--gold);border-radius:2px 0 0 0"></div>
+        <div style="position:absolute;top:0;right:0;width:28px;height:28px;border-top:3px solid var(--gold);border-right:3px solid var(--gold);border-radius:0 2px 0 0"></div>
+        <div style="position:absolute;bottom:0;left:0;width:28px;height:28px;border-bottom:3px solid var(--gold);border-left:3px solid var(--gold);border-radius:0 0 0 2px"></div>
+        <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-bottom:3px solid var(--gold);border-right:3px solid var(--gold);border-radius:0 0 2px 0"></div>
+        <div id="qrScanLine" style="position:absolute;top:0;left:4px;right:4px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:qrScan 2s ease-in-out infinite"></div>
+      </div>
+    </div>
+    <p id="qrStatus" style="text-align:center;padding:12px 16px;font-size:.82em;color:var(--text2);margin:0">将二维码对准框内</p>
+  </div>
+</div>
+
 <!-- ══ CONFIRM MODAL ══ -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-box">
@@ -1916,7 +1942,62 @@ function updateVestingDisplays(){
 
 function openQRScanner(){
   const isEn=I18N.getLang()==='en';
-  showToast(isEn?'QR scanner requires camera permission (demo mode)':'扫码需要摄像头权限（演示模式）','info');
+  const modal=document.getElementById('qrModal');
+  const video=document.getElementById('qrVideo');
+  const canvas=document.getElementById('qrCanvas');
+  const status=document.getElementById('qrStatus');
+  if(!modal||!video||!canvas) return;
+  modal.classList.add('show');
+  status.textContent=isEn?'Align QR code within the frame':'将二维码对准框内';
+  let stream=null;
+  let rafId=null;
+  let stopped=false;
+
+  function stopAll(){
+    stopped=true;
+    if(rafId) cancelAnimationFrame(rafId);
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    stream=null;
+  }
+
+  window._qrStop=stopAll;
+
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+    .then(s=>{
+      if(stopped){s.getTracks().forEach(t=>t.stop());return;}
+      stream=s;
+      video.srcObject=s;
+      video.play();
+      const ctx=canvas.getContext('2d');
+      function tick(){
+        if(stopped||video.readyState<video.HAVE_ENOUGH_DATA){rafId=requestAnimationFrame(tick);return;}
+        canvas.width=video.videoWidth;
+        canvas.height=video.videoHeight;
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
+        const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+        const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
+        if(code&&code.data){
+          const addr=code.data.replace(/^ethereum:/i,'').split('?')[0].trim();
+          const addrEl=document.getElementById('vpAddr');
+          if(addrEl) addrEl.value=addr;
+          status.textContent=isEn?'Address captured!':'地址已填入！';
+          stopAll();
+          setTimeout(()=>closeQRScanner(),600);
+          return;
+        }
+        rafId=requestAnimationFrame(tick);
+      }
+      rafId=requestAnimationFrame(tick);
+    })
+    .catch(()=>{
+      status.textContent=isEn?'Camera access denied':'无法访问摄像头，请检查权限';
+    });
+}
+
+function closeQRScanner(){
+  if(window._qrStop) window._qrStop();
+  const modal=document.getElementById('qrModal');
+  if(modal) modal.classList.remove('show');
 }
 
 /* ── ICO ── */
@@ -2193,6 +2274,7 @@ function formatCurrency(val){
   return '$' + parseInt(val).toLocaleString('en-US');
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </body>
 </html>
 <!-- Cache bust: 1783072824 -->
