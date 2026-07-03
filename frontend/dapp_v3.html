@@ -100,9 +100,20 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   filter:drop-shadow(0 0 12px rgba(212,168,67,.9)) drop-shadow(0 0 28px rgba(255,210,80,.6));
   animation:lockGlow 3s ease-in-out infinite;
 }
+.nw-block .shovel-bg{
+  position:absolute;right:24px;top:50%;transform:translateY(-50%);
+  font-size:7.5em;opacity:.18;
+  pointer-events:none;user-select:none;line-height:1;
+  filter:drop-shadow(0 0 12px rgba(220,50,50,.9)) drop-shadow(0 0 28px rgba(255,80,80,.6));
+  animation:shovelGlow 3s ease-in-out infinite;
+}
 @keyframes lockGlow{
   0%,100%{filter:drop-shadow(0 0 10px rgba(212,168,67,.8)) drop-shadow(0 0 24px rgba(255,210,80,.5));}
   50%{filter:drop-shadow(0 0 18px rgba(255,215,80,1)) drop-shadow(0 0 40px rgba(212,168,67,.8));}
+}
+@keyframes shovelGlow{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(220,50,50,.8)) drop-shadow(0 0 24px rgba(255,80,80,.5));}
+  50%{filter:drop-shadow(0 0 18px rgba(255,60,60,1)) drop-shadow(0 0 40px rgba(220,50,50,.8));}
 }
 .nw-label{font-size:.68em;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;}
 .nw-value{
@@ -806,6 +817,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <!-- ══ ICO ══ -->
 <div class="page" id="page-ico">
   <div class="nw-block">
+    <span class="shovel-bg">⛏️</span>
     <div class="nw-label" data-i18n="ico.title">E轨 · 创世池 ICO</div>
     <div class="nw-value">
       <span id="ico-remaining">168,500</span>
