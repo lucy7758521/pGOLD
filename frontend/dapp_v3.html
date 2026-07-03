@@ -114,6 +114,13 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   filter:drop-shadow(0 0 12px rgba(59,130,246,.9)) drop-shadow(0 0 28px rgba(96,165,250,.6));
   animation:faucetGlow 3s ease-in-out infinite;
 }
+.nw-block .trophy-bg{
+  position:absolute;right:24px;top:50%;transform:translateY(-50%);
+  font-size:7.5em;opacity:.18;color:var(--gold);
+  pointer-events:none;user-select:none;line-height:1;
+  filter:drop-shadow(0 0 12px rgba(212,168,67,.9)) drop-shadow(0 0 28px rgba(255,210,80,.6));
+  animation:lockGlow 3s ease-in-out infinite;
+}
 @keyframes lockGlow{
   0%,100%{filter:drop-shadow(0 0 10px rgba(212,168,67,.8)) drop-shadow(0 0 24px rgba(255,210,80,.5));}
   50%{filter:drop-shadow(0 0 18px rgba(255,215,80,1)) drop-shadow(0 0 40px rgba(212,168,67,.8));}
@@ -1104,6 +1111,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <!-- ══ RANKING ══ -->
 <div class="page" id="page-ranking">
   <div class="nw-block">
+    <span class="trophy-bg">🏆</span>
     <div class="nw-label" data-i18n="nav.ranking">Top 100</div>
     <div class="nw-value">#12</div>
     <div class="nw-sub" data-i18n="dash.monthRank">当前月榜排名</div>
