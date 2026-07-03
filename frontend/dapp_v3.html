@@ -29,9 +29,13 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .nav-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
 .nav-links{display:flex;gap:2px;flex:1;}
 .nav-link{padding:7px 13px;border-radius:8px;font-size:.8em;font-weight:500;color:var(--text2);
-  cursor:pointer;transition:all .15s;border:none;background:none;white-space:nowrap;font-family:inherit;}
-.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04);}
-.nav-link.active{color:var(--text);background:rgba(255,255,255,.07);}
+  cursor:pointer;transition:all .18s;border:none;background:none;white-space:nowrap;font-family:inherit;position:relative;}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.05);}
+.nav-link.active{color:var(--gold);background:rgba(212,168,67,.08);font-weight:600;}
+.nav-link.active::after{
+  content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:16px;height:2px;background:var(--gold);border-radius:2px 2px 0 0;
+}
 .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;}
 .wallet-badge{font-size:.7em;color:var(--text2);font-family:'SF Mono',monospace;
   padding:5px 12px;border:1px solid var(--border);border-radius:20px;}
@@ -68,18 +72,43 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 
 /* DASHBOARD */
-.nw-block{padding:52px 0 40px;border-bottom:1px solid var(--border);}
+.nw-block{
+  padding:52px 0 40px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+}
+.nw-block::before{
+  content:'';position:absolute;top:-60px;left:-80px;width:320px;height:320px;
+  background:radial-gradient(ellipse,rgba(212,168,67,.06) 0%,transparent 65%);
+  pointer-events:none;
+}
 .nw-label{font-size:.68em;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;}
-.nw-value{font-size:3.2em;font-weight:800;color:var(--text);letter-spacing:-1.5px;line-height:1;}
-.nw-sub{font-size:.78em;color:var(--text2);margin-top:10px;}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);
-  border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:28px;}
-.stat-cell{padding:20px 22px;border-right:1px solid var(--border);transition:background .15s;}
-.stat-cell:last-child{border-right:none;}
-.stat-cell:hover{background:var(--surface);}
-.sc-l{font-size:.67em;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;}
-.sc-v{font-size:1.05em;font-weight:700;}
-.sc-h{font-size:.67em;color:var(--muted);margin-top:3px;}
+.nw-value{
+  font-size:3.2em;font-weight:800;letter-spacing:-1.5px;line-height:1;
+  background:linear-gradient(135deg,#f0ede5 30%,#d4a843 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nw-sub{font-size:.78em;color:var(--text2);margin-top:10px;display:flex;align-items:center;gap:8px;}
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:28px;
+}
+.stat-cell{
+  padding:18px 20px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--border);
+  transition:border-color .2s,transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.stat-cell::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(212,168,67,.25),transparent);
+}
+.stat-cell:hover{
+  border-color:rgba(212,168,67,.25);
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+}
+.sc-l{font-size:.65em;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.sc-v{font-size:1.05em;font-weight:700;line-height:1.3;}
+.sc-h{font-size:.67em;color:var(--muted);margin-top:4px;}
 
 /* SECTION HEADER */
 .sec-hd{display:flex;align-items:center;justify-content:space-between;padding:32px 0 14px;}
@@ -89,28 +118,44 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .sec-hd a:hover,.sec-hd button:hover{color:var(--gold);}
 
 /* TRACK LIST */
-.track-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.track-row{display:flex;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border);
-  cursor:pointer;transition:background .15s;gap:16px;position:relative;}
+.track-list{border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.track-row{
+  display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .15s;gap:14px;position:relative;
+}
 .track-row:last-child{border-bottom:none;}
-.track-row:hover{background:var(--surface);}
-.tr-badge{font-size:.62em;font-weight:700;letter-spacing:.8px;padding:3px 8px;
-  border-radius:5px;background:rgba(255,255,255,.05);color:var(--text2);flex-shrink:0;width:44px;text-align:center;}
-.tr-name{font-size:.86em;color:var(--text);font-weight:500;flex:1;}
-.tr-meta{font-size:.75em;color:var(--text2);}
-.tr-value{font-size:.95em;font-weight:700;color:var(--text);text-align:right;}
-.tr-hint{font-size:.67em;color:var(--muted);text-align:right;margin-top:2px;}
-.tr-chevron{color:var(--muted);font-size:.75em;flex-shrink:0;transition:transform .2s;}
+.track-row::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:transparent;transition:background .2s;border-radius:0;
+}
+.track-row:hover{background:rgba(255,255,255,.025);}
+.track-row:hover::before,.track-row.open::before{background:var(--track-color,var(--gold));}
+.tr-badge{
+  font-size:.62em;font-weight:800;letter-spacing:.8px;padding:5px 0;
+  border-radius:8px;background:var(--track-bg,rgba(255,255,255,.05));
+  color:var(--track-color,var(--text2));flex-shrink:0;width:36px;text-align:center;
+}
+.tr-main{flex:1;min-width:0;}
+.tr-name{font-size:.86em;color:var(--text);font-weight:500;}
+.tr-desc{font-size:.72em;color:var(--muted);margin-top:2px;}
+.tr-val-wrap{text-align:right;flex-shrink:0;}
+.tr-val{font-size:.95em;font-weight:700;}
+.tr-hint{font-size:.67em;color:var(--muted);margin-top:2px;}
+.tr-chevron{color:var(--muted);font-size:.8em;flex-shrink:0;transition:transform .22s;margin-left:4px;}
 .track-row.open .tr-chevron{transform:rotate(90deg);}
-.track-detail{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;}
-.track-detail.show{display:block;}
+.track-detail{display:none;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border);padding:0 20px;}
+.track-detail.show{display:block;animation:fadeUp .15s ease;}
 .td-inner{padding:16px 0;border-top:1px solid var(--border);}
+.td-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px;}
+.td-item{padding:12px 14px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);}
+.td-l{font-size:.65em;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.td-v{font-size:.9em;font-weight:700;color:var(--text);}
 .td-row{display:flex;justify-content:space-between;align-items:center;
   padding:8px 0;font-size:.82em;border-bottom:1px solid rgba(255,255,255,.03);}
 .td-row:last-child{border-bottom:none;}
 .td-row .k{color:var(--text2);}
 .td-row .v{font-weight:600;color:var(--text);}
-.td-actions{display:flex;gap:8px;padding-top:14px;}
+.td-actions{display:flex;gap:8px;padding-top:14px;flex-wrap:wrap;}
 
 /* PORTFOLIO TABLE */
 .port-table{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
@@ -158,17 +203,28 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 
 /* BUTTONS */
 .btn{padding:11px 22px;border:none;border-radius:9px;cursor:pointer;font-weight:600;
-  font-size:.82em;transition:all .15s;min-height:40px;display:inline-flex;align-items:center;
-  justify-content:center;gap:6px;font-family:inherit;}
-.btn:active{transform:scale(.97);}
+  font-size:.82em;transition:all .18s;min-height:40px;display:inline-flex;align-items:center;
+  justify-content:center;gap:6px;font-family:inherit;letter-spacing:.2px;}
+.btn:active{transform:scale(.96);}
 .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
-.btn-primary{background:var(--gold);color:#000;}
-.btn-primary:hover{background:var(--gold-dim);}
-.btn-secondary{background:rgba(212,168,67,.1);color:var(--gold);border:1px solid rgba(212,168,67,.2);}
-.btn-secondary:hover{background:rgba(212,168,67,.15);}
+.btn-primary,.btn-gold{
+  background:linear-gradient(135deg,#d4a843,#b88c28);color:#000;
+  box-shadow:0 4px 14px rgba(212,168,67,.2);
+}
+.btn-primary:hover,.btn-gold:hover{
+  background:linear-gradient(135deg,#e0b84e,#c49933);
+  box-shadow:0 6px 20px rgba(212,168,67,.32);transform:translateY(-1px);
+}
+.btn-secondary{background:rgba(212,168,67,.1);color:var(--gold);border:1px solid rgba(212,168,67,.22);}
+.btn-secondary:hover{background:rgba(212,168,67,.18);border-color:rgba(212,168,67,.35);}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-outline:hover{background:rgba(255,255,255,.05);color:var(--text);border-color:rgba(255,255,255,.12);}
 .btn-ghost{background:rgba(255,255,255,.04);color:var(--text2);border:1px solid var(--border);}
 .btn-ghost:hover{background:rgba(255,255,255,.07);color:var(--text);}
+.btn-blue{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.22);}
+.btn-blue:hover{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.35);}
 .btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.btn-danger:hover{background:rgba(239,68,68,.18);}
 .btn-sm{padding:7px 14px;font-size:.75em;min-height:32px;border-radius:7px;}
 .btn-full{width:100%;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -236,6 +292,54 @@ tr:hover td{background:rgba(255,255,255,.015);}
 .toast-warning{background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.25);}
 .toast-info{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.25);}
 
+/* INFO CARD (staking/ICO form cards) */
+.info-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:22px;margin-bottom:16px;transition:border-color .2s;
+}
+.info-card:hover{border-color:rgba(212,168,67,.15);}
+.card-desc{font-size:.82em;color:var(--text2);line-height:1.55;margin-bottom:18px;}
+.info-row{display:flex;justify-content:space-between;align-items:center;
+  font-size:.8em;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.info-row:last-of-type{border-bottom:none;}
+.info-label{color:var(--muted);}
+.info-val{font-weight:600;color:var(--text);}
+
+/* FORM ROWS */
+.form-row{margin-bottom:16px;}
+.form-row label{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:7px;}
+.form-row input,.form-row select{
+  width:100%;padding:12px 14px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:9px;
+  color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .18s;
+}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:rgba(212,168,67,.4);background:rgba(212,168,67,.02);}
+.form-error{font-size:.7em;color:var(--red);margin-top:5px;display:none;}
+.form-error.show{display:block;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-row .btn{flex:1;min-width:80px;}
+.btn-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.15);border-top-color:currentColor;
+  border-radius:50%;animation:spin .6s linear infinite;display:none;}
+.btn.loading .btn-spinner{display:inline-block;}
+.btn.loading .btn-label{opacity:.5;}
+.btn.loading{pointer-events:none;}
+
+/* ASSET LIST */
+.asset-list{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px;}
+.asset-row{
+  display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .15s;
+}
+.asset-row:last-child{border-bottom:none;}
+.asset-row:hover{background:var(--surface);}
+.asset-row.asset-total{
+  background:var(--surface2);border-top:1px solid var(--border);font-weight:700;
+}
+.asset-label{flex:1;font-size:.82em;color:var(--text2);}
+.asset-amt{font-size:.88em;font-weight:600;color:var(--text);min-width:100px;text-align:right;margin-right:16px;}
+.asset-usd{font-size:.78em;color:var(--muted);min-width:80px;text-align:right;}
+
 /* UTILS */
 .flex-between{display:flex;justify-content:space-between;align-items:center;}
 .mt16{margin-top:16px;}.mt8{margin-top:8px;}.mb16{margin-bottom:16px;}.gap8{gap:8px;}
@@ -252,11 +356,13 @@ tr:hover td{background:rgba(255,255,255,.015);}
   .info-grid{grid-template-columns:repeat(2,1fr);}
   .info-cell:nth-child(2){border-right:none;}
   .info-cell:nth-child(1),.info-cell:nth-child(2){border-bottom:1px solid var(--border);}
-  .stats-row{grid-template-columns:1fr 1fr;}
-  .stat-cell:nth-child(2){border-right:none;}
-  .stat-cell:nth-child(3){border-top:1px solid var(--border);grid-column:span 2;}
+  .stats-row{grid-template-columns:1fr 1fr;gap:8px;}
   .nw-value{font-size:2.4em;}
   .topnav{padding:0 16px;}
+  .td-grid{grid-template-columns:1fr 1fr;}
+  .btn-row{gap:6px;}
+  .asset-amt{min-width:80px;}
+  .asset-usd{min-width:60px;}
 }
 </style>
 </head>
@@ -347,8 +453,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
   </div>
   <div class="track-list">
     <!-- Track A -->
-    <div class="track-row" onclick="toggleTrack('tA')">
-      <div class="tr-badge" style="background:rgba(16,185,129,.1);color:var(--green)">A</div>
+    <div class="track-row" onclick="toggleTrack('tA')" style="--track-color:var(--green);--track-bg:rgba(16,185,129,.1)">
+      <div class="tr-badge">A</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="dash.trackA">持币分红</div>
         <div class="tr-desc" data-i18n="stake.trackADesc">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</div>
@@ -367,8 +473,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
       </div>
     </div>
     <!-- Track B -->
-    <div class="track-row" onclick="toggleTrack('tB')">
-      <div class="tr-badge" style="background:rgba(59,130,246,.1);color:var(--blue)">B</div>
+    <div class="track-row" onclick="toggleTrack('tB')" style="--track-color:var(--blue);--track-bg:rgba(59,130,246,.1)">
+      <div class="tr-badge">B</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="dash.trackB">Top 100</div>
         <div class="tr-desc" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</div>
@@ -387,8 +493,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
       </div>
     </div>
     <!-- Track C -->
-    <div class="track-row" onclick="toggleTrack('tC')">
-      <div class="tr-badge" style="background:rgba(239,68,68,.1);color:var(--red)">C</div>
+    <div class="track-row" onclick="toggleTrack('tC')" style="--track-color:var(--red);--track-bg:rgba(239,68,68,.1)">
+      <div class="tr-badge">C</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="dash.trackC">燃烧挖矿</div>
         <div class="tr-desc">手续费 × 10 补偿，C 轨奖励</div>
@@ -406,8 +512,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
       </div>
     </div>
     <!-- Track D -->
-    <div class="track-row" onclick="toggleTrack('tD')">
-      <div class="tr-badge" style="background:rgba(139,92,246,.1);color:var(--purple)">D</div>
+    <div class="track-row" onclick="toggleTrack('tD')" style="--track-color:var(--purple);--track-bg:rgba(139,92,246,.1)">
+      <div class="tr-badge">D</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="dash.trackD">战队返佣</div>
         <div class="tr-desc">直邀 20% · 间邀 5%</div>
@@ -427,8 +533,8 @@ tr:hover td{background:rgba(255,255,255,.015);}
       </div>
     </div>
     <!-- Track E -->
-    <div class="track-row" onclick="toggleTrack('tE')">
-      <div class="tr-badge" style="background:rgba(212,168,67,.1);color:var(--gold)">E</div>
+    <div class="track-row" onclick="toggleTrack('tE')" style="--track-color:var(--gold);--track-bg:rgba(212,168,67,.1)">
+      <div class="tr-badge">E</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="ico.title">创世池 ICO</div>
         <div class="tr-desc">E 轨 · 创世池，10 年线性释放</div>
@@ -1165,5 +1271,4 @@ fetchPAXGPrice();
 setInterval(fetchPAXGPrice,5*60*1000);
 </script>
 </body>
-</html>
 </html>
