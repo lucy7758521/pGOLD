@@ -1324,9 +1324,9 @@ function toggleBalance(){
     eyeOpen.forEach(el=>el.style.display='');
     eyeClosed.forEach(el=>el.style.display='none');
   }else{
-    // 隐藏为星号
+    // 隐藏为星号（约等于号保持显示）
     nwTotal.textContent = '******';
-    nwApprox.style.visibility = 'hidden';
+    nwApprox.style.visibility = 'visible';
     nwTotal.parentElement.classList.add('masked');
     eyeOpen.forEach(el=>el.style.display='none');
     eyeClosed.forEach(el=>el.style.display='');
