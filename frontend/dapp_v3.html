@@ -1314,18 +1314,10 @@ function closeModal(){
 }
 
 function execAction(){
-  console.log('execAction called, pendingAction:', pendingAction);
-
-  if(!pendingAction) {
-    console.log('No pendingAction, returning');
-    return;
-  }
+  if(!pendingAction) return;
 
   const action = pendingAction.action;
   const actionData = pendingAction;
-
-  console.log('action:', action, 'actionData:', actionData);
-
   closeModal();
 
   // 显示加载状态
@@ -1344,14 +1336,9 @@ function execAction(){
       const pgoldAmount = parseFloat(actionData.pgold);
       const points = actionData.points;
 
-      console.log('Before update:', JSON.parse(JSON.stringify(ICO_DATA)));
-
       ICO_DATA.yourAmount += pgoldAmount;
       ICO_DATA.yourPoints += points;
       ICO_DATA.subscribed += pgoldAmount;
-
-      console.log('After update:', JSON.parse(JSON.stringify(ICO_DATA)));
-      console.log('Updating displays with price:', dappPgoldPrice);
 
       // 更新显示
       updateICODisplays(dappPgoldPrice);
@@ -1384,18 +1371,8 @@ const ICO_DATA = {
 };
 
 function updateICODisplays(p){
-  console.log('updateICODisplays called with price:', p, 'ICO_DATA:', ICO_DATA);
-
   const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
-  const set=(id,val)=>{
-    const el=document.getElementById(id);
-    if(el){
-      console.log(`Setting ${id} to:`, val);
-      el.textContent=val;
-    } else {
-      console.warn(`Element ${id} not found!`);
-    }
-  };
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
 
   const remaining = ICO_DATA.poolTotal - ICO_DATA.subscribed;
   const progressPct = ((ICO_DATA.subscribed / ICO_DATA.poolTotal) * 100).toFixed(2);
@@ -1413,12 +1390,7 @@ function updateICODisplays(p){
   set('icoPreviewPrice', p.toFixed(2));
 
   const progressBar = document.getElementById('ico-progress-bar');
-  if(progressBar) {
-    progressBar.style.width = progressPct + '%';
-    console.log('Progress bar width set to:', progressPct + '%');
-  } else {
-    console.warn('Progress bar not found!');
-  }
+  if(progressBar) progressBar.style.width = progressPct + '%';
 
   // 更新当前输入的预览
   updateICOPreview();
@@ -1473,12 +1445,7 @@ function confirmSubscribe(){
   const weight = 7;
   const points = Math.round(parseFloat(pgoldAmount) * weight);
 
-  console.log('confirmSubscribe called with:', {v, pgoldAmount, points});
-
   pendingAction={action:'subscribe', usdc: v, pgold: pgoldAmount, points: points};
-
-  console.log('pendingAction set to:', pendingAction);
-
   const modal=document.getElementById('confirmModal');
   document.getElementById('modalTitle').textContent=t('modal.subscribe');
 
