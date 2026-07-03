@@ -392,6 +392,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
   border:1px solid var(--border);border-radius:9px;
   color:var(--text);font-size:.9em;font-family:inherit;transition:border-color .18s;
 }
+.form-row input::placeholder{color:var(--muted);opacity:.55;}
 .form-row input:focus,.form-row select:focus{outline:none;border-color:rgba(212,168,67,.4);background:rgba(212,168,67,.02);box-shadow:0 0 0 3px rgba(212,168,67,.07);}
 .form-error{font-size:.7em;color:var(--red);margin-top:5px;display:none;}
 .form-error.show{display:block;}
@@ -912,14 +913,14 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <div class="page" id="page-staking">
   <div class="nw-block">
     <div class="nw-label" data-i18n="nav.staking">质押中心</div>
-    <div class="nw-value">800 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
+    <div class="nw-value" id="stake-staked-val">800 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
     <div class="nw-sub" data-i18n="stake.staked">已质押 · A轨</div>
   </div>
   <div class="stats-row">
     <div class="stat-cell">
       <div class="sc-l" data-i18n="stake.pending">待领分红</div>
-      <div class="sc-v" style="color:var(--green);display:flex;align-items:center;gap:6px">
-        <span class="pulse-dot" style="background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5)"></span>12.5 pGOLD
+      <div class="sc-v" id="stake-pending-stat" style="color:var(--green);display:flex;align-items:center;gap:6px">
+        <span class="pulse-dot" style="background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5)"></span><span id="stake-pending-val">12.5</span> pGOLD
       </div>
     </div>
     <div class="stat-cell">
@@ -928,7 +929,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </div>
     <div class="stat-cell">
       <div class="sc-l" data-i18n="stake.deposited">B轨存入</div>
-      <div class="sc-v" style="color:var(--blue)">800 pGOLD</div>
+      <div class="sc-v" style="color:var(--blue)"><span id="stake-deposit-stat">800</span> pGOLD</div>
     </div>
   </div>
 
@@ -954,7 +955,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <p class="card-desc" data-i18n="stake.trackBDesc">存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小</p>
     <div class="info-row" style="margin-bottom:14px">
       <span class="info-label" data-i18n="stake.deposited">已存入</span>
-      <span class="info-val data-highlight" style="color:var(--blue)">800 pGOLD</span>
+      <span class="info-val data-highlight" style="color:var(--blue)"><span id="stake-deposit-val">800</span> pGOLD</span>
     </div>
     <div class="form-row">
       <label data-i18n="stake.depositAmt">存入数量</label>
@@ -1418,22 +1419,122 @@ function showToast(msg,type='info'){
 
 /* ── CONFIRM MODAL ── */
 function withConfirm(action,track){
-  pendingAction={action,track};
-  const modal=document.getElementById('confirmModal');
-  const title=document.getElementById('modalTitle');
-  const msg=document.getElementById('modalMsg');
-  const msgs={
-    stake:`${t('modal.stake')}: ${document.getElementById('stakeAmount')?.value||0} pGOLD`,
-    unstake:t('modal.unstake'),deposit:t('modal.deposit'),withdraw:t('modal.withdraw'),
-    claim:`${t('modal.claim')} ${track||''}`,wrap:t('modal.wrap'),claimAll:t('modal.claimAll'),
-    claimReward:t('modal.claimReward'),transferVp:t('modal.transferVp'),claimVp:t('modal.claimVp'),
-    unwrapVp:t('modal.unwrapVp'),createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),
-    claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission'),
-  };
-  title.textContent=t('modal.default');
-  msg.textContent=msgs[action]||action;
-  modal.classList.add('show');
+  const p=dappPgoldPrice||85;
+  const paxgPrice=p*31.1035;
+  const isEn=I18N.getLang()==='en';
+  const fmt=(v,d=2)=>parseFloat(v).toFixed(d);
+  const fmtN=(v)=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
+
+  let amount=0,details='',titleTxt='';
+
+  if(action==='stake'){
+    amount=parseFloat(document.getElementById('stakeAmount')?.value)||0;
+    if(amount<=0){validateStake();return;}
+    const annualReward=fmt(amount*0.035,2);
+    const dailyReward=fmt(amount*0.035/365,4);
+    pendingAction={action,track,amount};
+    titleTxt=isEn?'Confirm Stake':'确认质押';
+    details=isEn
+      ?`<b>Stake ${fmtN(amount)} pGOLD</b><br>
+        ≈ $${fmtN(amount*p)} USD<br>
+        ≈ ${fmt(amount/paxgPrice*31.1035,4)} PAXG<br><br>
+        <span style="color:var(--green)">Estimated annual yield: ${annualReward} pGOLD / yr</span><br>
+        <span style="color:var(--green)">Estimated daily yield: ${dailyReward} pGOLD / day</span>`
+      :`<b>质押 ${fmtN(amount)} pGOLD</b><br>
+        ≈ $${fmtN(amount*p)} USD<br>
+        ≈ ${fmt(amount/paxgPrice*31.1035,4)} PAXG<br><br>
+        <span style="color:var(--green)">预计年化收益：${annualReward} pGOLD / 年</span><br>
+        <span style="color:var(--green)">预计日收益：${dailyReward} pGOLD / 天</span>`;
+
+  } else if(action==='unstake'){
+    const staked=STAKE_DATA.staked;
+    const pending=STAKE_DATA.pending;
+    const annualLoss=fmt(staked*0.035,2);
+    pendingAction={action,track};
+    titleTxt=isEn?'Confirm Unstake':'确认解质押';
+    details=isEn
+      ?`<b>Unstake all ${fmtN(staked)} pGOLD</b><br><br>
+        <span style="color:var(--red)">⚠ Forfeited pending dividend: ${fmtN(pending)} pGOLD</span><br>
+        <span style="color:var(--red)">≈ $${fmtN(pending*p)} USD</span><br>
+        <span style="color:var(--text2)">Annual yield lost: ${annualLoss} pGOLD / yr</span><br><br>
+        <span style="color:var(--muted)">Tip: Claim dividends before unstaking.</span>`
+      :`<b>解除全部质押 ${fmtN(staked)} pGOLD</b><br><br>
+        <span style="color:var(--red)">⚠ 将损失待领分红：${fmtN(pending)} pGOLD</span><br>
+        <span style="color:var(--red)">≈ $${fmtN(pending*p)} USD</span><br>
+        <span style="color:var(--text2)">年化收益损失：${annualLoss} pGOLD / 年</span><br><br>
+        <span style="color:var(--muted)">建议先领取分红再解质押</span>`;
+
+  } else if(action==='claimReward'){
+    const pending=STAKE_DATA.pending;
+    pendingAction={action,track};
+    titleTxt=isEn?'Claim Dividend':'领取分红';
+    details=isEn
+      ?`<b>Claim ${fmtN(pending)} pGOLD</b><br>
+        ≈ $${fmtN(pending*p)} USD<br>
+        ≈ ${fmt(pending/paxgPrice*31.1035,4)} PAXG<br><br>
+        <span style="color:var(--text2)">Current staked: ${fmtN(STAKE_DATA.staked)} pGOLD</span>`
+      :`<b>领取待领分红 ${fmtN(pending)} pGOLD</b><br>
+        ≈ $${fmtN(pending*p)} USD<br>
+        ≈ ${fmt(pending/paxgPrice*31.1035,4)} PAXG<br><br>
+        <span style="color:var(--text2)">当前已质押：${fmtN(STAKE_DATA.staked)} pGOLD</span>`;
+
+  } else if(action==='deposit'){
+    amount=parseFloat(document.getElementById('depositAmount')?.value)||0;
+    if(amount<=0){showToast(t('stake.errZero'),'error');return;}
+    const newTotal=STAKE_DATA.deposited+amount;
+    const total10y=fmt(amount*3,2);
+    const daily=fmt(amount*3/3650,4);
+    pendingAction={action,track,amount};
+    titleTxt=isEn?'Confirm Deposit':'确认存入锚定';
+    details=isEn
+      ?`<b>Deposit ${fmtN(amount)} pGOLD to Track B</b><br>
+        New total deposited: ${fmtN(newTotal)} pGOLD<br><br>
+        <span style="color:var(--blue)">Reward multiplier: 300% (Top 100)</span><br>
+        <span style="color:var(--green)">Est. 10-yr total reward: ${total10y} pGOLD</span><br>
+        <span style="color:var(--green)">Est. daily reward: ${daily} pGOLD / day</span>`
+      :`<b>存入 ${fmtN(amount)} pGOLD 至 B轨锚定</b><br>
+        锚定后总存入：${fmtN(newTotal)} pGOLD<br><br>
+        <span style="color:var(--blue)">收益率：300%（月榜前100）</span><br>
+        <span style="color:var(--green)">预计10年总收益：${total10y} pGOLD</span><br>
+        <span style="color:var(--green)">日收益估算：${daily} pGOLD / 天</span>`;
+
+  } else if(action==='withdraw'){
+    amount=parseFloat(document.getElementById('depositAmount')?.value)||STAKE_DATA.deposited;
+    if(amount<=0){showToast(t('stake.errZero'),'error');return;}
+    amount=Math.min(amount,STAKE_DATA.deposited);
+    const remaining=Math.max(0,STAKE_DATA.deposited-amount);
+    pendingAction={action,track,amount};
+    titleTxt=isEn?'Confirm Withdraw':'确认取出';
+    details=isEn
+      ?`<b>Withdraw ${fmtN(amount)} pGOLD from Track B</b><br>
+        Remaining after withdraw: ${fmtN(remaining)} pGOLD<br><br>
+        <span style="color:var(--red)">⚠ Withdrawing reduces your reward base</span><br>
+        <span style="color:var(--text2)">Reward eligibility depends on ranking + deposit</span>`
+      :`<b>取出 ${fmtN(amount)} pGOLD（B轨锚定）</b><br>
+        取出后剩余存入：${fmtN(remaining)} pGOLD<br><br>
+        <span style="color:var(--red)">⚠ 取出将降低你的奖励基数</span><br>
+        <span style="color:var(--text2)">奖励资格由排名+存入量共同决定</span>`;
+
+  } else {
+    // 其余操作保持原逻辑
+    pendingAction={action,track};
+    const msgs={
+      claim:`${t('modal.claim')} ${track||''}`,wrap:t('modal.wrap'),claimAll:t('modal.claimAll'),
+      claimReward:t('modal.claimReward'),transferVp:t('modal.transferVp'),claimVp:t('modal.claimVp'),
+      unwrapVp:t('modal.unwrapVp'),createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),
+      claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission'),
+    };
+    titleTxt=t('modal.default');
+    details=msgs[action]||action;
+  }
+
+  document.getElementById('modalTitle').textContent=titleTxt;
+  const msgEl=document.getElementById('modalMsg');
+  if(details.includes('<')){msgEl.innerHTML=details;}
+  else{msgEl.textContent=details;}
+  document.getElementById('confirmModal').classList.add('show');
 }
+
 function closeModal(){
   document.getElementById('confirmModal').classList.remove('show');
   pendingAction=null;
@@ -1441,51 +1542,92 @@ function closeModal(){
 
 function execAction(){
   if(!pendingAction) return;
-
-  const action = pendingAction.action;
-  const actionData = pendingAction;
+  const action=pendingAction.action;
+  const actionData=pendingAction;
+  const isEn=I18N.getLang()==='en';
   closeModal();
 
-  // 显示加载状态
-  const btn = document.getElementById('icoBtn');
-  if(btn && action === 'subscribe'){
-    btn.classList.add('loading');
-  }
+  const icoBtn=document.getElementById('icoBtn');
+  if(icoBtn && action==='subscribe') icoBtn.classList.add('loading');
 
-  // 模拟异步操作
-  setTimeout(() => {
-    if(btn) btn.classList.remove('loading');
+  setTimeout(()=>{
+    if(icoBtn) icoBtn.classList.remove('loading');
 
-    // 根据不同操作显示不同的成功消息并更新数据
-    if(action === 'subscribe'){
-      // 更新 ICO 数据
-      const pgoldAmount = parseFloat(actionData.pgold);
-      const points = actionData.points;
+    // 90% 成功率模拟（subscribe 始终成功）
+    const success = action==='subscribe' || Math.random()>0.1;
 
-      ICO_DATA.yourAmount += pgoldAmount;
-      ICO_DATA.yourPoints += points;
-      ICO_DATA.subscribed += pgoldAmount;
-
-      // 更新显示
-      updateICODisplays(dappPgoldPrice);
-
-      // 清空输入框
-      const input = document.getElementById('icoAmount');
-      if(input) {
-        input.value = '';
-        updateICOPreview();
-      }
-
-      showToast(t('common.confirm') + '! ' + (I18N.getLang() === 'en' ? 'Subscription successful' : '认购成功'), 'success');
-    } else {
-      showToast(t('common.confirm') + '!', 'success');
+    if(!success){
+      showToast(isEn?'Transaction failed, please try again':'操作失败，请稍后重试','error');
+      return;
     }
-  }, 1500);
+
+    if(action==='subscribe'){
+      const pgoldAmount=parseFloat(actionData.pgold);
+      const points=actionData.points;
+      ICO_DATA.yourAmount+=pgoldAmount;
+      ICO_DATA.yourPoints+=points;
+      ICO_DATA.subscribed+=pgoldAmount;
+      updateICODisplays(dappPgoldPrice);
+      const inp=document.getElementById('icoAmount');
+      if(inp){inp.value='';updateICOPreview();}
+      showToast(isEn?'Subscription successful!':'认购成功！','success');
+
+    } else if(action==='stake'){
+      const amt=parseFloat(actionData.amount)||0;
+      STAKE_DATA.staked+=amt;
+      document.getElementById('stakeAmount').value='';
+      updateStakeDisplays();
+      showToast(isEn?`Staked ${amt.toFixed(2)} pGOLD successfully`:`成功质押 ${amt.toFixed(2)} pGOLD`,'success');
+
+    } else if(action==='unstake'){
+      STAKE_DATA.staked=0;
+      STAKE_DATA.pending=0;
+      updateStakeDisplays();
+      showToast(isEn?'Unstaked successfully':'解质押成功','success');
+
+    } else if(action==='claimReward'){
+      const claimed=STAKE_DATA.pending;
+      STAKE_DATA.pending=0;
+      updateStakeDisplays();
+      showToast(isEn?`Claimed ${claimed.toFixed(2)} pGOLD`:`已领取 ${claimed.toFixed(2)} pGOLD`,'success');
+
+    } else if(action==='deposit'){
+      const amt=parseFloat(actionData.amount)||0;
+      STAKE_DATA.deposited+=amt;
+      document.getElementById('depositAmount').value='';
+      updateStakeDisplays();
+      showToast(isEn?`Deposited ${amt.toFixed(2)} pGOLD to Track B`:`成功存入 ${amt.toFixed(2)} pGOLD 至 B轨`,'success');
+
+    } else if(action==='withdraw'){
+      const amt=parseFloat(actionData.amount)||0;
+      STAKE_DATA.deposited=Math.max(0,STAKE_DATA.deposited-amt);
+      document.getElementById('depositAmount').value='';
+      updateStakeDisplays();
+      showToast(isEn?`Withdrew ${amt.toFixed(2)} pGOLD from Track B`:`已从 B轨取出 ${amt.toFixed(2)} pGOLD`,'success');
+
+    } else {
+      showToast(t('common.confirm')+'!','success');
+    }
+  },1500);
 }
 
 function confirmAction(){
   closeModal();
   showToast(t('common.confirm')+'!','success');
+}
+
+/* ── STAKING STATE ── */
+const STAKE_DATA={staked:800,pending:12.5,deposited:800};
+
+function updateStakeDisplays(){
+  const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  // A轨 nw-value
+  const nwEl=document.getElementById('stake-staked-val');
+  if(nwEl)nwEl.innerHTML=`${fmtN(STAKE_DATA.staked)} <span style="font-size:.4em;color:var(--text2)">pGOLD</span>`;
+  set('stake-pending-val',fmtN(STAKE_DATA.pending));
+  set('stake-deposit-stat',fmtN(STAKE_DATA.deposited));
+  set('stake-deposit-val',fmtN(STAKE_DATA.deposited));
 }
 
 /* ── ICO ── */
