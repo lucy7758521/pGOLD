@@ -1287,32 +1287,37 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <!-- ══ QR SCANNER MODAL ══ -->
 <div class="modal-overlay" id="qrModal" style="align-items:stretch;justify-content:stretch;background:#000;padding:0">
   <div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column">
-    <!-- 顶栏浮层 -->
-    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:env(safe-area-inset-top,16px) 20px 16px;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent)">
-      <span style="font-weight:600;font-size:1em;color:#fff">扫描钱包地址二维码</span>
-      <button onclick="closeQRScanner()" style="background:rgba(255,255,255,.15);border:none;color:#fff;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2em">×</button>
+    <!-- 关闭按钮（右上角） -->
+    <div style="position:absolute;top:env(safe-area-inset-top,16px);right:20px;z-index:10">
+      <button onclick="closeQRScanner()" style="background:rgba(255,255,255,.15);border:none;color:#fff;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2em">×</button>
     </div>
     <!-- 全屏摄像头 -->
     <video id="qrVideo" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block" playsinline autoplay muted></video>
     <canvas id="qrCanvas" style="display:none"></canvas>
-    <!-- 四周遮罩 + 扫描框 -->
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+    <!-- 遮罩 + 扫描框 + 上下文字 + 闪光灯 全部在这一层 -->
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:5">
+      <!-- 四周遮罩 -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
-      <div style="position:relative;width:240px;height:240px;z-index:2">
-        <!-- 透明挖空效果 -->
-        <div style="position:absolute;inset:0;background:transparent;box-shadow:0 0 0 9999px rgba(0,0,0,.45);border-radius:4px"></div>
-        <!-- 角标 -->
+      <!-- 扫描框上方文字 -->
+      <p style="position:relative;z-index:2;color:#fff;font-size:.9em;font-weight:600;margin:0 0 16px;text-shadow:0 1px 4px rgba(0,0,0,.8)">扫描钱包地址二维码</p>
+      <!-- 扫描框 -->
+      <div style="position:relative;width:240px;height:240px;z-index:2;flex-shrink:0">
+        <div style="position:absolute;inset:0;box-shadow:0 0 0 9999px rgba(0,0,0,.45);border-radius:4px"></div>
         <div style="position:absolute;top:0;left:0;width:32px;height:32px;border-top:3px solid var(--gold);border-left:3px solid var(--gold);border-radius:3px 0 0 0"></div>
         <div style="position:absolute;top:0;right:0;width:32px;height:32px;border-top:3px solid var(--gold);border-right:3px solid var(--gold);border-radius:0 3px 0 0"></div>
         <div style="position:absolute;bottom:0;left:0;width:32px;height:32px;border-bottom:3px solid var(--gold);border-left:3px solid var(--gold);border-radius:0 0 0 3px"></div>
         <div style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-bottom:3px solid var(--gold);border-right:3px solid var(--gold);border-radius:0 0 3px 0"></div>
-        <!-- 扫描线 -->
         <div id="qrScanLine" style="position:absolute;top:0;left:6px;right:6px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:qrScan 2s ease-in-out infinite"></div>
       </div>
-    </div>
-    <!-- 底部状态栏浮层 -->
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:10;padding:16px 20px env(safe-area-inset-bottom,16px);background:linear-gradient(to top,rgba(0,0,0,.7),transparent);text-align:center">
-      <p id="qrStatus" style="font-size:.86em;color:rgba(255,255,255,.75);margin:0">将二维码对准框内</p>
+      <!-- 扫描框下方状态文字 -->
+      <p id="qrStatus" style="position:relative;z-index:2;color:rgba(255,255,255,.75);font-size:.84em;margin:16px 0 24px;text-shadow:0 1px 4px rgba(0,0,0,.8)">将二维码对准框内</p>
+      <!-- 闪光灯按钮 -->
+      <button id="qrTorchBtn" onclick="toggleTorch()" style="position:relative;z-index:2;pointer-events:auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:50px;padding:10px 24px;font-size:.84em;cursor:pointer;display:flex;align-items:center;gap:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+        <span id="qrTorchLabel">开启闪光灯</span>
+      </button>
     </div>
   </div>
 </div>
@@ -2005,9 +2010,46 @@ function openQRScanner(){
 }
 
 function closeQRScanner(){
+  if(_torchOn){
+    const video=document.getElementById('qrVideo');
+    if(video&&video.srcObject){
+      const track=video.srcObject.getVideoTracks()[0];
+      if(track) track.applyConstraints({advanced:[{torch:false}]}).catch(()=>{});
+    }
+    _torchOn=false;
+  }
   if(window._qrStop) window._qrStop();
   const modal=document.getElementById('qrModal');
   if(modal) modal.classList.remove('show');
+  const label=document.getElementById('qrTorchLabel');
+  const btn=document.getElementById('qrTorchBtn');
+  if(label) label.textContent='开启闪光灯';
+  if(btn){btn.style.background='rgba(255,255,255,.12)';btn.style.borderColor='rgba(255,255,255,.2)';}
+}
+
+let _torchOn=false;
+function toggleTorch(){
+  const isEn=I18N.getLang()==='en';
+  const video=document.getElementById('qrVideo');
+  const label=document.getElementById('qrTorchLabel');
+  const btn=document.getElementById('qrTorchBtn');
+  if(!video||!video.srcObject) return;
+  const track=video.srcObject.getVideoTracks()[0];
+  if(!track) return;
+  const caps=track.getCapabilities?.();
+  if(!caps||!caps.torch){
+    showToast(isEn?'Torch not supported on this device':'此设备不支持闪光灯','error');
+    return;
+  }
+  _torchOn=!_torchOn;
+  track.applyConstraints({advanced:[{torch:_torchOn}]}).then(()=>{
+    if(label) label.textContent=_torchOn?(isEn?'Turn off torch':'关闭闪光灯'):(isEn?'Turn on torch':'开启闪光灯');
+    if(btn) btn.style.background=_torchOn?'rgba(212,168,67,.3)':'rgba(255,255,255,.12)';
+    if(btn) btn.style.borderColor=_torchOn?'var(--gold)':'rgba(255,255,255,.2)';
+  }).catch(()=>{
+    _torchOn=!_torchOn;
+    showToast(isEn?'Failed to toggle torch':'闪光灯控制失败','error');
+  });
 }
 
 /* ── ICO ── */
