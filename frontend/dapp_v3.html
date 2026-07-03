@@ -252,11 +252,10 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .btn-blue:hover{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.35);}
 .btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
 .btn-danger:hover{background:rgba(239,68,68,.18);}
-.row-highlight td{background:rgba(212,168,67,.04);}
 .btn-sm{padding:7px 14px;font-size:.75em;min-height:32px;border-radius:7px;}
 .btn-full{width:100%;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.btn-spinner{width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:currentColor;
+.btn-spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,.15);border-top-color:currentColor;
   border-radius:50%;animation:spin .6s linear infinite;display:none;}
 .btn.loading .btn-spinner{display:inline-block;}
 .btn.loading .btn-label{opacity:.5;}
@@ -270,11 +269,12 @@ td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.025);white-space:
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(212,168,67,.03);}
 .row-highlight td{background:rgba(212,168,67,.04)!important;border-left:3px solid var(--gold);}
-.row-highlight td:first-child{padding-left:17px;}.tbl-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;
+.row-highlight td:first-child{padding-left:17px;}
+.tbl-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;
   box-shadow:0 4px 20px rgba(0,0,0,.25);}
 .tbl-wrap table th:first-child,.tbl-wrap table td:first-child{padding-left:20px;}
 .tbl-wrap table th:last-child,.tbl-wrap table td:last-child{padding-right:20px;}
-.tbl-note{font-size:.72em;color:var(--muted);padding:14px 20px;border-top:1px solid var(--border);}
+.tbl-note{font-size:.72em;color:var(--text2);padding:14px 20px;border-top:1px solid var(--border);line-height:1.6;}
 .hist-price{font-family:'SF Mono','Cascadia Code','Fira Code',monospace;font-size:.82em;}
 
 /* TABS */
@@ -282,16 +282,21 @@ tr:hover td{background:rgba(212,168,67,.03);}
   border:1px solid var(--border);}
 .tab-btn{flex:1;padding:9px 12px;border:none;border-radius:7px;cursor:pointer;font-size:.78em;
   font-weight:600;background:transparent;color:var(--text2);transition:all .15s;font-family:inherit;}
+.tab-btn:hover{color:var(--text);background:rgba(255,255,255,.04);}
 .tab-btn.active{background:rgba(255,255,255,.08);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.2);}
 
 /* VEST */
-.vest-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+.vest-list{display:flex;flex-direction:column;gap:14px;margin-bottom:16px;}
 .vest-item{
   border:1px solid var(--border);border-radius:12px;overflow:hidden;
   background:linear-gradient(150deg,var(--surface),var(--surface2));
   box-shadow:0 4px 20px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.02) inset;
-  position:relative;
+  position:relative;transition:border-color .2s,transform .2s,box-shadow .2s;
 }
+.vest-item:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,.4);}
+.vest-item.vest-e:hover{border-color:rgba(139,92,246,.3);}
+.vest-item.vest-b:hover{border-color:rgba(59,130,246,.3);}
+.vest-item.vest-c:hover{border-color:rgba(239,68,68,.3);}
 .vest-item::before{
   content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
   background:linear-gradient(90deg,transparent,rgba(212,168,67,.2),transparent);
@@ -438,23 +443,6 @@ tr:hover td{background:rgba(212,168,67,.03);}
 .ico-preview.visible{opacity:1;max-height:120px;}
 .ico-preview-label{
   font-size:.75em;color:var(--muted);margin-bottom:6px;
-}}
-.highlight-text{flex:1;}
-.highlight-label{
-  font-size:.9em;font-weight:600;color:var(--text);margin-bottom:2px;
-}
-.highlight-desc{
-  font-size:.75em;color:var(--muted);
-}
-
-/* ICO PREVIEW */
-.ico-preview{
-  background:linear-gradient(135deg, rgba(212,168,67,.08) 0%, rgba(212,168,67,.03) 100%);
-  border:1px solid rgba(212,168,67,.2);border-radius:10px;
-  padding:16px;margin-bottom:16px;text-align:center;
-}
-.ico-preview-label{
-  font-size:.75em;color:var(--muted);margin-bottom:6px;
 }
 .ico-preview-value{
   font-size:2em;font-weight:700;color:var(--gold);margin-bottom:6px;
@@ -529,6 +517,9 @@ tr:hover td{background:rgba(212,168,67,.03);}
 .empty{text-align:center;color:var(--muted);padding:40px 0;font-size:.82em;}
 
 /* RESPONSIVE */
+@media(min-width:481px) and (max-width:768px){
+  .ico-highlights{grid-template-columns:repeat(2,1fr);}
+}
 @media(max-width:768px){
   .nav-links,.nav-right{display:none;}
   .menu-btn{display:flex;}
@@ -543,10 +534,13 @@ tr:hover td{background:rgba(212,168,67,.03);}
   .btn-row{gap:6px;}
   .asset-amt{min-width:80px;}
   .asset-usd{min-width:60px;}
-  .ico-highlights{grid-template-columns:1fr;gap:10px;}
-  .highlight-item{padding:12px;gap:10px;}
   .quick-amounts{flex-wrap:wrap;}
   .quick-amt-btn{min-width:60px;}
+}
+@media(max-width:480px){
+  .ico-highlights{grid-template-columns:1fr;}
+  .highlight-item{padding:12px;gap:10px;}
+  .data-highlight{font-size:1.05em;}
 }
 </style>
 </head>
@@ -1000,7 +994,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
   </div>
 
   <div class="vest-list">
-    <div class="vest-item" style="transition:border-color .2s,transform .2s,box-shadow .2s" onmouseenter="this.style.transform='translateY(-1px)';this.style.borderColor='rgba(139,92,246,.3)'" onmouseleave="this.style.transform='';this.style.borderColor=''">
+    <div class="vest-item vest-e">
       <div class="vest-head">
         <div>
           <div class="vest-name" data-i18n="vest.trackE">E轨 · 创世池</div>
@@ -1017,7 +1011,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
       </div>
     </div>
-    <div class="vest-item" style="transition:border-color .2s,transform .2s,box-shadow .2s" onmouseenter="this.style.transform='translateY(-1px)';this.style.borderColor='rgba(59,130,246,.3)'" onmouseleave="this.style.transform='';this.style.borderColor=''">
+    <div class="vest-item vest-b">
       <div class="vest-head">
         <div>
           <div class="vest-name" data-i18n="vest.trackB">B轨 · 月榜奖励</div>
@@ -1031,7 +1025,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <button class="btn btn-ghost btn-sm" onclick="withConfirm('claim','B')"><span class="btn-label" data-i18n="common.claim">领取</span><span class="btn-spinner"></span></button>
       </div>
     </div>
-    <div class="vest-item" style="transition:border-color .2s,transform .2s,box-shadow .2s" onmouseenter="this.style.transform='translateY(-1px)';this.style.borderColor='rgba(239,68,68,.3)'" onmouseleave="this.style.transform='';this.style.borderColor=''">
+    <div class="vest-item vest-c">
       <div class="vest-head">
         <div>
           <div class="vest-name" data-i18n="vest.trackC">C轨 · 燃烧补偿</div>
@@ -1106,10 +1100,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <tr><td><span style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,168,67,.15);color:#f0d078;border:1px solid rgba(212,168,67,.3);padding:2px 8px;border-radius:5px;font-size:.78em;font-weight:700">#1</span></td><td>0xAb...Ef01</td><td>$2.4M</td><td>5,000</td><td class="text-green">15,000</td><td>300%</td></tr>
         <tr><td><span style="display:inline-flex;align-items:center;gap:6px;background:rgba(180,180,180,.1);color:#c0c0c0;border:1px solid rgba(180,180,180,.25);padding:2px 8px;border-radius:5px;font-size:.78em;font-weight:700">#2</span></td><td>0xBc...Fg23</td><td>$1.8M</td><td>3,200</td><td class="text-green">9,600</td><td>300%</td></tr>
         <tr><td><span style="display:inline-flex;align-items:center;gap:6px;background:rgba(180,120,60,.12);color:#cd7f32;border:1px solid rgba(180,120,60,.25);padding:2px 8px;border-radius:5px;font-size:.78em;font-weight:700">#3</span></td><td>0xCd...Gh45</td><td>$1.2M</td><td>2,100</td><td class="text-green">6,300</td><td>300%</td></tr>
-        <tr style="background:rgba(212,168,67,.04);border-left:3px solid var(--gold)"><td style="padding-left:17px">#12</td><td style="color:var(--gold);font-weight:700">You</td><td>$450K</td><td>800</td><td class="text-green">2,400</td><td>300%</td></tr>
+        <tr class="row-highlight"><td>#12</td><td style="color:var(--gold);font-weight:700">You</td><td>$450K</td><td>800</td><td class="text-green">2,400</td><td>300%</td></tr>
       </tbody>
     </table>
-    <p class="tbl-note" style="color:var(--text2);line-height:1.6" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
+    <p class="tbl-note" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
   </div>
 </div>
 <!-- ══ TEAM ══ -->
