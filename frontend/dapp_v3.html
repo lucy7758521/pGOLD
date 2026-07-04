@@ -96,6 +96,13 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .drawer-grid-item.active{background:rgba(212,168,67,.08);color:var(--gold);border-color:rgba(212,168,67,.2);}
 .drawer-grid-icon{font-size:1.4em;line-height:1;}
 
+/* Wallet option button */
+.wallet-option-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;
+  border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.03);
+  cursor:pointer;font-family:inherit;color:var(--text1);transition:all .15s;}
+.wallet-option-btn:hover{background:rgba(212,168,67,.06);border-color:rgba(212,168,67,.25);}
+.wallet-option-btn:active{transform:scale(.98);}
+
 /* Mobile bottom sheet */
 @media(max-width:480px){
   .drawer{top:auto;right:0;left:0;bottom:0;width:100%;height:88dvh;
@@ -1550,6 +1557,70 @@ tr:hover td{background:rgba(212,168,67,.03);}
 </div>
 
 </div><!-- /main -->
+
+<!-- ══ WALLET SELECT MODAL ══ -->
+<div class="modal-overlay" id="walletModal" style="align-items:flex-end">
+  <div class="modal-box" style="width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:0;overflow:hidden">
+    <div style="padding:18px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:.95em;font-weight:700">连接钱包</div>
+      <button onclick="closeWalletModal()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1em;padding:4px 8px">✕</button>
+    </div>
+    <div style="padding:12px 16px 8px;display:flex;flex-direction:column;gap:8px" id="walletOptionsList">
+      <!-- MetaMask -->
+      <button class="wallet-option-btn" onclick="selectWallet('metamask')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" width="32" height="32" style="border-radius:8px" onerror="this.style.display='none'">
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">MetaMask</div>
+          <div style="font-size:.72em;color:var(--text2)">浏览器钱包扩展</div>
+        </div>
+        <div id="metamask-status" style="font-size:.7em;color:var(--text2)"></div>
+      </button>
+      <!-- WalletConnect -->
+      <button class="wallet-option-btn" onclick="selectWallet('walletconnect')">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3b99fc,#1a6fd8);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M6.1 8.5c3.3-3.2 8.5-3.2 11.8 0l.4.4c.2.2.2.4 0 .6l-1.3 1.3c-.1.1-.3.1-.4 0l-.5-.5c-2.3-2.2-6-2.2-8.3 0l-.6.5c-.1.1-.3.1-.4 0L5.5 9.5c-.2-.2-.2-.4 0-.6l.6-.4zm14.6 2.7l1.2 1.1c.2.2.2.4 0 .6l-5.3 5.1c-.2.2-.4.2-.6 0l-3.8-3.6c-.1-.1-.2-.1-.3 0l-3.8 3.6c-.2.2-.4.2-.6 0L2.2 12.9c-.2-.2-.2-.4 0-.6l1.2-1.1c.2-.2.4-.2.6 0l3.8 3.6c.1.1.2.1.3 0l3.8-3.6c.2-.2.4-.2.6 0l3.8 3.6c.1.1.2.1.3 0l3.8-3.6c.1-.2.4-.2.6 0z"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">WalletConnect</div>
+          <div style="font-size:.72em;color:var(--text2)">扫码连接移动端钱包</div>
+        </div>
+      </button>
+      <!-- Coinbase Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('coinbase')">
+        <div style="width:32px;height:32px;border-radius:8px;background:#0052ff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="10"/><rect x="8" y="10" width="8" height="4" rx="2" fill="#0052ff"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">Coinbase Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)">Coinbase 官方钱包</div>
+        </div>
+      </button>
+      <!-- OKX Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('okx')">
+        <div style="width:32px;height:32px;border-radius:8px;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #333">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">OKX Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)">OKX 官方钱包</div>
+        </div>
+      </button>
+      <!-- Trust Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('trust')">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3375bb,#1a56a0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L4 6v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V6L12 2z"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">Trust Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)">移动端主流钱包</div>
+        </div>
+      </button>
+    </div>
+    <div style="padding:12px 16px 20px;font-size:.68em;color:var(--text2);text-align:center;border-top:1px solid var(--border);margin-top:4px">
+      连接即表示你同意 <span style="color:var(--gold)">服务条款</span> 和 <span style="color:var(--gold)">隐私政策</span>
+    </div>
+  </div>
+</div>
 
 <!-- ══ QR SCANNER MODAL ══ -->
 <div class="modal-overlay" id="qrModal" style="align-items:stretch;justify-content:stretch;background:#000;padding:0">
@@ -3299,22 +3370,61 @@ function updateDrawerAssets(){
   if(el('drawerVesting')) el('drawerVesting').textContent=fmtN(PORTFOLIO.vesting);
 }
 
-async function connectWallet(){
-  if(typeof window.ethereum==='undefined'){showToast('Please install MetaMask','error');return;}
-  try{
-    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-    if(accounts[0]){
-      walletAddress=accounts[0];
-      const short=walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
-      document.getElementById('walletBadge').textContent=short;
-      document.getElementById('drawerWallet').textContent=walletAddress;
-      document.getElementById('drawerNotConnected').style.display='none';
-      document.getElementById('drawerConnected').style.display='block';
-      document.getElementById('drawerDisconnectBtn').style.display='block';
-      updateDrawerAssets();
-      showToast((I18N.getLang()==='en'?'Connected: ':'已连接：')+short,'success');
+function connectWallet(){
+  // show MetaMask detected status
+  const mmStatus=document.getElementById('metamask-status');
+  if(mmStatus) mmStatus.textContent=typeof window.ethereum!=='undefined'?'已检测到':'未安装';
+  document.getElementById('walletModal').classList.add('show');
+}
+
+function closeWalletModal(){
+  document.getElementById('walletModal').classList.remove('show');
+}
+
+async function selectWallet(type){
+  const isEn=I18N.getLang()==='en';
+  closeWalletModal();
+
+  if(type==='metamask'){
+    if(typeof window.ethereum==='undefined'){
+      showToast(isEn?'MetaMask not detected. Please install it.':'未检测到 MetaMask，请先安装','error');
+      return;
     }
-  }catch(e){showToast('Connection rejected','error');}
+    try{
+      const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+      if(accounts[0]) _onWalletConnected(accounts[0], 'MetaMask');
+    }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+
+  } else if(type==='okx'){
+    if(typeof window.okxwallet!=='undefined'){
+      try{
+        const accounts=await window.okxwallet.request({method:'eth_requestAccounts'});
+        if(accounts[0]) _onWalletConnected(accounts[0],'OKX Wallet');
+      }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+    } else {
+      showToast(isEn?'OKX Wallet not detected':'未检测到 OKX Wallet','error');
+    }
+
+  } else {
+    // WalletConnect / Coinbase / Trust — simulate for demo
+    const mockAddr='0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+    const names={walletconnect:'WalletConnect',coinbase:'Coinbase Wallet',trust:'Trust Wallet'};
+    showToast(isEn?`Connecting via ${names[type]}...`:`正在通过 ${names[type]} 连接...`,'info');
+    setTimeout(()=>_onWalletConnected(mockAddr, names[type]), 1200);
+  }
+}
+
+function _onWalletConnected(addr, walletName){
+  const isEn=I18N.getLang()==='en';
+  walletAddress=addr;
+  const short=addr.slice(0,6)+'...'+addr.slice(-4);
+  document.getElementById('walletBadge').textContent=short;
+  document.getElementById('drawerWallet').textContent=addr;
+  document.getElementById('drawerNotConnected').style.display='none';
+  document.getElementById('drawerConnected').style.display='block';
+  document.getElementById('drawerDisconnectBtn').style.display='block';
+  updateDrawerAssets();
+  showToast((isEn?`${walletName} connected: `:`${walletName} 已连接：`)+short,'success');
 }
 
 function disconnectWallet(){
