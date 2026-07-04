@@ -1205,6 +1205,13 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="stat-cell"><div class="sc-l" data-i18n="team.volume">战队交易量</div><div class="sc-v" id="team-vol">$3.4M</div></div>
     <div class="stat-cell"><div class="sc-l" data-i18n="team.direct">直邀人数</div><div class="sc-v" id="team-direct">8</div></div>
     <div class="stat-cell"><div class="sc-l" data-i18n="team.pendingComm">待领返佣</div><div class="sc-v" id="team-pending-comm" style="color:var(--purple)">$340</div></div>
+    <div class="stat-cell">
+      <div class="sc-l">待领竞赛奖励</div>
+      <div class="sc-v" id="team-contest-reward" style="color:var(--gold)">480 pGOLD</div>
+      <div style="font-size:.68em;color:var(--text2);margin-top:3px;line-height:1.3">
+        <span id="team-contest-countdown" style="color:var(--blue)">—</span>
+      </div>
+    </div>
   </div>
   <div class="tab-bar" style="margin-top:28px">
     <button class="tab-btn active" data-team="myTeam" onclick="switchTeamTab('myTeam')" data-i18n="team.myTeam">我的战队</button>
@@ -1216,7 +1223,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div style="text-align:center;padding:20px 0 10px">
       <div style="font-size:2em;margin-bottom:8px">🏴</div>
       <div style="font-weight:700;font-size:1em;margin-bottom:4px">你还没有加入战队</div>
-      <div style="font-size:.78em;color:var(--text2)">加入或创建战队，参与季度竞赛赢取奖励</div>
+      <div style="font-size:.78em;color:var(--text2)">加入或创建战队，参与月度竞赛赢取奖励</div>
     </div>
     <div style="display:flex;gap:8px;margin:14px 0 20px">
       <button class="btn btn-gold btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label">创建战队</span><span class="btn-spinner"></span></button>
@@ -1936,19 +1943,25 @@ function withConfirm(action,track){
         <span style="color:var(--text2)">解包后剩余 vPGOLD：${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`;
 
   } else if(action==='claimTeamReward'){
-    const teamRewardAmt=parseFloat((document.getElementById('team-reward-val')||{}).textContent)||2400;
+    const contestEl=document.getElementById('team-contest-reward');
+    const teamRewardAmt=parseFloat((contestEl||{}).textContent)||0;
     const teamName=(document.querySelector('#page-team .nw-value')||{}).textContent||'TIGER_TEAM';
     pendingAction={action,track,reward:teamRewardAmt};
-    titleTxt=isEn?'Claim Team Reward':'领取战队竞赛奖励';
+    titleTxt=isEn?'Claim Contest Reward':'领取竞赛奖励';
+    const canClaim=teamRewardAmt>0;
     details=isEn
-      ?`<b>Claim team contest reward</b><br><br>
-        <span style="color:var(--text2)">Team: <b style="color:var(--gold)">${teamName}</b></span><br>
-        <span style="color:var(--text2)">Reward: <b style="color:var(--green)">${fmtN(teamRewardAmt)} pGOLD</b> ≈ $${(teamRewardAmt*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
-        <span style="color:var(--green);font-size:.9em">✓ Credited to your liquid balance immediately</span>`
-      :`<b>领取战队竞赛奖励</b><br><br>
-        <span style="color:var(--text2)">战队：<b style="color:var(--gold)">${teamName}</b></span><br>
-        <span style="color:var(--text2)">奖励：<b style="color:var(--green)">${fmtN(teamRewardAmt)} pGOLD</b> ≈ $${(teamRewardAmt*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
-        <span style="color:var(--green);font-size:.9em">✓ 战队奖励实时发放，直接到账可用余额</span>`;
+      ?canClaim
+        ?`<b>Claim your monthly contest reward</b><br><br>
+          <span style="color:var(--text2)">Team: <b style="color:var(--gold)">${teamName}</b></span><br>
+          <span style="color:var(--text2)">Your share: <b style="color:var(--green)">${fmtN(teamRewardAmt)} pGOLD</b> ≈ $${(teamRewardAmt*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
+          <span style="color:var(--green);font-size:.9em">✓ Credited to your liquid balance immediately</span>`
+        :`<span style="color:var(--text2)">No contest reward available yet.<br>Rewards are distributed on the 1st of each month.</span>`
+      :canClaim
+        ?`<b>领取本月竞赛奖励（你的份额）</b><br><br>
+          <span style="color:var(--text2)">战队：<b style="color:var(--gold)">${teamName}</b></span><br>
+          <span style="color:var(--text2)">你的份额：<b style="color:var(--green)">${fmtN(teamRewardAmt)} pGOLD</b> ≈ $${(teamRewardAmt*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
+          <span style="color:var(--green);font-size:.9em">✓ 实时到账，每月1日按贡献积分比例结算</span>`
+        :`<span style="color:var(--text2)">暂无可领取的竞赛奖励。<br>每月1日按贡献积分比例结算发放。</span>`;
 
   } else if(action==='claimCommission'){
     pendingAction={action,track};
@@ -2131,20 +2144,22 @@ function execAction(){
 
     } else if(action==='claimTeamReward'){
       const reward=actionData.reward||0;
+      if(reward<=0){showToast(isEn?'No reward available yet':'暂无可领取奖励','info');return;}
       PORTFOLIO.liquid+=reward;
-      // 领取后清零竞赛奖励显示
-      const rewardEl=document.getElementById('team-reward-val');
-      if(rewardEl) rewardEl.textContent='0 pGOLD';
+      const contestEl=document.getElementById('team-contest-reward');
+      if(contestEl) contestEl.textContent='0 pGOLD';
       updateDappPriceDisplays(dappPgoldPrice);
-      showToast(isEn?`${fmtN(reward)} pGOLD team reward credited`:`${fmtN(reward)} pGOLD 战队奖励已到账`,'success');
+      showToast(isEn?`${fmtN(reward)} pGOLD contest reward credited`:`${fmtN(reward)} pGOLD 竞赛奖励已到账`,'success');
 
     } else if(action==='leaveTeam'){
       const vol=document.getElementById('team-vol');
       const direct=document.getElementById('team-direct');
       const comm=document.getElementById('team-pending-comm');
+      const contest=document.getElementById('team-contest-reward');
       if(vol) vol.textContent='$0';
       if(direct) direct.textContent='0';
       if(comm) comm.textContent='$0';
+      if(contest) contest.textContent='0 pGOLD';
       showTeamNoTeam();
       showToast(isEn?'You have left the team':'已退出战队','success');
 
@@ -2616,6 +2631,35 @@ const ALL_TEAMS=[
 
 let inTeam=true; // 是否在战队中
 
+// 竞赛奖励倒计时：每月1日0时结算，模拟下次结算时间
+(function initContestCountdown(){
+  function getNextSettlement(){
+    const now=new Date();
+    const next=new Date(now.getFullYear(), now.getMonth()+1, 1, 0, 0, 0);
+    return next;
+  }
+  function formatCountdown(ms){
+    if(ms<=0) return '可领取';
+    const d=Math.floor(ms/86400000);
+    const h=Math.floor((ms%86400000)/3600000);
+    const m=Math.floor((ms%3600000)/60000);
+    const s=Math.floor((ms%60000)/1000);
+    if(d>0) return `${d}天 ${h}时 ${m}分后结算`;
+    if(h>0) return `${h}时 ${m}分 ${s}秒后结算`;
+    return `${m}分 ${s}秒后结算`;
+  }
+  function tick(){
+    const el=document.getElementById('team-contest-countdown');
+    if(!el) return;
+    const diff=getNextSettlement()-new Date();
+    el.textContent=formatCountdown(diff);
+    if(diff<=0) el.style.color='var(--green)';
+    else el.style.color='var(--blue)';
+  }
+  tick();
+  setInterval(tick,1000);
+})();
+
 function showTeamNoTeam(){
   inTeam=false;
   // 隐藏 tab bar，显示无战队面板
@@ -2834,9 +2878,11 @@ function showNewTeamPage(name){
   const vol=document.getElementById('team-vol');
   const direct=document.getElementById('team-direct');
   const comm=document.getElementById('team-pending-comm');
+  const contest=document.getElementById('team-contest-reward');
   if(vol) vol.textContent='$0';
   if(direct) direct.textContent='0';
   if(comm) comm.textContent='$0';
+  if(contest) contest.textContent='0 pGOLD';
   // 重置等级/积分/成员/奖励/进度条
   const levelBadge=document.getElementById('team-level-badge');
   const pointsVal=document.getElementById('team-points-val');
