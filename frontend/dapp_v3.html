@@ -1263,6 +1263,15 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <button class="btn btn-gold btn-full" onclick="withConfirm('claimTeamReward')"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
       <button class="btn btn-outline btn-danger btn-full" onclick="withConfirm('leaveTeam')"><span class="btn-label" data-i18n="team.leaveBtn">退出战队</span><span class="btn-spinner"></span></button>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:.72em;color:var(--text2);white-space:nowrap">或管理战队</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label">创建新战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline btn-full" onclick="openJoinTeam()" style="flex:1"><span class="btn-label">加入战队</span><span class="btn-spinner"></span></button>
+    </div>
   </div>
   <div id="teamTab-invite" class="info-card" style="display:none">
     <!-- 邀请链接 -->
@@ -2542,6 +2551,54 @@ function switchHistFilter(f){
 }
 
 /* ── BIND INVITER ── */
+function openCreateTeam(){
+  const isEn=I18N.getLang()==='en';
+  const name=prompt(isEn?'Enter team name (3-20 characters):':'输入战队名称（3-20个字符）：');
+  if(!name) return;
+  const trimmed=name.trim();
+  if(trimmed.length<3||trimmed.length>20){
+    showToast(isEn?'Team name must be 3-20 characters':'战队名称需3-20个字符','error');
+    return;
+  }
+  if(!/^[a-zA-Z0-9_一-龥]+$/.test(trimmed)){
+    showToast(isEn?'Only letters, numbers, underscores and Chinese':'仅支持字母、数字、下划线和中文','error');
+    return;
+  }
+  pendingAction={action:'createTeam',teamName:trimmed};
+  const isEnNow=I18N.getLang()==='en';
+  document.getElementById('modalTitle').textContent=isEnNow?'Create Team':'创建战队';
+  document.getElementById('modalMsg').innerHTML=isEnNow
+    ?`<b>Create team: <span style="color:var(--gold)">${trimmed}</span></b><br><br>
+      <span style="color:var(--text2)">· You will become the team leader</span><br>
+      <span style="color:var(--text2)">· Team creation requires 100 pGOLD as deposit</span><br>
+      <span style="color:var(--text2)">· Max 50 members, team competes in quarterly leaderboard</span>`
+    :`<b>创建战队：<span style="color:var(--gold)">${trimmed}</span></b><br><br>
+      <span style="color:var(--text2)">· 你将成为战队队长</span><br>
+      <span style="color:var(--text2)">· 创建战队需质押 100 pGOLD 作为保证金</span><br>
+      <span style="color:var(--text2)">· 最多 50 名成员，参与季度战队竞赛排行榜</span>`;
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function openJoinTeam(){
+  const isEn=I18N.getLang()==='en';
+  const name=prompt(isEn?'Enter team name to join:':'输入要加入的战队名称：');
+  if(!name) return;
+  const trimmed=name.trim();
+  if(!trimmed){showToast(isEn?'Please enter a team name':'请输入战队名称','error');return;}
+  pendingAction={action:'joinTeam',teamName:trimmed};
+  document.getElementById('modalTitle').textContent=isEn?'Join Team':'加入战队';
+  document.getElementById('modalMsg').innerHTML=isEn
+    ?`<b>Join team: <span style="color:var(--gold)">${trimmed}</span></b><br><br>
+      <span style="color:var(--text2)">· You will contribute your trading volume to the team</span><br>
+      <span style="color:var(--text2)">· Team rewards are shared based on contribution points</span><br>
+      <span style="color:var(--text2)">· You can leave the team at any time (forfeits unclaimed rewards)</span>`
+    :`<b>加入战队：<span style="color:var(--gold)">${trimmed}</span></b><br><br>
+      <span style="color:var(--text2)">· 你的交易量将计入战队总量</span><br>
+      <span style="color:var(--text2)">· 战队奖励按贡献积分分配</span><br>
+      <span style="color:var(--text2)">· 可随时退出（未领奖励将被没收）</span>`;
+  document.getElementById('confirmModal').classList.add('show');
+}
+
 function openBindInviter(){
   const addr=prompt(t('team.promptAddr'));
   if(!addr)return;
