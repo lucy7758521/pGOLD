@@ -1212,19 +1212,52 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <button class="tab-btn" data-team="leaderboard" onclick="switchTeamTab('leaderboard')" data-i18n="team.leaderboard">战队竞赛榜</button>
   </div>
   <div id="teamTab-myTeam" class="info-card">
+    <!-- 战队基本信息 -->
     <div class="info-row">
       <span class="info-label" data-i18n="team.name">战队名称</span>
       <span class="info-val" style="font-size:1.1em;font-weight:800;color:var(--gold)">TIGER_TEAM</span>
     </div>
     <div class="divider"></div>
     <div class="info-row">
-      <span class="info-label" data-i18n="team.members">成员</span>
-      <span class="info-val data-highlight">12</span>
+      <span class="info-label">战队等级</span>
+      <span class="info-val" style="display:flex;align-items:center;gap:6px">
+        <span style="background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.3);padding:2px 10px;border-radius:20px;font-size:.82em;font-weight:700">LV.4 精英</span>
+      </span>
+    </div>
+    <div class="divider"></div>
+    <div class="info-row">
+      <span class="info-label">战队积分</span>
+      <span class="info-val" style="color:var(--blue);font-weight:700">8,640 <span style="font-size:.75em;color:var(--text2)">pts</span></span>
+    </div>
+    <div class="divider"></div>
+    <div class="info-row">
+      <span class="info-label" data-i18n="team.members">成员数</span>
+      <span class="info-val data-highlight">12 / 50</span>
     </div>
     <div class="divider"></div>
     <div class="info-row">
       <span class="info-label" data-i18n="team.reward">竞赛奖励</span>
-      <span class="info-val data-highlight" style="color:var(--green)">2,400 pGOLD</span>
+      <span class="info-val" style="color:var(--green);font-weight:700">2,400 pGOLD</span>
+    </div>
+    <!-- 等级进度条 -->
+    <div style="margin:14px 0 6px">
+      <div style="display:flex;justify-content:space-between;font-size:.75em;color:var(--text2);margin-bottom:6px">
+        <span>距 LV.5 传奇</span><span>8,640 / 12,000 pts</span>
+      </div>
+      <div style="background:var(--border);border-radius:99px;height:6px;overflow:hidden">
+        <div style="width:72%;height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:99px"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <!-- 成员列表 -->
+    <div style="margin-top:4px">
+      <div style="font-size:.78em;color:var(--text2);font-weight:600;margin-bottom:10px;letter-spacing:.04em">成员列表</div>
+      <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;padding:7px 12px;background:rgba(255,255,255,.03);font-size:.72em;color:var(--text2);font-weight:600">
+          <span>#</span><span>地址</span><span style="text-align:right">交易量</span><span style="text-align:right">贡献积分</span>
+        </div>
+        <div id="team-member-list"></div>
+      </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
       <button class="btn btn-gold btn-full" onclick="withConfirm('claimTeamReward')"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
@@ -1232,29 +1265,103 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </div>
   </div>
   <div id="teamTab-invite" class="info-card" style="display:none">
+    <!-- 邀请链接 -->
     <div class="form-row">
       <label data-i18n="team.inviteLink">你的邀请链接</label>
       <input type="text" value="https://pgold.io/r/0xAbCd" readonly
         style="background:rgba(212,168,67,.03);cursor:pointer"
         onclick="navigator.clipboard.writeText(this.value).then(()=>{const old=this.value;this.value='已复制!';setTimeout(()=>this.value=old,1500)})">
     </div>
-    <div class="info-row"><span class="info-label" data-i18n="team.indirect">间邀人数</span><span class="info-val">23</span></div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+    <!-- 返佣比例说明 -->
+    <div style="background:rgba(212,168,67,.05);border:1px solid rgba(212,168,67,.15);border-radius:10px;padding:14px 16px;margin-bottom:14px">
+      <div style="font-size:.78em;color:var(--gold);font-weight:700;margin-bottom:10px">返佣规则</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
+          <div style="font-size:.7em;color:var(--text2);margin-bottom:4px">直邀 (L1)</div>
+          <div style="font-size:1.1em;font-weight:800;color:var(--green)">10%</div>
+          <div style="font-size:.68em;color:var(--text2);margin-top:2px">交易手续费</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
+          <div style="font-size:.7em;color:var(--text2);margin-bottom:4px">间邀 (L2)</div>
+          <div style="font-size:1.1em;font-weight:800;color:var(--blue)">5%</div>
+          <div style="font-size:.68em;color:var(--text2);margin-top:2px">交易手续费</div>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
+          <div style="font-size:.7em;color:var(--text2);margin-bottom:4px">三级 (L3)</div>
+          <div style="font-size:1.1em;font-weight:800;color:var(--purple)">2%</div>
+          <div style="font-size:.68em;color:var(--text2);margin-top:2px">交易手续费</div>
+        </div>
+      </div>
+    </div>
+    <!-- 直邀/间邀分层数据 -->
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+        <div>
+          <div style="font-size:.78em;color:var(--text2)">直邀 (L1)</div>
+          <div style="font-weight:700;font-size:.95em">8 人</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.72em;color:var(--text2)">累计返佣</div>
+          <div style="color:var(--green);font-weight:700">$210</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+        <div>
+          <div style="font-size:.78em;color:var(--text2)">间邀 (L2)</div>
+          <div style="font-weight:700;font-size:.95em">23 人</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.72em;color:var(--text2)">累计返佣</div>
+          <div style="color:var(--blue);font-weight:700">$98</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+        <div>
+          <div style="font-size:.78em;color:var(--text2)">三级 (L3)</div>
+          <div style="font-weight:700;font-size:.95em">47 人</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.72em;color:var(--text2)">累计返佣</div>
+          <div style="color:var(--purple);font-weight:700">$32</div>
+        </div>
+      </div>
+      <!-- 待领合计 -->
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(148,103,189,.08);border:1px solid rgba(148,103,189,.2);border-radius:8px;padding:10px 14px">
+        <div style="font-size:.85em;font-weight:600">待领返佣合计</div>
+        <div style="color:var(--purple);font-weight:800;font-size:1.05em">$340</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
       <button class="btn btn-gold btn-full" onclick="withConfirm('claimCommission')"><span class="btn-label" data-i18n="team.claimComm">领取返佣</span><span class="btn-spinner"></span></button>
       <button class="btn btn-outline btn-full" onclick="openBindInviter()"><span class="btn-label" data-i18n="team.bindInviter">绑定邀请人</span><span class="btn-spinner"></span></button>
     </div>
   </div>
   <div id="teamTab-leaderboard" style="display:none">
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>#</th><th data-i18n="team.thTeam">战队</th><th data-i18n="team.thLeader">队长</th><th data-i18n="team.thMembers">成员</th><th data-i18n="team.thVol">交易量</th><th data-i18n="team.thReward">奖励</th></tr></thead>
+    <div class="tbl-wrap" id="team-lb-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none">
+      <table style="min-width:480px">
+        <thead><tr>
+          <th>#</th>
+          <th data-i18n="team.thTeam">战队</th>
+          <th data-i18n="team.thLeader">队长</th>
+          <th data-i18n="team.thMembers">成员</th>
+          <th data-i18n="team.thVol">交易量</th>
+          <th data-i18n="team.thReward">奖励</th>
+        </tr></thead>
         <tbody>
-          <tr><td>1</td><td>DRAGON</td><td>0xAA...BB</td><td>48</td><td>$12M</td><td style="color:var(--green)">6,000 pGOLD</td></tr>
-          <tr><td>2</td><td>PHOENIX</td><td>0xCC...DD</td><td>35</td><td>$8.2M</td><td style="color:var(--green)">4,800 pGOLD</td></tr>
-          <tr class="row-highlight"><td>3</td><td>TIGER_TEAM</td><td>0xAbCd (You)</td><td>12</td><td>$3.4M</td><td style="color:var(--green)">2,400 pGOLD</td></tr>
+          <tr><td><span style="background:rgba(212,168,67,.15);color:#f0d078;border:1px solid rgba(212,168,67,.3);padding:2px 8px;border-radius:5px;font-size:.78em;font-weight:700">1</span></td><td style="font-weight:700">DRAGON</td><td style="font-family:monospace;font-size:.82em">0xAA...BB</td><td>48</td><td>$12M</td><td style="color:var(--green);font-weight:600">6,000</td></tr>
+          <tr><td><span style="background:rgba(180,180,180,.1);color:#c0c0c0;border:1px solid rgba(180,180,180,.25);padding:2px 8px;border-radius:5px;font-size:.78em;font-weight:700">2</span></td><td style="font-weight:700">PHOENIX</td><td style="font-family:monospace;font-size:.82em">0xCC...DD</td><td>35</td><td>$8.2M</td><td style="color:var(--green);font-weight:600">4,800</td></tr>
+          <tr class="row-highlight"><td><span style="background:rgba(180,120,60,.12);color:#cd7f32;border:1px solid rgba(180,120,60,.25);padding:2px 8px;border-radius:5px;font-size:.78em;font-weight:700">3</span></td><td style="font-weight:700;color:var(--gold)">TIGER_TEAM</td><td style="color:var(--gold);font-size:.82em">YOU</td><td>12</td><td>$3.4M</td><td style="color:var(--green);font-weight:600">2,400</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">4</span></td><td>WOLF_PACK</td><td style="font-family:monospace;font-size:.82em">0xEE...FF</td><td>28</td><td>$2.8M</td><td style="color:var(--green);font-weight:600">1,960</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">5</span></td><td>EAGLE</td><td style="font-family:monospace;font-size:.82em">0x11...22</td><td>22</td><td>$2.1M</td><td style="color:var(--green);font-weight:600">1,470</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">6</span></td><td>SHARK</td><td style="font-family:monospace;font-size:.82em">0x33...44</td><td>19</td><td>$1.7M</td><td style="color:var(--green);font-weight:600">1,190</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">7</span></td><td>LION</td><td style="font-family:monospace;font-size:.82em">0x55...66</td><td>17</td><td>$1.4M</td><td style="color:var(--green);font-weight:600">980</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">8</span></td><td>BULL</td><td style="font-family:monospace;font-size:.82em">0x77...88</td><td>15</td><td>$1.1M</td><td style="color:var(--green);font-weight:600">770</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">9</span></td><td>BEAR</td><td style="font-family:monospace;font-size:.82em">0x99...AA</td><td>14</td><td>$890K</td><td style="color:var(--green);font-weight:600">623</td></tr>
+          <tr><td><span style="color:var(--text2);font-size:.85em">10</span></td><td>FALCON</td><td style="font-family:monospace;font-size:.82em">0xBB...CC</td><td>11</td><td>$720K</td><td style="color:var(--green);font-weight:600">504</td></tr>
         </tbody>
       </table>
     </div>
+    <p style="font-size:.72em;color:var(--text2);padding:10px 4px;line-height:1.6">🏆 奖励单位：pGOLD，按战队交易量排名，每季结算一次</p>
   </div>
 </div>
 
@@ -1759,12 +1866,54 @@ function withConfirm(action,track){
         <span style="color:var(--green)">✓ 释放将继续按原节奏执行</span><br>
         <span style="color:var(--text2)">解包后剩余 vPGOLD：${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`;
 
+  } else if(action==='claimTeamReward'){
+    pendingAction={action,track};
+    titleTxt=isEn?'Claim Team Reward':'领取战队竞赛奖励';
+    details=isEn
+      ?`<b>Claim 2,400 pGOLD team reward</b><br><br>
+        <span style="color:var(--text2)">Team: <b style="color:var(--gold)">TIGER_TEAM</b> · Rank #3</span><br>
+        <span style="color:var(--text2)">Reward: <b style="color:var(--green)">2,400 pGOLD</b> ≈ $${(2400*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
+        <span style="color:var(--text2);font-size:.9em">Rewards enter 10-year linear vesting after claim</span>`
+      :`<b>领取 2,400 pGOLD 战队竞赛奖励</b><br><br>
+        <span style="color:var(--text2)">战队：<b style="color:var(--gold)">TIGER_TEAM</b> · 排名第 3</span><br>
+        <span style="color:var(--text2)">奖励：<b style="color:var(--green)">2,400 pGOLD</b> ≈ $${(2400*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
+        <span style="color:var(--text2);font-size:.9em">奖励领取后进入 10 年线性释放计划</span>`;
+
+  } else if(action==='claimCommission'){
+    pendingAction={action,track};
+    titleTxt=isEn?'Claim Commission':'领取返佣';
+    details=isEn
+      ?`<b>Claim $340 referral commission</b><br><br>
+        <span style="color:var(--text2)">L1 Direct (8 people): <b style="color:var(--green)">$210</b></span><br>
+        <span style="color:var(--text2)">L2 Indirect (23 people): <b style="color:var(--blue)">$98</b></span><br>
+        <span style="color:var(--text2)">L3 (47 people): <b style="color:var(--purple)">$32</b></span><br><br>
+        <span style="color:var(--text2)">Total: <b style="color:var(--gold)">$340</b></span>`
+      :`<b>领取 $340 邀请返佣</b><br><br>
+        <span style="color:var(--text2)">直邀 L1（8 人）：<b style="color:var(--green)">$210</b></span><br>
+        <span style="color:var(--text2)">间邀 L2（23 人）：<b style="color:var(--blue)">$98</b></span><br>
+        <span style="color:var(--text2)">三级 L3（47 人）：<b style="color:var(--purple)">$32</b></span><br><br>
+        <span style="color:var(--text2)">合计：<b style="color:var(--gold)">$340</b></span>`;
+
+  } else if(action==='leaveTeam'){
+    pendingAction={action,track};
+    titleTxt=isEn?'Leave Team':'退出战队';
+    details=isEn
+      ?`<b style="color:var(--red)">⚠️ Confirm leave TIGER_TEAM?</b><br><br>
+        <span style="color:var(--text2)">· You will lose your current rank #3 reward eligibility</span><br>
+        <span style="color:var(--text2)">· Unclaimed team rewards will be forfeited</span><br>
+        <span style="color:var(--text2)">· You can rejoin or create a new team after leaving</span><br><br>
+        <span style="color:var(--red);font-size:.9em">This action cannot be undone</span>`
+      :`<b style="color:var(--red)">⚠️ 确认退出 TIGER_TEAM？</b><br><br>
+        <span style="color:var(--text2)">· 将失去当前第 3 名的竞赛奖励资格</span><br>
+        <span style="color:var(--text2)">· 未领取的战队奖励将被没收</span><br>
+        <span style="color:var(--text2)">· 退出后可重新加入或创建新战队</span><br><br>
+        <span style="color:var(--red);font-size:.9em">此操作不可撤销</span>`;
+
   } else {
     // 其余操作保持原逻辑
     pendingAction={action,track};
     const msgs={
       createTeam:t('modal.createTeam'),joinTeam:t('modal.joinTeam'),
-      claimTeamReward:t('modal.claimTeamReward'),claimCommission:t('modal.claimCommission'),
     };
     titleTxt=t('modal.default');
     details=msgs[action]||action;
@@ -2342,13 +2491,63 @@ function downloadRankCSV(){
 
 
 /* ── TEAM TAB ── */
+const TEAM_MEMBERS=[
+  {r:1,addr:'0xAbCd...1234',vol:'$620K',pts:1240,isMe:true},
+  {r:2,addr:'0xBc...Fg23',vol:'$580K',pts:1160},
+  {r:3,addr:'0xCd...Gh45',vol:'$430K',pts:860},
+  {r:4,addr:'0xDe...Hi56',vol:'$390K',pts:780},
+  {r:5,addr:'0xEf...Ij67',vol:'$310K',pts:620},
+  {r:6,addr:'0xFg...Jk78',vol:'$270K',pts:540},
+  {r:7,addr:'0xGh...Kl89',vol:'$210K',pts:420},
+  {r:8,addr:'0xHi...Lm90',vol:'$180K',pts:360},
+  {r:9,addr:'0xIj...Mn01',vol:'$150K',pts:300},
+  {r:10,addr:'0xJk...No12',vol:'$120K',pts:240},
+  {r:11,addr:'0xKl...Op23',vol:'$90K',pts:180},
+  {r:12,addr:'0xLm...Pq34',vol:'$60K',pts:120},
+];
+
+function renderTeamMembers(){
+  const el=document.getElementById('team-member-list');
+  if(!el||el.dataset.rendered) return;
+  el.dataset.rendered='1';
+  el.innerHTML=TEAM_MEMBERS.map((m,i)=>{
+    const bg=i%2===0?'':'background:rgba(255,255,255,.02)';
+    const addrStyle=m.isMe?'color:var(--gold);font-weight:700':'font-family:monospace;font-size:.78em;color:var(--text2)';
+    return `<div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;padding:8px 12px;${bg};border-top:1px solid var(--border)">
+      <span style="font-size:.8em;color:var(--text2)">${m.r}</span>
+      <span style="${addrStyle}">${m.isMe?'YOU':m.addr}</span>
+      <span style="text-align:right;font-size:.8em">${m.vol}</span>
+      <span style="text-align:right;font-size:.8em;color:var(--blue);font-weight:600">${m.pts}</span>
+    </div>`;
+  }).join('');
+}
+
+function initTeamLbDrag(){
+  const wrap=document.getElementById('team-lb-wrap');
+  if(!wrap||wrap.dataset.drag) return;
+  wrap.dataset.drag='1';
+  let isDragging=false,startX=0,scrollLeft=0;
+  wrap.addEventListener('mousedown',e=>{isDragging=true;startX=e.pageX-wrap.offsetLeft;scrollLeft=wrap.scrollLeft;wrap.style.cursor='grabbing';});
+  wrap.addEventListener('mouseleave',()=>{isDragging=false;wrap.style.cursor='grab';});
+  wrap.addEventListener('mouseup',()=>{isDragging=false;wrap.style.cursor='grab';});
+  wrap.addEventListener('mousemove',e=>{if(!isDragging)return;e.preventDefault();wrap.scrollLeft=scrollLeft-(e.pageX-wrap.offsetLeft-startX);});
+  wrap.addEventListener('touchstart',e=>{startX=e.touches[0].pageX-wrap.offsetLeft;scrollLeft=wrap.scrollLeft;},{passive:true});
+  wrap.addEventListener('touchmove',e=>{wrap.scrollLeft=scrollLeft-(e.touches[0].pageX-wrap.offsetLeft-startX);},{passive:true});
+}
+
 function switchTeamTab(tab){
   document.querySelectorAll('[data-team]').forEach(b=>b.classList.toggle('active',b.dataset.team===tab));
   ['myTeam','invite','leaderboard'].forEach(id=>{
     const el=document.getElementById('teamTab-'+id);
-    if(el)el.style.display=id===tab?'':'none';
+    if(el) el.style.display=id===tab?'':'none';
   });
+  if(tab==='myTeam') renderTeamMembers();
+  if(tab==='leaderboard') initTeamLbDrag();
 }
+
+/* 初始渲染成员列表（默认 tab 是 myTeam） */
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderTeamMembers);
+else renderTeamMembers();
 
 /* ── HISTORY FILTER ── */
 function switchHistFilter(f){
