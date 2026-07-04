@@ -679,6 +679,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
 }
 @media(max-width:768px){
   .nav-links,.nav-right{display:none;}
+  .nav-notif-mobile{display:flex !important;}
   .menu-btn{display:flex;}
   .page{padding:28px 18px 80px;}
   .info-grid{grid-template-columns:repeat(2,1fr);}
@@ -819,6 +820,14 @@ tr:hover td{background:rgba(212,168,67,.03);}
   </div>
   <button class="menu-btn" id="menuBtn" onclick="openDrawer()" aria-label="Menu">
     <span></span><span></span><span></span>
+  </button>
+  <!-- 移动端单独的通知铃铛（nav-right 在移动端隐藏，这里补回来） -->
+  <button class="notif-btn nav-notif-mobile" style="display:none;margin-left:4px" id="notifBtnMobile" onclick="toggleNotifPanel()" title="操作记录">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+    <span class="notif-badge" id="notifBadgeMobile" style="display:none">0</span>
   </button>
 </nav>
 
@@ -3878,11 +3887,10 @@ function addNotifItem(type,amt,note){
   notifList.unshift({icon,type,amt,note,time:fmtHistTime()});
   if(notifList.length>50) notifList.pop();
   notifUnread++;
-  const badge=document.getElementById('notifBadge');
-  if(badge){
-    badge.style.display='flex';
-    badge.textContent=notifUnread>9?'9+':notifUnread;
-  }
+  ['notifBadge','notifBadgeMobile'].forEach(id=>{
+    const badge=document.getElementById(id);
+    if(badge){badge.style.display='flex';badge.textContent=notifUnread>9?'9+':notifUnread;}
+  });
   if(document.getElementById('notifPanel')?.classList.contains('show')){
     renderNotifPanel();
   }
@@ -3914,18 +3922,22 @@ function renderNotifPanel(){
 function toggleNotifPanel(){
   const panel=document.getElementById('notifPanel');
   if(!panel) return;
-  const btn=document.getElementById('notifBtn');
-  const rect=btn?.getBoundingClientRect();
+  const btn=document.getElementById('notifBtn')||document.getElementById('notifBtnMobile');
+  const isMobile=window.innerWidth<=768;
+  const activeBtn=isMobile?document.getElementById('notifBtnMobile'):document.getElementById('notifBtn');
+  const rect=activeBtn?.getBoundingClientRect();
   if(rect){
     panel.style.top=(rect.bottom+6)+'px';
-    panel.style.right=(window.innerWidth-rect.right)+'px';
+    const rightGap=window.innerWidth-rect.right;
+    panel.style.right=Math.max(8,rightGap)+'px';
   }
   const willOpen=!panel.classList.contains('show');
   panel.classList.toggle('show');
   if(willOpen){
     notifUnread=0;
-    const badge=document.getElementById('notifBadge');
-    if(badge) badge.style.display='none';
+    ['notifBadge','notifBadgeMobile'].forEach(id=>{
+      const b=document.getElementById(id);if(b)b.style.display='none';
+    });
     renderNotifPanel();
   }
 }
@@ -3933,15 +3945,17 @@ function toggleNotifPanel(){
 function clearNotifPanel(){
   notifList=[];
   notifUnread=0;
-  const badge=document.getElementById('notifBadge');
-  if(badge) badge.style.display='none';
+  ['notifBadge','notifBadgeMobile'].forEach(id=>{
+    const b=document.getElementById(id);if(b)b.style.display='none';
+  });
   renderNotifPanel();
 }
 
 document.addEventListener('click',function(e){
   const panel=document.getElementById('notifPanel');
   const btn=document.getElementById('notifBtn');
-  if(panel?.classList.contains('show') && !panel.contains(e.target) && !btn?.contains(e.target)){
+  const btnM=document.getElementById('notifBtnMobile');
+  if(panel?.classList.contains('show') && !panel.contains(e.target) && !btn?.contains(e.target) && !btnM?.contains(e.target)){
     panel.classList.remove('show');
   }
 });
