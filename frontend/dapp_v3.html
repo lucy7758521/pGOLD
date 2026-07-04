@@ -1204,13 +1204,14 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <div class="stats-row">
     <div class="stat-cell"><div class="sc-l" data-i18n="team.volume">战队交易量</div><div class="sc-v" id="team-vol">$3.4M</div></div>
     <div class="stat-cell"><div class="sc-l" data-i18n="team.direct">直邀人数</div><div class="sc-v" id="team-direct">8</div></div>
-    <div class="stat-cell"><div class="sc-l" data-i18n="team.pendingComm">待领返佣</div><div class="sc-v" id="team-pending-comm" style="color:var(--purple)">$340</div></div>
+    <div class="stat-cell"><div class="sc-l" data-i18n="team.pendingComm">待领返佣</div><div class="sc-v" id="team-pending-comm" style="color:var(--purple)">$340</div><button class="btn btn-ghost btn-sm" onclick="withConfirm('claimCommission')" style="margin-top:5px;font-size:.68em;padding:3px 10px;color:var(--purple);border-color:rgba(139,92,246,.3)">领取</button></div>
     <div class="stat-cell">
       <div class="sc-l">待领竞赛奖励</div>
       <div class="sc-v" id="team-contest-reward" style="color:var(--gold)">480 pGOLD</div>
       <div style="font-size:.68em;color:var(--text2);margin-top:3px;line-height:1.3">
         <span id="team-contest-countdown" style="color:var(--blue)">—</span>
       </div>
+      <button class="btn btn-ghost btn-sm" onclick="withConfirm('claimTeamReward')" style="margin-top:5px;font-size:.68em;padding:3px 10px;color:var(--gold);border-color:rgba(212,168,67,.3)">领取</button>
     </div>
   </div>
   <div class="tab-bar" style="margin-top:28px">
@@ -1292,7 +1293,6 @@ tr:hover td{background:rgba(212,168,67,.03);}
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
-      <button class="btn btn-gold btn-full" onclick="withConfirm('claimTeamReward')"><span class="btn-label" data-i18n="stake.claimAll">领取奖励</span><span class="btn-spinner"></span></button>
       <button class="btn btn-outline btn-danger btn-full" onclick="withConfirm('leaveTeam')"><span class="btn-label" data-i18n="team.leaveBtn">退出战队</span><span class="btn-spinner"></span></button>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px">
@@ -1964,19 +1964,26 @@ function withConfirm(action,track){
         :`<span style="color:var(--text2)">暂无可领取的竞赛奖励。<br>每月1日按贡献积分比例结算发放。</span>`;
 
   } else if(action==='claimCommission'){
-    pendingAction={action,track};
+    const commText=(document.getElementById('team-pending-comm')||{}).textContent||'$0';
+    const commAmt=parseFloat(commText.replace(/[^0-9.]/g,''))||0;
+    pendingAction={action,track,amount:commAmt};
     titleTxt=isEn?'Claim Commission':'领取返佣';
+    const canClaim=commAmt>0;
     details=isEn
-      ?`<b>Claim $340 referral commission</b><br><br>
-        <span style="color:var(--text2)">Current level: <b style="color:var(--gold)">⭐ Silver Referrer</b> · 4%</span><br>
-        <span style="color:var(--text2)">This month: <b style="color:var(--green)">$180</b> / $200 cap</span><br>
-        <span style="color:var(--text2)">Pending total: <b style="color:var(--purple)">$340</b></span><br><br>
-        <span style="color:var(--text2);font-size:.9em">Paid in pGOLD via market buyback</span>`
-      :`<b>领取 $340 推荐返佣</b><br><br>
-        <span style="color:var(--text2)">当前等级：<b style="color:var(--gold)">⭐ 白银推荐人</b> · 4%</span><br>
-        <span style="color:var(--text2)">本月已返：<b style="color:var(--green)">$180</b> / $200 上限</span><br>
-        <span style="color:var(--text2)">待领合计：<b style="color:var(--purple)">$340</b></span><br><br>
-        <span style="color:var(--text2);font-size:.9em">以 pGOLD 形式通过市场回购发放</span>`;
+      ?canClaim
+        ?`<b>Claim $${commAmt.toLocaleString('en-US',{maximumFractionDigits:0})} referral commission</b><br><br>
+          <span style="color:var(--text2)">Current level: <b style="color:var(--gold)">⭐ Silver Referrer</b> · 4%</span><br>
+          <span style="color:var(--text2)">This month: <b style="color:var(--green)">$180</b> / $200 cap</span><br>
+          <span style="color:var(--text2)">Pending total: <b style="color:var(--purple)">$${commAmt.toLocaleString('en-US',{maximumFractionDigits:0})}</b></span><br><br>
+          <span style="color:var(--text2);font-size:.9em">Paid in pGOLD via market buyback</span>`
+        :`<span style="color:var(--text2)">No pending commission to claim.</span>`
+      :canClaim
+        ?`<b>领取 $${commAmt.toLocaleString('en-US',{maximumFractionDigits:0})} 推荐返佣</b><br><br>
+          <span style="color:var(--text2)">当前等级：<b style="color:var(--gold)">⭐ 白银推荐人</b> · 4%</span><br>
+          <span style="color:var(--text2)">本月已返：<b style="color:var(--green)">$180</b> / $200 上限</span><br>
+          <span style="color:var(--text2)">待领合计：<b style="color:var(--purple)">$${commAmt.toLocaleString('en-US',{maximumFractionDigits:0})}</b></span><br><br>
+          <span style="color:var(--text2);font-size:.9em">以 pGOLD 形式通过市场回购发放，实时到账</span>`
+        :`<span style="color:var(--text2)">暂无待领返佣。</span>`;
 
   } else if(action==='leaveTeam'){
     pendingAction={action,track};
@@ -2164,11 +2171,14 @@ function execAction(){
       showToast(isEn?'You have left the team':'已退出战队','success');
 
     } else if(action==='claimCommission'){
-      PORTFOLIO.liquid+=340;
+      const amt=actionData.amount||0;
+      if(amt<=0){showToast(isEn?'No pending commission':'暂无待领返佣','info');return;}
+      const pgoldAmt=amt/dappPgoldPrice;
+      PORTFOLIO.liquid+=pgoldAmt;
       updateDappPriceDisplays(dappPgoldPrice);
       const comm=document.getElementById('team-pending-comm');
       if(comm) comm.textContent='$0';
-      showToast(isEn?'$340 commission credited':'$340 返佣已到账','success');
+      showToast(isEn?`$${amt} commission credited (${fmtN(pgoldAmt)} pGOLD)`:`$${amt} 返佣已到账（${fmtN(pgoldAmt)} pGOLD）`,'success');
 
     } else if(action==='createTeam'){
       const name=pendingAction.teamName||'NEW_TEAM';
