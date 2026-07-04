@@ -1309,9 +1309,15 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <!-- 邀请链接 -->
     <div class="form-row">
       <label data-i18n="team.inviteLink">你的邀请链接</label>
-      <input type="text" value="https://pgold.io/r/0xAbCd" readonly
-        style="background:rgba(212,168,67,.03);cursor:pointer"
-        onclick="navigator.clipboard.writeText(this.value).then(()=>{const old=this.value;this.value='已复制!';setTimeout(()=>this.value=old,1500)})">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="invite-link-input" type="text" value="https://pgold.io/r/0xAbCd" readonly
+          style="flex:1;background:rgba(212,168,67,.03);cursor:pointer">
+        <button class="btn btn-ghost btn-sm" onclick="copyInviteLink()" title="复制链接" style="flex-shrink:0;padding:8px 10px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
+      </div>
     </div>
     <!-- 当前等级 -->
     <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:10px;padding:12px 16px;margin-bottom:14px">
@@ -2947,6 +2953,16 @@ function showNewTeamPage(name){
         <div style="font-size:.78em;color:var(--text2)">已质押保证金：<b style="color:var(--green)">100 pGOLD</b></div>
       </div>`;
   }
+}
+
+function copyInviteLink(){
+  const input=document.getElementById('invite-link-input');
+  if(!input) return;
+  navigator.clipboard.writeText(input.value).then(()=>{
+    showToast(I18N.getLang()==='en'?'Invite link copied!':'邀请链接已复制！','success');
+  }).catch(()=>{
+    showToast(I18N.getLang()==='en'?'Copy failed, please copy manually':'复制失败，请手动复制','error');
+  });
 }
 
 function openJoinTeam(){
