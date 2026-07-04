@@ -1943,6 +1943,11 @@ function withConfirm(action,track){
         <span style="color:var(--text2)">解包后剩余 vPGOLD：${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`;
 
   } else if(action==='claimTeamReward'){
+    const timeLeft=getNextSettlement()-new Date();
+    if(timeLeft>0){
+      showToast(isEn?'Contest rewards are not yet available. Please wait for the monthly settlement.':'竞赛奖励尚未结算，请等待每月1日结算后再领取。','error');
+      return;
+    }
     const contestEl=document.getElementById('team-contest-reward');
     const teamRewardAmt=parseFloat((contestEl||{}).textContent)||0;
     const teamName=(document.querySelector('#page-team .nw-value')||{}).textContent||'TIGER_TEAM';
@@ -2641,13 +2646,13 @@ const ALL_TEAMS=[
 
 let inTeam=true; // 是否在战队中
 
-// 竞赛奖励倒计时：每月1日0时结算，模拟下次结算时间
+function getNextSettlement(){
+  const now=new Date();
+  return new Date(now.getFullYear(), now.getMonth()+1, 1, 0, 0, 0);
+}
+
+// 竞赛奖励倒计时：每月1日0时结算
 (function initContestCountdown(){
-  function getNextSettlement(){
-    const now=new Date();
-    const next=new Date(now.getFullYear(), now.getMonth()+1, 1, 0, 0, 0);
-    return next;
-  }
   function formatCountdown(ms){
     if(ms<=0) return '可领取';
     const d=Math.floor(ms/86400000);
