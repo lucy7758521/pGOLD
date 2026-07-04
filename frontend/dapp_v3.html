@@ -1426,6 +1426,16 @@ tr:hover td{background:rgba(212,168,67,.03);}
       CSV
     </button>
   </div>
+  <!-- 日期范围筛选 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap">
+    <input type="date" id="hist-date-from" onchange="renderHistTable()"
+      style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border);color:var(--text1);border-radius:8px;padding:6px 10px;font-size:.8em">
+    <span style="color:var(--text2);font-size:.82em;flex-shrink:0">至</span>
+    <input type="date" id="hist-date-to" onchange="renderHistTable()"
+      style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border);color:var(--text1);border-radius:8px;padding:6px 10px;font-size:.8em">
+    <button class="btn btn-ghost btn-sm" onclick="clearHistDates()" style="flex-shrink:0;font-size:.75em;padding:6px 10px">重置</button>
+    <span id="hist-count" style="font-size:.75em;color:var(--text2);flex-shrink:0"></span>
+  </div>
   <div class="tbl-wrap" style="margin-top:12px">
     <table id="hist-table" style="min-width:520px">
       <thead>
@@ -2850,19 +2860,36 @@ let histFilter='all';
 
 function renderHistTable(){
   const isEn=I18N.getLang()==='en';
-  const filtered=histFilter==='all'?HIST_DATA:HIST_DATA.filter(r=>r.type===histFilter);
+  const fromVal=document.getElementById('hist-date-from')?.value;
+  const toVal=document.getElementById('hist-date-to')?.value;
+  const fromTs=fromVal?new Date(fromVal+' 00:00:00').getTime():0;
+  const toTs=toVal?new Date(toVal+' 23:59:59').getTime():Infinity;
+
+  const filtered=HIST_DATA.filter(r=>{
+    if(histFilter!=='all'&&r.type!==histFilter) return false;
+    const rTs=new Date(r.time).getTime();
+    return rTs>=fromTs&&rTs<=toTs;
+  });
+
   const typeLabel={buy:['BUY','买入'],sell:['SELL','卖出'],stake:['STAKE','质押'],claim:['CLAIM','领取']};
   const typeBadge={buy:'badge-green',sell:'badge-red',stake:'badge-blue',claim:'badge-purple'};
   const typeColor={buy:'var(--green)',sell:'var(--red)',stake:'var(--text1)',claim:'var(--gold)'};
 
-  // 只在纯质押/领取筛选时隐藏价格和手续费列
   const hidePrice=['stake','claim'].includes(histFilter);
   const hideFee=['stake','claim'].includes(histFilter);
   document.getElementById('hist-th-price').style.display=hidePrice?'none':'';
   document.getElementById('hist-th-fee').style.display=hideFee?'none':'';
   document.getElementById('hist-th-extra').textContent=isEn?'Note':'备注';
 
+  const countEl=document.getElementById('hist-count');
+  if(countEl) countEl.textContent=isEn?`${filtered.length} records`:`共 ${filtered.length} 条`;
+
   const tbody=document.getElementById('hist-tbody');
+  if(!filtered.length){
+    const cols=hidePrice?4:6;
+    tbody.innerHTML=`<tr><td colspan="${cols}" style="text-align:center;color:var(--text2);padding:24px 0">${isEn?'No records found':'暂无记录'}</td></tr>`;
+    return;
+  }
   tbody.innerHTML=filtered.map(r=>{
     const lbl=isEn?typeLabel[r.type][0]:typeLabel[r.type][1];
     const sign=(r.type==='buy'||r.type==='claim')&&r.amt>0?'+':'';
@@ -2879,6 +2906,14 @@ function renderHistTable(){
   }).join('');
 }
 
+function clearHistDates(){
+  const f=document.getElementById('hist-date-from');
+  const t=document.getElementById('hist-date-to');
+  if(f) f.value='';
+  if(t) t.value='';
+  renderHistTable();
+}
+
 function switchHistFilter(f){
   histFilter=f;
   document.querySelectorAll('[data-hfilter]').forEach(b=>b.classList.toggle('active',b.dataset.hfilter===f));
@@ -2887,13 +2922,22 @@ function switchHistFilter(f){
 
 function downloadHistory(){
   const isEn=I18N.getLang()==='en';
-  const filtered=histFilter==='all'?HIST_DATA:HIST_DATA.filter(r=>r.type===histFilter);
+  const fromVal=document.getElementById('hist-date-from')?.value;
+  const toVal=document.getElementById('hist-date-to')?.value;
+  const fromTs=fromVal?new Date(fromVal+' 00:00:00').getTime():0;
+  const toTs=toVal?new Date(toVal+' 23:59:59').getTime():Infinity;
+  const filtered=HIST_DATA.filter(r=>{
+    if(histFilter!=='all'&&r.type!==histFilter) return false;
+    const rTs=new Date(r.time).getTime();
+    return rTs>=fromTs&&rTs<=toTs;
+  });
+  if(!filtered.length){showToast(isEn?'No records to export':'无可导出的记录','info');return;}
   const headers=isEn?['Time','Type','Amount (pGOLD)','Price (USD)','Fee (USD)','Note']
                     :['时间','类型','数量 (pGOLD)','价格 (USD)','手续费 (USD)','备注'];
   const typeLabel={buy:'买入/BUY',sell:'卖出/SELL',stake:'质押/STAKE',claim:'领取/CLAIM'};
   const rows=filtered.map(r=>[
     r.time, typeLabel[r.type],
-    r.type==='sell'?r.amt:(r.amt>0?`+${r.amt}`:r.amt),
+    (r.type==='buy'||r.type==='claim'?'+':'')+r.amt,
     r.price!=null?r.price:'',
     r.fee!=null?r.fee:'',
     r.note
@@ -2902,10 +2946,10 @@ function downloadHistory(){
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  const month=new Date().toISOString().slice(0,7);
-  a.href=url; a.download=`pGOLD_history_${month}.csv`; a.click();
+  const suffix=fromVal&&toVal?`${fromVal}_${toVal}`:new Date().toISOString().slice(0,7);
+  a.href=url; a.download=`pGOLD_history_${suffix}.csv`; a.click();
   URL.revokeObjectURL(url);
-  showToast(isEn?'History downloaded':'交易记录已下载','success');
+  showToast(isEn?`${filtered.length} records downloaded`:`已导出 ${filtered.length} 条记录`,'success');
 }
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderHistTable);
