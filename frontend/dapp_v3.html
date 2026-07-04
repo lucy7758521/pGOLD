@@ -1936,17 +1936,19 @@ function withConfirm(action,track){
         <span style="color:var(--text2)">解包后剩余 vPGOLD：${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`;
 
   } else if(action==='claimTeamReward'){
-    pendingAction={action,track};
+    const teamRewardAmt=parseFloat((document.getElementById('team-reward-val')||{}).textContent)||2400;
+    const teamName=(document.querySelector('#page-team .nw-value')||{}).textContent||'TIGER_TEAM';
+    pendingAction={action,track,reward:teamRewardAmt};
     titleTxt=isEn?'Claim Team Reward':'领取战队竞赛奖励';
     details=isEn
-      ?`<b>Claim 2,400 pGOLD team reward</b><br><br>
-        <span style="color:var(--text2)">Team: <b style="color:var(--gold)">TIGER_TEAM</b> · Rank #3</span><br>
-        <span style="color:var(--text2)">Reward: <b style="color:var(--green)">2,400 pGOLD</b> ≈ $${(2400*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
+      ?`<b>Claim team contest reward</b><br><br>
+        <span style="color:var(--text2)">Team: <b style="color:var(--gold)">${teamName}</b></span><br>
+        <span style="color:var(--text2)">Reward: <b style="color:var(--green)">${fmtN(teamRewardAmt)} pGOLD</b> ≈ $${(teamRewardAmt*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
         <span style="color:var(--green);font-size:.9em">✓ Credited to your liquid balance immediately</span>`
-      :`<b>领取 2,400 pGOLD 战队竞赛奖励</b><br><br>
-        <span style="color:var(--text2)">战队：<b style="color:var(--gold)">TIGER_TEAM</b> · 排名第 3</span><br>
-        <span style="color:var(--text2)">奖励：<b style="color:var(--green)">2,400 pGOLD</b> ≈ $${(2400*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
-        <span style="color:var(--green);font-size:.9em">✓ 奖励实时发放至你的可用余额</span>`;
+      :`<b>领取战队竞赛奖励</b><br><br>
+        <span style="color:var(--text2)">战队：<b style="color:var(--gold)">${teamName}</b></span><br>
+        <span style="color:var(--text2)">奖励：<b style="color:var(--green)">${fmtN(teamRewardAmt)} pGOLD</b> ≈ $${(teamRewardAmt*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
+        <span style="color:var(--green);font-size:.9em">✓ 战队奖励实时发放，直接到账可用余额</span>`;
 
   } else if(action==='claimCommission'){
     pendingAction={action,track};
@@ -2128,10 +2130,13 @@ function execAction(){
       showToast(isEn?'Unwrapped successfully, vesting plan restored':'解包成功，释放计划已恢复','success');
 
     } else if(action==='claimTeamReward'){
-      const reward=2400;
+      const reward=actionData.reward||0;
       PORTFOLIO.liquid+=reward;
+      // 领取后清零竞赛奖励显示
+      const rewardEl=document.getElementById('team-reward-val');
+      if(rewardEl) rewardEl.textContent='0 pGOLD';
       updateDappPriceDisplays(dappPgoldPrice);
-      showToast(isEn?`${reward} pGOLD team reward credited`:`${reward} pGOLD 战队奖励已到账`,'success');
+      showToast(isEn?`${fmtN(reward)} pGOLD team reward credited`:`${fmtN(reward)} pGOLD 战队奖励已到账`,'success');
 
     } else if(action==='leaveTeam'){
       const vol=document.getElementById('team-vol');
