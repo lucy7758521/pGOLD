@@ -1413,31 +1413,32 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="nw-value">170 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
     <div class="nw-sub">净买入 · 本月</div>
   </div>
-  <div class="tab-bar" style="margin-top:28px">
-    <button class="tab-btn active" data-hfilter="all" onclick="switchHistFilter('all')" data-i18n="hist.all">全部</button>
-    <button class="tab-btn" data-hfilter="buy" onclick="switchHistFilter('buy')" data-i18n="hist.buy">买入</button>
-    <button class="tab-btn" data-hfilter="sell" onclick="switchHistFilter('sell')" data-i18n="hist.sell">卖出</button>
-    <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
-    <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:28px">
+    <div class="tab-bar" style="margin-top:0;flex:1">
+      <button class="tab-btn active" data-hfilter="all" onclick="switchHistFilter('all')" data-i18n="hist.all">全部</button>
+      <button class="tab-btn" data-hfilter="buy" onclick="switchHistFilter('buy')" data-i18n="hist.buy">买入</button>
+      <button class="tab-btn" data-hfilter="sell" onclick="switchHistFilter('sell')" data-i18n="hist.sell">卖出</button>
+      <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
+      <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="downloadHistory()" style="flex-shrink:0;margin-left:8px;font-size:.75em;display:flex;align-items:center;gap:5px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      CSV
+    </button>
   </div>
-  <div class="tbl-wrap">
-    <table>
+  <div class="tbl-wrap" style="margin-top:12px">
+    <table id="hist-table" style="min-width:520px">
       <thead>
         <tr style="background:linear-gradient(90deg,var(--surface),var(--surface2))">
           <th style="min-width:120px" data-i18n="hist.thTime">时间</th>
           <th data-i18n="hist.thType">类型</th>
           <th data-i18n="hist.thAmt">数量</th>
-          <th data-i18n="hist.thPrice">价格</th>
-          <th data-i18n="hist.thFee">手续费</th>
+          <th id="hist-th-price" data-i18n="hist.thPrice">价格</th>
+          <th id="hist-th-fee" data-i18n="hist.thFee">手续费</th>
+          <th id="hist-th-extra">备注</th>
         </tr>
       </thead>
-      <tbody id="hist-tbody">
-        <tr><td>2026-06-26 09:15</td><td><span class="badge badge-green" style="border-radius:5px">BUY</span></td><td style="color:var(--green)">+50 pGOLD</td><td class="hist-price">$85.20</td><td>$10.65</td></tr>
-        <tr><td>2026-06-25 14:30</td><td><span class="badge badge-red" style="border-radius:5px">SELL</span></td><td style="color:var(--red)">-20 pGOLD</td><td class="hist-price">$84.80</td><td>$4.24</td></tr>
-        <tr><td>2026-06-25 10:15</td><td><span class="badge badge-green" style="border-radius:5px">BUY</span></td><td style="color:var(--green)">+100 pGOLD</td><td class="hist-price">$85.00</td><td>$21.25</td></tr>
-        <tr><td>2026-06-24 16:45</td><td><span class="badge badge-blue" style="border-radius:5px">STAKE</span></td><td>200 pGOLD</td><td>—</td><td>—</td></tr>
-        <tr><td>2026-06-24 08:00</td><td><span class="badge badge-purple" style="border-radius:5px">CLAIM</span></td><td style="color:var(--gold)">+12.5 pGOLD</td><td>—</td><td>—</td></tr>
-      </tbody>
+      <tbody id="hist-tbody"></tbody>
     </table>
   </div>
 </div>
@@ -2831,10 +2832,84 @@ function switchTeamTab(tab){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderTeamMembers);
 else renderTeamMembers();
 
-/* ── HISTORY FILTER ── */
-function switchHistFilter(f){
-  document.querySelectorAll('[data-hfilter]').forEach(b=>b.classList.toggle('active',b.dataset.hfilter===f));
+/* ── HISTORY ── */
+const HIST_DATA=[
+  {time:'2026-06-26 09:15',type:'buy', amt:+50,  price:85.20, fee:10.65, note:'市价买入'},
+  {time:'2026-06-25 14:30',type:'sell',amt:-20,  price:84.80, fee:4.24,  note:'市价卖出'},
+  {time:'2026-06-25 10:15',type:'buy', amt:+100, price:85.00, fee:21.25, note:'限价买入'},
+  {time:'2026-06-24 16:45',type:'stake',amt:200, price:null,  fee:null,  note:'A轨质押'},
+  {time:'2026-06-24 08:00',type:'claim',amt:12.5,price:null,  fee:null,  note:'持仓分红'},
+  {time:'2026-06-23 11:20',type:'buy', amt:+30,  price:84.50, fee:6.34,  note:'市价买入'},
+  {time:'2026-06-22 15:00',type:'sell',amt:-50,  price:85.10, fee:10.64, note:'限价卖出'},
+  {time:'2026-06-21 09:00',type:'claim',amt:8.2, price:null,  fee:null,  note:'Top100奖励'},
+  {time:'2026-06-20 13:30',type:'stake',amt:100, price:null,  fee:null,  note:'B轨存入'},
+  {time:'2026-06-19 10:45',type:'buy', amt:+80,  price:83.90, fee:16.78, note:'市价买入'},
+];
+
+let histFilter='all';
+
+function renderHistTable(){
+  const isEn=I18N.getLang()==='en';
+  const filtered=histFilter==='all'?HIST_DATA:HIST_DATA.filter(r=>r.type===histFilter);
+  const typeLabel={buy:['BUY','买入'],sell:['SELL','卖出'],stake:['STAKE','质押'],claim:['CLAIM','领取']};
+  const typeBadge={buy:'badge-green',sell:'badge-red',stake:'badge-blue',claim:'badge-purple'};
+  const typeColor={buy:'var(--green)',sell:'var(--red)',stake:'var(--text1)',claim:'var(--gold)'};
+
+  // 只在纯质押/领取筛选时隐藏价格和手续费列
+  const hidePrice=['stake','claim'].includes(histFilter);
+  const hideFee=['stake','claim'].includes(histFilter);
+  document.getElementById('hist-th-price').style.display=hidePrice?'none':'';
+  document.getElementById('hist-th-fee').style.display=hideFee?'none':'';
+  document.getElementById('hist-th-extra').textContent=isEn?'Note':'备注';
+
+  const tbody=document.getElementById('hist-tbody');
+  tbody.innerHTML=filtered.map(r=>{
+    const lbl=isEn?typeLabel[r.type][0]:typeLabel[r.type][1];
+    const sign=(r.type==='buy'||r.type==='claim')&&r.amt>0?'+':'';
+    const amtStr=`${sign}${r.amt} pGOLD`;
+    const priceCell=hidePrice?'':`<td class="hist-price">${r.price!=null?'$'+r.price.toFixed(2):'—'}</td>`;
+    const feeCell=hideFee?'':`<td>${r.fee!=null?'$'+r.fee.toFixed(2):'—'}</td>`;
+    return `<tr>
+      <td style="font-size:.82em;color:var(--text2)">${r.time}</td>
+      <td><span class="badge ${typeBadge[r.type]}" style="border-radius:5px">${lbl}</span></td>
+      <td style="color:${typeColor[r.type]};font-weight:600">${amtStr}</td>
+      ${priceCell}${feeCell}
+      <td style="font-size:.8em;color:var(--text2)">${r.note}</td>
+    </tr>`;
+  }).join('');
 }
+
+function switchHistFilter(f){
+  histFilter=f;
+  document.querySelectorAll('[data-hfilter]').forEach(b=>b.classList.toggle('active',b.dataset.hfilter===f));
+  renderHistTable();
+}
+
+function downloadHistory(){
+  const isEn=I18N.getLang()==='en';
+  const filtered=histFilter==='all'?HIST_DATA:HIST_DATA.filter(r=>r.type===histFilter);
+  const headers=isEn?['Time','Type','Amount (pGOLD)','Price (USD)','Fee (USD)','Note']
+                    :['时间','类型','数量 (pGOLD)','价格 (USD)','手续费 (USD)','备注'];
+  const typeLabel={buy:'买入/BUY',sell:'卖出/SELL',stake:'质押/STAKE',claim:'领取/CLAIM'};
+  const rows=filtered.map(r=>[
+    r.time, typeLabel[r.type],
+    r.type==='sell'?r.amt:(r.amt>0?`+${r.amt}`:r.amt),
+    r.price!=null?r.price:'',
+    r.fee!=null?r.fee:'',
+    r.note
+  ]);
+  const csv=[headers.join(','),...rows.map(r=>r.map(c=>`"${c}"`).join(','))].join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const month=new Date().toISOString().slice(0,7);
+  a.href=url; a.download=`pGOLD_history_${month}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  showToast(isEn?'History downloaded':'交易记录已下载','success');
+}
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderHistTable);
+else renderHistTable();
 
 /* ── BIND INVITER ── */
 function openCreateTeam(){
