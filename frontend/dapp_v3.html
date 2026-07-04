@@ -114,7 +114,7 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 }
 
 /* MAIN */
-.main{padding-top:var(--nav-h);}
+.main{padding-top:calc(var(--nav-h) + 28px);}
 .page{display:none;max-width:860px;margin:0 auto;padding:44px 28px 80px;}
 .page.active{display:block;animation:fadeUp .18s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
@@ -409,6 +409,63 @@ tr:hover td{background:rgba(212,168,67,.03);}
 .btn-purple:hover{background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.35);}
 .btn-green{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.22);}
 .btn-green:hover{background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.35);}
+
+/* PRICE TICKER */
+.price-ticker{position:fixed;top:var(--nav-h);left:0;right:0;z-index:99;height:28px;
+  background:rgba(8,8,12,.98);border-bottom:1px solid rgba(212,168,67,.1);
+  display:flex;align-items:center;padding:0 28px;gap:10px;font-size:.68em;overflow:hidden;white-space:nowrap;}
+.ticker-sep{color:rgba(255,255,255,.1);flex-shrink:0;font-size:.85em;}
+.ticker-live{display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 4px var(--green);animation:tickerPulse 2s infinite;flex-shrink:0;}
+@keyframes tickerPulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* NOTIFICATION */
+.notif-btn{position:relative;background:none;border:1px solid var(--border);cursor:pointer;
+  padding:6px 8px;border-radius:8px;color:var(--text2);transition:all .15s;display:flex;align-items:center;}
+.notif-btn:hover{background:rgba(255,255,255,.05);color:var(--text);}
+.notif-badge{position:absolute;top:-4px;right:-4px;min-width:15px;height:15px;
+  background:var(--red);border-radius:8px;font-size:.58em;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid var(--bg);}
+.notif-panel{position:fixed;z-index:500;width:300px;max-height:380px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 12px 40px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden;}
+.notif-panel.show{display:flex;}
+.notif-hd{padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.notif-hd-title{font-size:.75em;font-weight:700;color:var(--text);}
+.notif-clear-btn{font-size:.68em;color:var(--muted);background:none;border:none;cursor:pointer;
+  font-family:inherit;padding:2px 6px;border-radius:5px;}
+.notif-clear-btn:hover{color:var(--gold);background:rgba(212,168,67,.06);}
+.notif-scroll{overflow-y:auto;flex:1;}
+.notif-item{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);
+  display:flex;align-items:flex-start;gap:9px;}
+.notif-icon-wrap{font-size:.88em;flex-shrink:0;width:24px;height:24px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.notif-body{flex:1;min-width:0;}
+.notif-text{font-size:.78em;color:var(--text);line-height:1.4;}
+.notif-meta{display:flex;align-items:center;gap:6px;margin-top:3px;}
+.notif-time{font-size:.65em;color:var(--muted);}
+.notif-amt{font-size:.65em;color:var(--gold);font-weight:600;}
+.notif-empty{padding:32px 16px;text-align:center;font-size:.78em;color:var(--muted);}
+
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:160px 1fr;gap:14px;margin-bottom:24px;}
+@media(max-width:600px){.chart-row{grid-template-columns:1fr;}}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+.chart-title{font-size:.65em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700;}
+.donut-wrap{display:flex;flex-direction:column;align-items:center;}
+.donut-legend{display:flex;flex-direction:column;gap:5px;margin-top:10px;width:100%;}
+.legend-row{display:flex;align-items:center;gap:6px;font-size:.7em;}
+.legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.legend-label{color:var(--text2);flex:1;}
+.legend-pct{color:var(--text);font-weight:600;font-size:.9em;}
+
+/* ICO COUNTDOWN */
+.ico-countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 8px;}
+.cd-cell{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:10px 8px;text-align:center;}
+.cd-num{font-size:1.4em;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums;}
+.cd-label{font-size:.58em;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:3px;}
 
 /* BADGE */
 .badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.68em;font-weight:700;}
@@ -747,6 +804,13 @@ tr:hover td{background:rgba(212,168,67,.03);}
   </div>
   <div class="nav-right">
     <a href="swap_v3.html" class="btn btn-gold btn-sm" style="text-decoration:none">⇄ Swap</a>
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotifPanel()" title="操作记录">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+    </button>
     <div class="lang-toggle">
       <button class="lang-btn active" data-lang="zh">中</button>
       <button class="lang-btn" data-lang="en">EN</button>
@@ -757,6 +821,22 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <span></span><span></span><span></span>
   </button>
 </nav>
+
+<!-- PRICE TICKER -->
+<div class="price-ticker">
+  <span class="ticker-live"></span>
+  <span style="color:var(--text2);font-weight:600">pGOLD</span>
+  <span id="ticker-price" style="color:var(--text);font-weight:700">$85.00</span>
+  <span id="ticker-change" style="color:var(--muted)">—</span>
+  <span class="ticker-sep">│</span>
+  <span style="color:var(--muted)">净资产</span>
+  <span id="ticker-nw" style="color:var(--gold);font-weight:600">$416,075</span>
+  <span class="ticker-sep">│</span>
+  <span style="color:var(--muted)">持仓</span>
+  <span id="ticker-pgold" style="color:var(--text)">4,895</span>
+  <span style="color:var(--muted)">pGOLD</span>
+  <span style="margin-left:auto;color:var(--green);letter-spacing:.5px;font-size:.9em;font-weight:700">● LIVE</span>
+</div>
 
 <!-- MAIN -->
 <div class="main">
@@ -950,6 +1030,45 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <span class="asset-usd data-highlight" id="port-total-usd" style="color:var(--gold)">≈ $416,075</span>
     </div>
   </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Charts -->
+  <div class="sec-hd"><h2 data-i18n="dash.charts">资产可视化</h2></div>
+  <div class="chart-row">
+    <!-- Donut: asset allocation -->
+    <div class="chart-card">
+      <div class="chart-title" data-i18n="dash.allocation">持仓占比</div>
+      <div class="donut-wrap">
+        <svg id="donut-svg" width="120" height="120" viewBox="0 0 42 42" style="transform:rotate(-90deg)">
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="5"/>
+          <circle id="donut-liquid" cx="21" cy="21" r="15.915" fill="none" stroke-width="5"
+            stroke="var(--gold)" stroke-dasharray="28.5 71.5" stroke-dashoffset="0"/>
+          <circle id="donut-staked" cx="21" cy="21" r="15.915" fill="none" stroke-width="5"
+            stroke="var(--green)" stroke-dasharray="16.3 83.7" stroke-dashoffset="-28.5"/>
+          <circle id="donut-vesting" cx="21" cy="21" r="15.915" fill="none" stroke-width="5"
+            stroke="var(--purple)" stroke-dasharray="50.1 49.9" stroke-dashoffset="-44.8"/>
+          <circle id="donut-vp" cx="21" cy="21" r="15.915" fill="none" stroke-width="5"
+            stroke="var(--blue)" stroke-dasharray="4.9 95.1" stroke-dashoffset="-94.9"/>
+        </svg>
+        <div class="donut-legend" id="donut-legend">
+          <div class="legend-row"><span class="legend-dot" style="background:var(--gold)"></span><span class="legend-label">流通</span><span class="legend-pct" id="leg-liquid">28.6%</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span><span class="legend-label">质押</span><span class="legend-pct" id="leg-staked">16.3%</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--purple)"></span><span class="legend-label">待释放</span><span class="legend-pct" id="leg-vesting">50.1%</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--blue)"></span><span class="legend-label">vPGOLD</span><span class="legend-pct" id="leg-vp">4.9%</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Sparkline: 7-day portfolio value -->
+    <div class="chart-card">
+      <div class="chart-title" data-i18n="dash.trend">净资产走势（7日）</div>
+      <canvas id="sparkline-canvas" width="0" height="100" style="width:100%;height:100px;display:block;"></canvas>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;">
+        <span id="spark-min" style="font-size:.6em;color:var(--muted)"></span>
+        <span id="spark-max" style="font-size:.6em;color:var(--muted)"></span>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- ══ ICO ══ -->
 <div class="page" id="page-ico">
@@ -1066,6 +1185,34 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <button class="btn btn-gold btn-full" id="icoBtn" onclick="confirmSubscribe()" style="min-height:52px;font-size:.9em;letter-spacing:.3px;">
       <span class="btn-label" data-i18n="ico.subscribBtn">立即认购</span><span class="btn-spinner"></span>
     </button>
+  </div>
+
+  <!-- ICO 倒计时 -->
+  <div class="sec-hd"><h2 data-i18n="ico.countdown">本轮结束倒计时</h2></div>
+  <div class="ico-countdown">
+    <div class="cd-cell"><div class="cd-num" id="ico-cd-days">--</div><div class="cd-label" data-i18n="ico.days">天</div></div>
+    <div class="cd-cell"><div class="cd-num" id="ico-cd-hours">--</div><div class="cd-label" data-i18n="ico.hours">时</div></div>
+    <div class="cd-cell"><div class="cd-num" id="ico-cd-mins">--</div><div class="cd-label" data-i18n="ico.mins">分</div></div>
+    <div class="cd-cell"><div class="cd-num" id="ico-cd-secs">--</div><div class="cd-label" data-i18n="ico.secs">秒</div></div>
+  </div>
+  <div style="text-align:center;font-size:.7em;color:var(--muted);margin-bottom:20px" id="ico-phase-end">第2档 · D31-60</div>
+
+  <!-- 我的认购记录 -->
+  <div class="sec-hd">
+    <h2 data-i18n="ico.myHistory">我的认购记录</h2>
+    <button onclick="downloadIcoHist()" style="font-size:.72em;color:var(--text2);background:none;border:none;cursor:pointer;font-family:inherit" data-i18n="hist.download">⬇ 下载</button>
+  </div>
+  <div class="tbl-wrap" style="overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th data-i18n="hist.time">时间</th>
+        <th data-i18n="ico.yourSub">认购</th>
+        <th data-i18n="hist.price">价格</th>
+        <th data-i18n="hist.fee">手续费</th>
+        <th data-i18n="ico.status">状态</th>
+      </tr></thead>
+      <tbody id="ico-hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">暂无记录</td></tr></tbody>
+    </table>
   </div>
 </div>
 
@@ -3103,6 +3250,8 @@ function pushHist(type,amt,note,price,fee){
   HIST_DATA.unshift({time:fmtHistTime(),type,amt:Math.abs(amt),price:price||null,fee:fee||null,note});
   if(document.getElementById('page-history')?.classList.contains('active')||
      document.getElementById('hist-tbody')) renderHistTable();
+  addNotifItem(type,amt,note);
+  updateIcoHistTable();
 }
 
 let histFilter='all';
@@ -3530,6 +3679,7 @@ function updateDappPriceDisplays(p){
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
   set('nw-price','$'+p.toFixed(2));
   const total=(PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp)*p;
+  const totalPgold=PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp;
 
   // 更新净资产（只在余额可见时更新）
   const nwTotal = document.getElementById('nw-total');
@@ -3545,6 +3695,11 @@ function updateDappPriceDisplays(p){
   set('port-vesting-usd',fmt(PORTFOLIO.vesting*p));
   set('port-vp-usd',fmt(PORTFOLIO.vp*p));
   set('port-total-usd','≈ '+fmt(total));
+
+  // 更新 price ticker
+  set('ticker-price','$'+p.toFixed(2));
+  set('ticker-nw',fmt(total));
+  set('ticker-pgold',totalPgold.toLocaleString('en-US'));
 
   // 同步 drawer 资产摘要
   if(walletAddress) updateDrawerAssets();
@@ -3562,6 +3717,9 @@ function updateDappPriceDisplays(p){
   document.querySelectorAll('.hist-price').forEach((td,i)=>{
     if(i<offsets.length)td.textContent='$'+(p+offsets[i]).toFixed(2);
   });
+
+  // 更新资产分配图
+  updateDonutChart();
 }
 
 async function fetchPAXGPrice(){
@@ -3572,8 +3730,13 @@ async function fetchPAXGPrice(){
       const p=data['pax-gold'].usd/31.1035;
       const ch=data['pax-gold'].usd_24h_change||0;
       updateDappPriceDisplays(p);
+      const s=ch>=0?'+':'';
+      const chStr=`${s}${ch.toFixed(2)}%`;
+      const chColor=ch>=0?'var(--green)':'var(--red)';
       const chEl=document.getElementById('nw-change');
-      if(chEl){const s=ch>=0?'+':'';chEl.textContent=`${s}${ch.toFixed(2)}%`;chEl.style.color=ch>=0?'var(--green)':'var(--red)';}
+      if(chEl){chEl.textContent=chStr;chEl.style.color=chColor;}
+      const tickerCh=document.getElementById('ticker-change');
+      if(tickerCh){tickerCh.textContent=chStr;tickerCh.style.color=chColor;}
     }
   }catch(e){console.warn('price fetch failed',e);setTimeout(fetchPAXGPrice,60000);}
 }
@@ -3617,8 +3780,250 @@ function toggleBalance(){
 function formatCurrency(val){
   return '$' + parseInt(val).toLocaleString('en-US');
 }
+
+/* ── DONUT CHART ── */
+function updateDonutChart(){
+  const total=PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp;
+  if(!total) return;
+  const segs=[
+    {id:'donut-liquid',legId:'leg-liquid',val:PORTFOLIO.liquid,color:'var(--gold)'},
+    {id:'donut-staked',legId:'leg-staked',val:PORTFOLIO.staked,color:'var(--green)'},
+    {id:'donut-vesting',legId:'leg-vesting',val:PORTFOLIO.vesting,color:'var(--purple)'},
+    {id:'donut-vp',legId:'leg-vp',val:PORTFOLIO.vp,color:'var(--blue)'},
+  ];
+  const circ=100;
+  let offset=0;
+  segs.forEach(s=>{
+    const pct=s.val/total;
+    const arc=(pct*circ).toFixed(1);
+    const gap=(circ-arc).toFixed(1);
+    const el=document.getElementById(s.id);
+    if(el){el.setAttribute('stroke-dasharray',`${arc} ${gap}`);el.setAttribute('stroke-dashoffset',-offset);}
+    const legEl=document.getElementById(s.legId);
+    if(legEl) legEl.textContent=(pct*100).toFixed(1)+'%';
+    offset+=parseFloat(arc);
+  });
+}
+
+/* ── SPARKLINE CHART ── */
+function drawSparkline(){
+  const canvas=document.getElementById('sparkline-canvas');
+  if(!canvas) return;
+  const dpr=window.devicePixelRatio||1;
+  const w=canvas.offsetWidth;
+  const h=100;
+  canvas.width=w*dpr;
+  canvas.height=h*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const base=(PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting+PORTFOLIO.vp)*dappPgoldPrice;
+  const noise=[-.06,-.02,.03,-.01,.05,.08,0];
+  const pts=noise.map(n=>base*(1+n));
+  const minV=Math.min(...pts), maxV=Math.max(...pts);
+  const range=maxV-minV||1;
+  const pad={t:10,b:10,l:4,r:4};
+  const plotW=w-pad.l-pad.r, plotH=h-pad.t-pad.b;
+
+  const xAt=i=>pad.l+i*(plotW/(pts.length-1));
+  const yAt=v=>pad.t+plotH-(v-minV)/range*plotH;
+
+  // fill
+  const grad=ctx.createLinearGradient(0,pad.t,0,h-pad.b);
+  grad.addColorStop(0,'rgba(212,168,67,.18)');
+  grad.addColorStop(1,'rgba(212,168,67,.0)');
+  ctx.beginPath();
+  ctx.moveTo(xAt(0),yAt(pts[0]));
+  for(let i=1;i<pts.length;i++) ctx.lineTo(xAt(i),yAt(pts[i]));
+  ctx.lineTo(xAt(pts.length-1),h-pad.b);
+  ctx.lineTo(xAt(0),h-pad.b);
+  ctx.closePath();
+  ctx.fillStyle=grad;
+  ctx.fill();
+
+  // line
+  ctx.beginPath();
+  ctx.moveTo(xAt(0),yAt(pts[0]));
+  for(let i=1;i<pts.length;i++) ctx.lineTo(xAt(i),yAt(pts[i]));
+  ctx.strokeStyle='rgba(212,168,67,.7)';
+  ctx.lineWidth=1.5;
+  ctx.lineJoin='round';
+  ctx.stroke();
+
+  // last dot
+  const lx=xAt(pts.length-1), ly=yAt(pts[pts.length-1]);
+  ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);
+  ctx.fillStyle='#d4a843';ctx.fill();
+
+  const fmtK=v=>'$'+(v>=1000?Math.round(v/1000)+'K':Math.round(v));
+  const minEl=document.getElementById('spark-min');
+  const maxEl=document.getElementById('spark-max');
+  if(minEl) minEl.textContent=fmtK(minV);
+  if(maxEl) maxEl.textContent=fmtK(maxV);
+}
+
+/* ── NOTIFICATION CENTER ── */
+let notifList=[];
+let notifUnread=0;
+
+const NOTIF_ICONS={
+  buy:'🟡',sell:'🔴',stake:'🟢',claim:'✨',default:'📋'
+};
+const NOTIF_LABELS={
+  buy:'买入',sell:'卖出',stake:'质押/存入',claim:'领取',default:'操作'
+};
+
+function addNotifItem(type,amt,note){
+  const icon=NOTIF_ICONS[type]||NOTIF_ICONS.default;
+  notifList.unshift({icon,type,amt,note,time:fmtHistTime()});
+  if(notifList.length>50) notifList.pop();
+  notifUnread++;
+  const badge=document.getElementById('notifBadge');
+  if(badge){
+    badge.style.display='flex';
+    badge.textContent=notifUnread>9?'9+':notifUnread;
+  }
+  if(document.getElementById('notifPanel')?.classList.contains('show')){
+    renderNotifPanel();
+  }
+}
+
+function renderNotifPanel(){
+  const scroll=document.getElementById('notifScroll');
+  const empty=document.getElementById('notifEmpty');
+  if(!scroll) return;
+  if(notifList.length===0){
+    if(empty) empty.style.display='block';
+    scroll.querySelectorAll('.notif-item').forEach(el=>el.remove());
+    return;
+  }
+  if(empty) empty.style.display='none';
+  scroll.querySelectorAll('.notif-item').forEach(el=>el.remove());
+  notifList.forEach(n=>{
+    const div=document.createElement('div');
+    div.className='notif-item';
+    div.innerHTML=`<div class="notif-icon-wrap">${n.icon}</div>
+      <div class="notif-body">
+        <div class="notif-text">${n.note||n.type} — <strong>${n.amt.toLocaleString('en-US',{maximumFractionDigits:4})} pGOLD</strong></div>
+        <div class="notif-meta"><span class="notif-time">${n.time}</span></div>
+      </div>`;
+    scroll.appendChild(div);
+  });
+}
+
+function toggleNotifPanel(){
+  const panel=document.getElementById('notifPanel');
+  if(!panel) return;
+  const btn=document.getElementById('notifBtn');
+  const rect=btn?.getBoundingClientRect();
+  if(rect){
+    panel.style.top=(rect.bottom+6)+'px';
+    panel.style.right=(window.innerWidth-rect.right)+'px';
+  }
+  const willOpen=!panel.classList.contains('show');
+  panel.classList.toggle('show');
+  if(willOpen){
+    notifUnread=0;
+    const badge=document.getElementById('notifBadge');
+    if(badge) badge.style.display='none';
+    renderNotifPanel();
+  }
+}
+
+function clearNotifPanel(){
+  notifList=[];
+  notifUnread=0;
+  const badge=document.getElementById('notifBadge');
+  if(badge) badge.style.display='none';
+  renderNotifPanel();
+}
+
+document.addEventListener('click',function(e){
+  const panel=document.getElementById('notifPanel');
+  const btn=document.getElementById('notifBtn');
+  if(panel?.classList.contains('show') && !panel.contains(e.target) && !btn?.contains(e.target)){
+    panel.classList.remove('show');
+  }
+});
+
+/* ── ICO COUNTDOWN ── */
+const ICO_END_DATE=new Date(Date.now()+30*24*3600*1000);
+
+function updateICOCountdown(){
+  const diff=ICO_END_DATE-Date.now();
+  if(diff<=0){
+    ['ico-cd-days','ico-cd-hours','ico-cd-mins','ico-cd-secs'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.textContent='00';
+    });
+    return;
+  }
+  const days=Math.floor(diff/86400000);
+  const hours=Math.floor((diff%86400000)/3600000);
+  const mins=Math.floor((diff%3600000)/60000);
+  const secs=Math.floor((diff%60000)/1000);
+  const pad=n=>String(n).padStart(2,'0');
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=pad(v);};
+  set('ico-cd-days',days);set('ico-cd-hours',hours);set('ico-cd-mins',mins);set('ico-cd-secs',secs);
+}
+setInterval(updateICOCountdown,1000);
+updateICOCountdown();
+
+/* ── ICO HISTORY TABLE ── */
+function updateIcoHistTable(){
+  const tbody=document.getElementById('ico-hist-tbody');
+  if(!tbody) return;
+  const records=HIST_DATA.filter(r=>r.type==='buy');
+  if(records.length===0){
+    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">暂无认购记录</td></tr>';
+    return;
+  }
+  tbody.innerHTML=records.map(r=>`
+    <tr>
+      <td style="color:var(--muted);font-size:.85em">${r.time}</td>
+      <td style="color:var(--gold);font-weight:600">${r.amt.toLocaleString('en-US',{maximumFractionDigits:4})} pGOLD</td>
+      <td style="font-family:monospace;font-size:.85em">${r.price?'$'+r.price.toFixed(2):'—'}</td>
+      <td style="color:var(--muted);font-size:.85em">${r.fee?'$'+r.fee.toFixed(2):'—'}</td>
+      <td><span style="font-size:.75em;padding:2px 8px;border-radius:5px;background:rgba(16,185,129,.1);color:var(--green)">已确认</span></td>
+    </tr>`).join('');
+}
+
+function downloadIcoHist(){
+  const records=HIST_DATA.filter(r=>r.type==='buy');
+  if(!records.length){showToast('暂无认购记录','error');return;}
+  const rows=[['时间','认购pGOLD','价格USD','手续费USD','状态']];
+  records.forEach(r=>rows.push([r.time,r.amt,r.price||'',r.fee||'','已确认']));
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
+  a.download='ico_history.csv';a.click();
+}
+
+/* ── INIT CHARTS on switchPage ── */
+const _origSwitchPage=window.switchPage;
+window.switchPage=function(page){
+  _origSwitchPage(page);
+  if(page==='dashboard'){
+    setTimeout(()=>{drawSparkline();updateDonutChart();},80);
+  }
+  if(page==='ico') updateIcoHistTable();
+};
+setTimeout(()=>{updateDonutChart();drawSparkline();},200);
+window.addEventListener('resize',()=>{
+  if(document.getElementById('page-dashboard')?.classList.contains('active')) drawSparkline();
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-hd">
+    <span class="notif-hd-title">操作记录</span>
+    <button class="notif-clear-btn" onclick="clearNotifPanel()">清除</button>
+  </div>
+  <div class="notif-scroll" id="notifScroll">
+    <div class="notif-empty" id="notifEmpty">暂无记录</div>
+  </div>
+</div>
 </body>
 </html>
 <!-- Cache bust: 1783072824 -->
