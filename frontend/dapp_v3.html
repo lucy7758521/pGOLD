@@ -1272,60 +1272,47 @@ tr:hover td{background:rgba(212,168,67,.03);}
         style="background:rgba(212,168,67,.03);cursor:pointer"
         onclick="navigator.clipboard.writeText(this.value).then(()=>{const old=this.value;this.value='已复制!';setTimeout(()=>this.value=old,1500)})">
     </div>
-    <!-- 返佣比例说明 -->
-    <div style="background:rgba(212,168,67,.05);border:1px solid rgba(212,168,67,.15);border-radius:10px;padding:14px 16px;margin-bottom:14px">
-      <div style="font-size:.78em;color:var(--gold);font-weight:700;margin-bottom:10px">返佣规则</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
-          <div style="font-size:.7em;color:var(--text2);margin-bottom:4px">直邀 (L1)</div>
-          <div style="font-size:1.1em;font-weight:800;color:var(--green)">10%</div>
-          <div style="font-size:.68em;color:var(--text2);margin-top:2px">交易手续费</div>
-        </div>
-        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
-          <div style="font-size:.7em;color:var(--text2);margin-bottom:4px">间邀 (L2)</div>
-          <div style="font-size:1.1em;font-weight:800;color:var(--blue)">5%</div>
-          <div style="font-size:.68em;color:var(--text2);margin-top:2px">交易手续费</div>
-        </div>
-        <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
-          <div style="font-size:.7em;color:var(--text2);margin-bottom:4px">三级 (L3)</div>
-          <div style="font-size:1.1em;font-weight:800;color:var(--purple)">2%</div>
-          <div style="font-size:.68em;color:var(--text2);margin-top:2px">交易手续费</div>
-        </div>
+    <!-- 当前等级 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:10px;padding:12px 16px;margin-bottom:14px">
+      <div>
+        <div style="font-size:.72em;color:var(--text2);margin-bottom:3px">当前推荐等级</div>
+        <div style="font-weight:800;color:var(--gold);font-size:1em">⭐ 白银推荐人</div>
+        <div style="font-size:.72em;color:var(--text2);margin-top:3px">已推荐 8 人 · 月交易量 $450K</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:.72em;color:var(--text2);margin-bottom:3px">当前返佣比例</div>
+        <div style="font-size:1.4em;font-weight:800;color:var(--green)">4%</div>
       </div>
     </div>
-    <!-- 直邀/间邀分层数据 -->
+    <!-- 等级返佣规则 -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px">
+      <div style="padding:10px 14px;font-size:.75em;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border)">返佣等级规则</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:8px 12px;font-size:.7em;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
+        <span>等级</span><span style="text-align:center">返佣</span><span style="text-align:center">推荐人数</span><span style="text-align:right">月交易量</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-bottom:1px solid var(--border)">
+        <span style="color:var(--text2)">普通</span><span style="text-align:center;color:var(--text2)">3%</span><span style="text-align:center;color:var(--text2)">注册即可</span><span style="text-align:right;color:var(--text2)">—</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-bottom:1px solid var(--border);background:rgba(212,168,67,.04)">
+        <span style="color:var(--gold);font-weight:700">⭐ 白银</span><span style="text-align:center;color:var(--green);font-weight:700">4%</span><span style="text-align:center">≥10 人</span><span style="text-align:right">$100K</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-bottom:1px solid var(--border)">
+        <span style="color:var(--gold)">🥇 黄金</span><span style="text-align:center;color:var(--green);font-weight:700">5%</span><span style="text-align:center">≥50 人</span><span style="text-align:right">$1M</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em">
+        <span style="color:var(--blue)">💎 钻石</span><span style="text-align:center;color:var(--green);font-weight:700">5%+2%</span><span style="text-align:center">≥200 人</span><span style="text-align:right">$5M</span>
+      </div>
+    </div>
+    <!-- 返佣数据 -->
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
-        <div>
-          <div style="font-size:.78em;color:var(--text2)">直邀 (L1)</div>
-          <div style="font-weight:700;font-size:.95em">8 人</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:.72em;color:var(--text2)">累计返佣</div>
-          <div style="color:var(--green);font-weight:700">$210</div>
-        </div>
+        <div><div style="font-size:.75em;color:var(--text2)">已推荐人数</div><div style="font-weight:700">8 人</div></div>
+        <div style="text-align:right"><div style="font-size:.72em;color:var(--text2)">有效推荐</div><div style="color:var(--green);font-weight:700">6 人</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
-        <div>
-          <div style="font-size:.78em;color:var(--text2)">间邀 (L2)</div>
-          <div style="font-weight:700;font-size:.95em">23 人</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:.72em;color:var(--text2)">累计返佣</div>
-          <div style="color:var(--blue);font-weight:700">$98</div>
-        </div>
+        <div><div style="font-size:.75em;color:var(--text2)">本月返佣</div><div style="font-weight:700;color:var(--green)">$180</div></div>
+        <div style="text-align:right"><div style="font-size:.72em;color:var(--text2)">月上限</div><div style="color:var(--text2);font-weight:600">$200</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
-        <div>
-          <div style="font-size:.78em;color:var(--text2)">三级 (L3)</div>
-          <div style="font-weight:700;font-size:.95em">47 人</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:.72em;color:var(--text2)">累计返佣</div>
-          <div style="color:var(--purple);font-weight:700">$32</div>
-        </div>
-      </div>
-      <!-- 待领合计 -->
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(148,103,189,.08);border:1px solid rgba(148,103,189,.2);border-radius:8px;padding:10px 14px">
         <div style="font-size:.85em;font-weight:600">待领返佣合计</div>
         <div style="color:var(--purple);font-weight:800;font-size:1.05em">$340</div>
@@ -1884,15 +1871,15 @@ function withConfirm(action,track){
     titleTxt=isEn?'Claim Commission':'领取返佣';
     details=isEn
       ?`<b>Claim $340 referral commission</b><br><br>
-        <span style="color:var(--text2)">L1 Direct (8 people): <b style="color:var(--green)">$210</b></span><br>
-        <span style="color:var(--text2)">L2 Indirect (23 people): <b style="color:var(--blue)">$98</b></span><br>
-        <span style="color:var(--text2)">L3 (47 people): <b style="color:var(--purple)">$32</b></span><br><br>
-        <span style="color:var(--text2)">Total: <b style="color:var(--gold)">$340</b></span>`
-      :`<b>领取 $340 邀请返佣</b><br><br>
-        <span style="color:var(--text2)">直邀 L1（8 人）：<b style="color:var(--green)">$210</b></span><br>
-        <span style="color:var(--text2)">间邀 L2（23 人）：<b style="color:var(--blue)">$98</b></span><br>
-        <span style="color:var(--text2)">三级 L3（47 人）：<b style="color:var(--purple)">$32</b></span><br><br>
-        <span style="color:var(--text2)">合计：<b style="color:var(--gold)">$340</b></span>`;
+        <span style="color:var(--text2)">Current level: <b style="color:var(--gold)">⭐ Silver Referrer</b> · 4%</span><br>
+        <span style="color:var(--text2)">This month: <b style="color:var(--green)">$180</b> / $200 cap</span><br>
+        <span style="color:var(--text2)">Pending total: <b style="color:var(--purple)">$340</b></span><br><br>
+        <span style="color:var(--text2);font-size:.9em">Paid in pGOLD via market buyback</span>`
+      :`<b>领取 $340 推荐返佣</b><br><br>
+        <span style="color:var(--text2)">当前等级：<b style="color:var(--gold)">⭐ 白银推荐人</b> · 4%</span><br>
+        <span style="color:var(--text2)">本月已返：<b style="color:var(--green)">$180</b> / $200 上限</span><br>
+        <span style="color:var(--text2)">待领合计：<b style="color:var(--purple)">$340</b></span><br><br>
+        <span style="color:var(--text2);font-size:.9em">以 pGOLD 形式通过市场回购发放</span>`;
 
   } else if(action==='leaveTeam'){
     pendingAction={action,track};
