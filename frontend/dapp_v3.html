@@ -1179,7 +1179,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
       </tr></thead>
       <tbody id="rank-tbody"></tbody>
     </table>
-    <p class="tbl-note" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
+    <div class="tbl-note" style="display:flex;flex-direction:column;gap:6px">
+      <span>💰 奖励 = 存入量 × 倍数，10年线性释放</span>
+      <span>🏅 排名是门票，存入量决定奖励基数</span>
+    </div>
   </div>
   <button onclick="downloadRankCSV()" style="display:flex;align-items:center;gap:8px;margin:14px auto 0;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:10px 20px;font-size:.82em;cursor:pointer;transition:all .2s"
     onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
