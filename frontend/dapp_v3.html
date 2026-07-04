@@ -2088,41 +2088,52 @@ function execAction(){
       updateICODisplays(dappPgoldPrice);
       const inp=document.getElementById('icoAmount');
       if(inp){inp.value='';updateICOPreview();}
+      pushHist('buy',pgoldAmount,'创世池认购',dappPgoldPrice,+(pgoldAmount*dappPgoldPrice*0.005).toFixed(2));
       showToast(isEn?'Subscription successful!':'认购成功！','success');
 
     } else if(action==='stake'){
       const amt=parseFloat(actionData.amount)||0;
       STAKE_DATA.staked+=amt;
+      PORTFOLIO.liquid=Math.max(0,PORTFOLIO.liquid-amt);
       document.getElementById('stakeAmount').value='';
       updateStakeDisplays();
+      pushHist('stake',amt,'A轨质押');
       showToast(isEn?`Staked ${amt.toFixed(2)} pGOLD successfully`:`成功质押 ${amt.toFixed(2)} pGOLD`,'success');
 
     } else if(action==='unstake'){
       const amt=parseFloat(actionData.amount)||0;
       STAKE_DATA.staked=Math.max(0,STAKE_DATA.staked-amt);
       STAKE_DATA.pending=Math.max(0,STAKE_DATA.pending*(STAKE_DATA.staked/Math.max(STAKE_DATA.staked+amt,1)));
+      PORTFOLIO.liquid+=amt;
       document.getElementById('stakeAmount').value='';
       updateStakeDisplays();
+      pushHist('sell',amt,'A轨解质押');
       showToast(isEn?`Unstaked ${amt.toFixed(2)} pGOLD successfully`:`成功解质押 ${amt.toFixed(2)} pGOLD`,'success');
 
     } else if(action==='claimReward'){
       const claimed=STAKE_DATA.pending;
       STAKE_DATA.pending=0;
+      PORTFOLIO.liquid+=claimed;
       updateStakeDisplays();
+      pushHist('claim',claimed,'A轨持仓分红');
       showToast(isEn?`Claimed ${claimed.toFixed(2)} pGOLD`:`已领取 ${claimed.toFixed(2)} pGOLD`,'success');
 
     } else if(action==='deposit'){
       const amt=parseFloat(actionData.amount)||0;
       STAKE_DATA.deposited+=amt;
+      PORTFOLIO.liquid=Math.max(0,PORTFOLIO.liquid-amt);
       document.getElementById('depositAmount').value='';
       updateStakeDisplays();
+      pushHist('stake',amt,'B轨存入');
       showToast(isEn?`Deposited ${amt.toFixed(2)} pGOLD to Track B`:`成功存入 ${amt.toFixed(2)} pGOLD 至 B轨`,'success');
 
     } else if(action==='withdraw'){
       const amt=parseFloat(actionData.amount)||0;
       STAKE_DATA.deposited=Math.max(0,STAKE_DATA.deposited-amt);
+      PORTFOLIO.liquid+=amt;
       document.getElementById('withdrawAmount').value='';
       updateStakeDisplays();
+      pushHist('sell',amt,'B轨取出');
       showToast(isEn?`Withdrew ${amt.toFixed(2)} pGOLD from Track B`:`已从 B轨取出 ${amt.toFixed(2)} pGOLD`,'success');
 
     } else if(action==='claim'){
@@ -2132,11 +2143,14 @@ function execAction(){
         tr.periodsLeft-=1;
         VEST_DATA.released+=tr.perPeriod;
         VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
+        PORTFOLIO.liquid+=tr.perPeriod;
+        pushHist('claim',tr.perPeriod,`释放计划-${actionData.track}轨`);
       }
       updateVestingDisplays();
       showToast(isEn?'Reward claimed successfully':'领取奖励成功','success');
 
     } else if(action==='claimAll'){
+      let totalClaimed=0;
       ['E','B','C'].forEach(k=>{
         const tr=VEST_DATA.tracks[k];
         if(tr&&tr.periodsLeft>0){
@@ -2144,8 +2158,11 @@ function execAction(){
           tr.periodsLeft-=1;
           VEST_DATA.released+=tr.perPeriod;
           VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
+          PORTFOLIO.liquid+=tr.perPeriod;
+          totalClaimed+=tr.perPeriod;
         }
       });
+      if(totalClaimed>0) pushHist('claim',totalClaimed,'释放计划-一键领取');
       updateVestingDisplays();
       showToast(isEn?'All rewards claimed successfully':'全部奖励领取成功','success');
 
@@ -2154,6 +2171,7 @@ function execAction(){
       VEST_DATA.vp+=amt;
       VEST_DATA.total=Math.max(0,VEST_DATA.total-amt);
       updateVestingDisplays();
+      pushHist('stake',amt,'vPGOLD 包装');
       showToast(isEn?'Wrapped to vPGOLD successfully':'已成功包装为 vPGOLD','success');
 
     } else if(action==='transferVp'){
@@ -2162,6 +2180,7 @@ function execAction(){
       document.getElementById('vpAddr').value='';
       document.getElementById('vpAmount').value='';
       updateVestingDisplays();
+      pushHist('sell',amt,'vPGOLD 转账');
       showToast(isEn?'vPGOLD sent successfully':'vPGOLD 已发送','success');
 
     } else if(action==='claimVp'){
@@ -2170,6 +2189,7 @@ function execAction(){
       PORTFOLIO.liquid+=amt;
       document.getElementById('vpAmount').value='';
       updateVestingDisplays();
+      pushHist('claim',amt,'vPGOLD 赎回');
       showToast(isEn?'Redeemed successfully, pGOLD credited':'赎回成功，pGOLD 已到账','success');
 
     } else if(action==='unwrapVp'){
@@ -2178,6 +2198,7 @@ function execAction(){
       VEST_DATA.total+=amt;
       document.getElementById('vpAmount').value='';
       updateVestingDisplays();
+      pushHist('stake',amt,'vPGOLD 解包');
       showToast(isEn?'Unwrapped successfully, vesting plan restored':'解包成功，释放计划已恢复','success');
 
     } else if(action==='claimTeamReward'){
@@ -2187,6 +2208,7 @@ function execAction(){
       const contestEl=document.getElementById('team-contest-reward');
       if(contestEl) contestEl.textContent='0 pGOLD';
       updateDappPriceDisplays(dappPgoldPrice);
+      pushHist('claim',reward,'战队竞赛奖励');
       showToast(isEn?`${fmtN(reward)} pGOLD contest reward credited`:`${fmtN(reward)} pGOLD 竞赛奖励已到账`,'success');
 
     } else if(action==='leaveTeam'){
@@ -2209,6 +2231,7 @@ function execAction(){
       updateDappPriceDisplays(dappPgoldPrice);
       const comm=document.getElementById('team-pending-comm');
       if(comm) comm.textContent='$0';
+      pushHist('claim',pgoldAmt,'邀请返佣');
       showToast(isEn?`$${amt} commission credited (${fmtN(pgoldAmt)} pGOLD)`:`$${amt} 返佣已到账（${fmtN(pgoldAmt)} pGOLD）`,'success');
 
     } else if(action==='createTeam'){
@@ -2247,12 +2270,14 @@ const VEST_DATA={
 function updateStakeDisplays(){
   const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  PORTFOLIO.staked=STAKE_DATA.staked; // keep portfolio in sync
   // A轨 nw-value
   const nwEl=document.getElementById('stake-staked-val');
   if(nwEl)nwEl.innerHTML=`${fmtN(STAKE_DATA.staked)} <span style="font-size:.4em;color:var(--text2)">pGOLD</span>`;
   set('stake-pending-val',fmtN(STAKE_DATA.pending));
   set('stake-deposit-stat',fmtN(STAKE_DATA.deposited));
   set('stake-deposit-val',fmtN(STAKE_DATA.deposited));
+  updateDappPriceDisplays(dappPgoldPrice);
 }
 
 function updateVestingDisplays(){
@@ -2846,7 +2871,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 else renderTeamMembers();
 
 /* ── HISTORY ── */
-const HIST_DATA=[
+let HIST_DATA=[
   {time:'2026-06-26 09:15',type:'buy', amt:+50,  price:85.20, fee:10.65, note:'市价买入'},
   {time:'2026-06-25 14:30',type:'sell',amt:-20,  price:84.80, fee:4.24,  note:'市价卖出'},
   {time:'2026-06-25 10:15',type:'buy', amt:+100, price:85.00, fee:21.25, note:'限价买入'},
@@ -2858,6 +2883,21 @@ const HIST_DATA=[
   {time:'2026-06-20 13:30',type:'stake',amt:100, price:null,  fee:null,  note:'B轨存入'},
   {time:'2026-06-19 10:45',type:'buy', amt:+80,  price:83.90, fee:16.78, note:'市价买入'},
 ];
+
+function fmtHistTime(){
+  const now=new Date();
+  return now.getFullYear()+'-'+
+    String(now.getMonth()+1).padStart(2,'0')+'-'+
+    String(now.getDate()).padStart(2,'0')+' '+
+    String(now.getHours()).padStart(2,'0')+':'+
+    String(now.getMinutes()).padStart(2,'0');
+}
+
+function pushHist(type,amt,note,price,fee){
+  HIST_DATA.unshift({time:fmtHistTime(),type,amt:Math.abs(amt),price:price||null,fee:fee||null,note});
+  if(document.getElementById('page-history')?.classList.contains('active')||
+     document.getElementById('hist-tbody')) renderHistTable();
+}
 
 let histFilter='all';
 
