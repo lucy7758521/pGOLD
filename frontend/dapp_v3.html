@@ -1211,6 +1211,29 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <button class="tab-btn" data-team="invite" onclick="switchTeamTab('invite')" data-i18n="team.invite">邀请返佣</button>
     <button class="tab-btn" data-team="leaderboard" onclick="switchTeamTab('leaderboard')" data-i18n="team.leaderboard">战队竞赛榜</button>
   </div>
+  <!-- 无战队状态面板（默认隐藏） -->
+  <div id="teamTab-noTeam" style="display:none">
+    <div style="text-align:center;padding:20px 0 10px">
+      <div style="font-size:2em;margin-bottom:8px">🏴</div>
+      <div style="font-weight:700;font-size:1em;margin-bottom:4px">你还没有加入战队</div>
+      <div style="font-size:.78em;color:var(--text2)">加入或创建战队，参与季度竞赛赢取奖励</div>
+    </div>
+    <div style="display:flex;gap:8px;margin:14px 0 20px">
+      <button class="btn btn-gold btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label">创建战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline btn-full" onclick="openJoinTeam()" style="flex:1"><span class="btn-label">加入战队</span><span class="btn-spinner"></span></button>
+    </div>
+    <!-- TOP100 战队列表 -->
+    <div style="font-size:.78em;color:var(--text2);font-weight:600;margin-bottom:10px;letter-spacing:.04em">战队 TOP 100</div>
+    <div class="tbl-wrap" id="noteam-lb-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none">
+      <table id="noteam-lb-table" style="min-width:480px">
+        <thead><tr>
+          <th>#</th><th>战队</th><th>队长</th><th>成员</th><th>交易量</th><th>奖励</th><th></th>
+        </tr></thead>
+        <tbody id="noteam-lb-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div id="teamTab-myTeam" class="info-card">
     <!-- 战队基本信息 -->
     <div class="info-row">
@@ -1446,6 +1469,46 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="modal-actions">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal()"><span data-i18n="modal.cancel">取消</span></button>
       <button class="btn btn-gold" style="flex:1" id="modalOkBtn" onclick="execAction()"><span data-i18n="modal.ok">确认</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 创建战队 Modal -->
+<div class="modal-overlay" id="createTeamModal">
+  <div class="modal-box">
+    <h3>创建战队</h3>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+      <div class="form-row">
+        <label>战队名称</label>
+        <input id="newTeamName" type="text" maxlength="20" placeholder="3-20 字符，字母/数字/下划线/中文"
+          style="background:rgba(212,168,67,.03)"
+          oninput="updateCreateTeamPreview()">
+        <div id="newTeamNameErr" style="font-size:.72em;color:var(--red);margin-top:4px;display:none"></div>
+      </div>
+      <div class="form-row">
+        <label>质押 pGOLD（创建保证金）</label>
+        <input id="newTeamStake" type="number" min="100" value="100" placeholder="最低 100 pGOLD"
+          style="background:rgba(212,168,67,.03)"
+          oninput="updateCreateTeamPreview()">
+      </div>
+      <div id="createTeamPreview" style="background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:8px;padding:12px 14px;font-size:.82em;display:none">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="color:var(--text2)">战队名称</span>
+          <b id="previewName" style="color:var(--gold)">—</b>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="color:var(--text2)">质押数量</span>
+          <b id="previewStake" style="color:var(--green)">—</b>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text2)">可用余额</span>
+          <b id="previewBalance">—</b>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:18px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeCreateTeamModal()">取消</button>
+      <button class="btn btn-gold" style="flex:1" id="createTeamOkBtn" onclick="submitCreateTeam()">确认创建</button>
     </div>
   </div>
 </div>
@@ -1869,11 +1932,11 @@ function withConfirm(action,track){
       ?`<b>Claim 2,400 pGOLD team reward</b><br><br>
         <span style="color:var(--text2)">Team: <b style="color:var(--gold)">TIGER_TEAM</b> · Rank #3</span><br>
         <span style="color:var(--text2)">Reward: <b style="color:var(--green)">2,400 pGOLD</b> ≈ $${(2400*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
-        <span style="color:var(--text2);font-size:.9em">Rewards enter 10-year linear vesting after claim</span>`
+        <span style="color:var(--green);font-size:.9em">✓ Credited to your liquid balance immediately</span>`
       :`<b>领取 2,400 pGOLD 战队竞赛奖励</b><br><br>
         <span style="color:var(--text2)">战队：<b style="color:var(--gold)">TIGER_TEAM</b> · 排名第 3</span><br>
         <span style="color:var(--text2)">奖励：<b style="color:var(--green)">2,400 pGOLD</b> ≈ $${(2400*dappPgoldPrice).toLocaleString('en-US',{maximumFractionDigits:0})}</span><br><br>
-        <span style="color:var(--text2);font-size:.9em">奖励领取后进入 10 年线性释放计划</span>`;
+        <span style="color:var(--green);font-size:.9em">✓ 奖励实时发放至你的可用余额</span>`;
 
   } else if(action==='claimCommission'){
     pendingAction={action,track};
@@ -2053,6 +2116,24 @@ function execAction(){
       document.getElementById('vpAmount').value='';
       updateVestingDisplays();
       showToast(isEn?'Unwrapped successfully, vesting plan restored':'解包成功，释放计划已恢复','success');
+
+    } else if(action==='claimTeamReward'){
+      const reward=2400;
+      PORTFOLIO.liquid+=reward;
+      updateDappPriceDisplays(dappPgoldPrice);
+      showToast(isEn?`${reward} pGOLD team reward credited`:`${reward} pGOLD 战队奖励已到账`,'success');
+
+    } else if(action==='leaveTeam'){
+      showTeamNoTeam();
+      showToast(isEn?'You have left the team':'已退出战队','success');
+
+    } else if(action==='createTeam'){
+      const name=pendingAction.teamName||'NEW_TEAM';
+      showToast(isEn?`Team "${name}" created successfully`:`战队「${name}」创建成功`,'success');
+
+    } else if(action==='joinTeam'){
+      const name=pendingAction.teamName||'';
+      showToast(isEn?`Joined team "${name}" successfully`:`已成功加入战队「${name}」`,'success');
 
     } else {
       showToast(t('common.confirm')+'!','success');
@@ -2487,6 +2568,98 @@ function downloadRankCSV(){
 
 
 /* ── TEAM TAB ── */
+const ALL_TEAMS=[
+  {r:1,name:'DRAGON',leader:'0xAA...BB',members:48,vol:'$12M',reward:6000},
+  {r:2,name:'PHOENIX',leader:'0xCC...DD',members:35,vol:'$8.2M',reward:4800},
+  {r:3,name:'TIGER_TEAM',leader:'0xAbCd',members:12,vol:'$3.4M',reward:2400},
+  {r:4,name:'WOLF_PACK',leader:'0xEE...FF',members:28,vol:'$2.8M',reward:1960},
+  {r:5,name:'EAGLE',leader:'0x11...22',members:22,vol:'$2.1M',reward:1470},
+  {r:6,name:'SHARK',leader:'0x33...44',members:19,vol:'$1.7M',reward:1190},
+  {r:7,name:'LION',leader:'0x55...66',members:17,vol:'$1.4M',reward:980},
+  {r:8,name:'BULL',leader:'0x77...88',members:15,vol:'$1.1M',reward:770},
+  {r:9,name:'BEAR',leader:'0x99...AA',members:14,vol:'$890K',reward:623},
+  {r:10,name:'FALCON',leader:'0xBB...CC',members:11,vol:'$720K',reward:504},
+  {r:11,name:'COBRA',leader:'0xDD...EE',members:10,vol:'$610K',reward:427},
+  {r:12,name:'PANDA',leader:'0xFF...00',members:9,vol:'$520K',reward:364},
+  {r:13,name:'RHINO',leader:'0x12...34',members:8,vol:'$430K',reward:301},
+  {r:14,name:'VIPER',leader:'0x56...78',members:7,vol:'$350K',reward:245},
+  {r:15,name:'THUNDER',leader:'0x9A...BC',members:6,vol:'$280K',reward:196},
+];
+
+let inTeam=true; // 是否在战队中
+
+function showTeamNoTeam(){
+  inTeam=false;
+  // 隐藏 tab bar，显示无战队面板
+  document.querySelector('#page-team .tab-bar').style.display='none';
+  ['myTeam','invite','leaderboard'].forEach(id=>{
+    const el=document.getElementById('teamTab-'+id);
+    if(el) el.style.display='none';
+  });
+  const noTeamEl=document.getElementById('teamTab-noTeam');
+  if(noTeamEl) noTeamEl.style.display='';
+  // 更新顶部 nw-block
+  document.querySelector('#page-team .nw-value').textContent='—';
+  document.querySelector('#page-team .nw-sub').textContent='未加入战队';
+  renderNoTeamLeaderboard();
+}
+
+function renderNoTeamLeaderboard(){
+  const tbody=document.getElementById('noteam-lb-tbody');
+  if(!tbody||tbody.dataset.rendered) return;
+  tbody.dataset.rendered='1';
+  tbody.innerHTML=ALL_TEAMS.map(t=>{
+    const badge=t.r<=3?[
+      `<span style="background:rgba(212,168,67,.15);color:#f0d078;border:1px solid rgba(212,168,67,.3);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
+      `<span style="background:rgba(180,180,180,.1);color:#c0c0c0;border:1px solid rgba(180,180,180,.25);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
+      `<span style="background:rgba(180,120,60,.12);color:#cd7f32;border:1px solid rgba(180,120,60,.25);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
+    ][t.r-1]:`<span style="color:var(--text2);font-size:.85em">${t.r}</span>`;
+    return `<tr>
+      <td>${badge}</td>
+      <td><span style="font-weight:700;cursor:pointer;color:var(--gold)" onclick="showTeamDetail('${t.name}')">${t.name}</span></td>
+      <td style="font-family:monospace;font-size:.8em">${t.leader}</td>
+      <td>${t.members}</td>
+      <td>${t.vol}</td>
+      <td style="color:var(--green);font-weight:600">${t.reward.toLocaleString()}</td>
+      <td><button onclick="openJoinTeamDirect('${t.name}')" style="background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);color:var(--gold);border-radius:6px;padding:3px 10px;font-size:.75em;cursor:pointer;white-space:nowrap">加入</button></td>
+    </tr>`;
+  }).join('');
+  // 初始化拖拽
+  const wrap=document.getElementById('noteam-lb-wrap');
+  if(wrap&&!wrap.dataset.drag){
+    wrap.dataset.drag='1';
+    let isDragging=false,startX=0,scrollLeft=0;
+    wrap.addEventListener('mousedown',e=>{isDragging=true;startX=e.pageX-wrap.offsetLeft;scrollLeft=wrap.scrollLeft;wrap.style.cursor='grabbing';});
+    wrap.addEventListener('mouseleave',()=>{isDragging=false;wrap.style.cursor='grab';});
+    wrap.addEventListener('mouseup',()=>{isDragging=false;wrap.style.cursor='grab';});
+    wrap.addEventListener('mousemove',e=>{if(!isDragging)return;e.preventDefault();wrap.scrollLeft=scrollLeft-(e.pageX-wrap.offsetLeft-startX);});
+    wrap.addEventListener('touchstart',e=>{startX=e.touches[0].pageX-wrap.offsetLeft;scrollLeft=wrap.scrollLeft;},{passive:true});
+    wrap.addEventListener('touchmove',e=>{wrap.scrollLeft=scrollLeft-(e.touches[0].pageX-wrap.offsetLeft-startX);},{passive:true});
+  }
+}
+
+function showTeamDetail(name){
+  const team=ALL_TEAMS.find(t=>t.name===name);
+  if(!team) return;
+  const isEn=I18N.getLang()==='en';
+  pendingAction={action:'joinTeam',teamName:name};
+  document.getElementById('modalTitle').textContent=isEn?`Team: ${name}`:`战队：${name}`;
+  document.getElementById('modalMsg').innerHTML=
+    `<div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">${isEn?'Rank':'排名'}</span><b>#${team.r}</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">${isEn?'Leader':'队长'}</span><span style="font-family:monospace;font-size:.9em">${team.leader}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">${isEn?'Members':'成员'}</span><b>${team.members} / 50</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">${isEn?'Volume':'交易量'}</span><b>${team.vol}</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">${isEn?'Est. Reward':'预计奖励'}</span><b style="color:var(--green)">${team.reward.toLocaleString()} pGOLD</b></div>
+    </div><br>
+    <span style="font-size:.85em;color:var(--text2)">${isEn?'Click Confirm to join this team':'点击确认加入该战队'}</span>`;
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function openJoinTeamDirect(name){
+  showTeamDetail(name);
+}
+
 const TEAM_MEMBERS=[
   {r:1,addr:'0xAbCd...1234',vol:'$620K',pts:1240,isMe:true},
   {r:2,addr:'0xBc...Fg23',vol:'$580K',pts:1160},
@@ -2552,31 +2725,57 @@ function switchHistFilter(f){
 
 /* ── BIND INVITER ── */
 function openCreateTeam(){
+  document.getElementById('newTeamName').value='';
+  document.getElementById('newTeamStake').value='100';
+  document.getElementById('newTeamNameErr').style.display='none';
+  document.getElementById('createTeamPreview').style.display='none';
+  document.getElementById('createTeamModal').classList.add('show');
+}
+
+function closeCreateTeamModal(){
+  document.getElementById('createTeamModal').classList.remove('show');
+}
+
+function updateCreateTeamPreview(){
+  const name=document.getElementById('newTeamName').value.trim();
+  const stake=parseFloat(document.getElementById('newTeamStake').value)||0;
+  const errEl=document.getElementById('newTeamNameErr');
+  const preview=document.getElementById('createTeamPreview');
+  if(name.length>=3){
+    preview.style.display='';
+    document.getElementById('previewName').textContent=name;
+    document.getElementById('previewStake').textContent=stake+' pGOLD';
+    const bal=PORTFOLIO.liquid-stake;
+    const balEl=document.getElementById('previewBalance');
+    balEl.textContent=(bal>=0?bal.toFixed(2):'不足') +' pGOLD';
+    balEl.style.color=bal>=0?'var(--text1)':'var(--red)';
+    errEl.style.display='none';
+  } else {
+    preview.style.display='none';
+  }
+}
+
+function submitCreateTeam(){
+  const name=document.getElementById('newTeamName').value.trim();
+  const stake=parseFloat(document.getElementById('newTeamStake').value)||0;
+  const errEl=document.getElementById('newTeamNameErr');
+  if(name.length<3||name.length>20){
+    errEl.textContent='战队名称需 3-20 个字符';errEl.style.display='';return;
+  }
+  if(!/^[a-zA-Z0-9_一-龥]+$/.test(name)){
+    errEl.textContent='仅支持字母、数字、下划线和中文';errEl.style.display='';return;
+  }
+  if(stake<100){
+    errEl.textContent='最低质押 100 pGOLD';errEl.style.display='';return;
+  }
+  if(stake>PORTFOLIO.liquid){
+    errEl.textContent='可用余额不足';errEl.style.display='';return;
+  }
+  PORTFOLIO.liquid-=stake;
+  updateDappPriceDisplays(dappPgoldPrice);
+  closeCreateTeamModal();
   const isEn=I18N.getLang()==='en';
-  const name=prompt(isEn?'Enter team name (3-20 characters):':'输入战队名称（3-20个字符）：');
-  if(!name) return;
-  const trimmed=name.trim();
-  if(trimmed.length<3||trimmed.length>20){
-    showToast(isEn?'Team name must be 3-20 characters':'战队名称需3-20个字符','error');
-    return;
-  }
-  if(!/^[a-zA-Z0-9_一-龥]+$/.test(trimmed)){
-    showToast(isEn?'Only letters, numbers, underscores and Chinese':'仅支持字母、数字、下划线和中文','error');
-    return;
-  }
-  pendingAction={action:'createTeam',teamName:trimmed};
-  const isEnNow=I18N.getLang()==='en';
-  document.getElementById('modalTitle').textContent=isEnNow?'Create Team':'创建战队';
-  document.getElementById('modalMsg').innerHTML=isEnNow
-    ?`<b>Create team: <span style="color:var(--gold)">${trimmed}</span></b><br><br>
-      <span style="color:var(--text2)">· You will become the team leader</span><br>
-      <span style="color:var(--text2)">· Team creation requires 100 pGOLD as deposit</span><br>
-      <span style="color:var(--text2)">· Max 50 members, team competes in quarterly leaderboard</span>`
-    :`<b>创建战队：<span style="color:var(--gold)">${trimmed}</span></b><br><br>
-      <span style="color:var(--text2)">· 你将成为战队队长</span><br>
-      <span style="color:var(--text2)">· 创建战队需质押 100 pGOLD 作为保证金</span><br>
-      <span style="color:var(--text2)">· 最多 50 名成员，参与季度战队竞赛排行榜</span>`;
-  document.getElementById('confirmModal').classList.add('show');
+  showToast(isEn?`Team "${name}" created!`:`战队「${name}」创建成功！`,'success');
 }
 
 function openJoinTeam(){
