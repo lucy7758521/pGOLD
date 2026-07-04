@@ -1421,10 +1421,6 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <button class="tab-btn" data-hfilter="stake" onclick="switchHistFilter('stake')" data-i18n="hist.stake">质押</button>
       <button class="tab-btn" data-hfilter="claim" onclick="switchHistFilter('claim')" data-i18n="hist.claim">领取</button>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="downloadHistory()" style="flex-shrink:0;margin-left:8px;font-size:.75em;display:flex;align-items:center;gap:5px">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      CSV
-    </button>
   </div>
   <!-- 日期范围筛选 -->
   <div style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap">
@@ -1436,7 +1432,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <button class="btn btn-ghost btn-sm" onclick="clearHistDates()" style="flex-shrink:0;font-size:.75em;padding:6px 10px">重置</button>
     <span id="hist-count" style="font-size:.75em;color:var(--text2);flex-shrink:0"></span>
   </div>
-  <div class="tbl-wrap" style="margin-top:12px">
+  <div class="tbl-wrap" id="hist-tbl-wrap" style="margin-top:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none">
     <table id="hist-table" style="min-width:520px">
       <thead>
         <tr style="background:linear-gradient(90deg,var(--surface),var(--surface2))">
@@ -1450,6 +1446,13 @@ tr:hover td{background:rgba(212,168,67,.03);}
       </thead>
       <tbody id="hist-tbody"></tbody>
     </table>
+  </div>
+  <!-- 下载按钮 -->
+  <div style="display:flex;justify-content:flex-end;margin-top:10px">
+    <button class="btn btn-ghost btn-sm" onclick="downloadHistory()" style="font-size:.75em;display:flex;align-items:center;gap:5px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      下载 CSV
+    </button>
   </div>
 </div>
 
@@ -2955,7 +2958,21 @@ function downloadHistory(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderHistTable);
 else renderHistTable();
 
-/* ── BIND INVITER ── */
+/* ── DRAG SCROLL for all .tbl-wrap ── */
+(function initDragScroll(){
+  function attach(el){
+    let isDown=false,startX,scrollLeft;
+    el.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;el.style.cursor='grabbing';});
+    el.addEventListener('mouseleave',()=>{isDown=false;el.style.cursor='grab';});
+    el.addEventListener('mouseup',()=>{isDown=false;el.style.cursor='grab';});
+    el.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-el.offsetLeft;el.scrollLeft=scrollLeft-(x-startX);});
+  }
+  function run(){document.querySelectorAll('.tbl-wrap').forEach(attach);}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run);
+  else run();
+})();
+
+
 function openCreateTeam(){
   document.getElementById('newTeamName').value='';
   document.getElementById('newTeamNameErr').style.display='none';
