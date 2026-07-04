@@ -2191,6 +2191,8 @@ function execAction(){
 
     } else if(action==='joinTeam'){
       const name=pendingAction.teamName||'';
+      contestStartTime=new Date(); // 从加入时刻开始计算第一次结算
+      inTeam=true;
       showToast(isEn?`Joined team "${name}" successfully`:`已成功加入战队「${name}」`,'success');
 
     } else {
@@ -2645,8 +2647,15 @@ const ALL_TEAMS=[
 ];
 
 let inTeam=true; // 是否在战队中
+let contestStartTime=null; // 加入/创建战队时间，null=未入队
 
 function getNextSettlement(){
+  // 若刚加入战队不足一个月，以入队时间+30天为第一次结算
+  if(contestStartTime){
+    const firstSettle=new Date(contestStartTime.getTime()+30*24*3600*1000);
+    const now=new Date();
+    if(firstSettle>now) return firstSettle;
+  }
   const now=new Date();
   return new Date(now.getFullYear(), now.getMonth()+1, 1, 0, 0, 0);
 }
@@ -2666,8 +2675,12 @@ function getNextSettlement(){
   function tick(){
     const el=document.getElementById('team-contest-countdown');
     if(!el) return;
-    const diff=getNextSettlement()-new Date();
-    el.textContent=formatCountdown(diff);
+    const now=new Date();
+    const settle=getNextSettlement();
+    const diff=settle-now;
+    const isFirst=contestStartTime&&(new Date(contestStartTime.getTime()+30*24*3600*1000))>now;
+    const prefix=isFirst?'首次结算：':'下次结算：';
+    el.textContent=diff<=0?'可领取':(prefix+formatCountdown(diff));
     if(diff<=0) el.style.color='var(--green)';
     else el.style.color='var(--blue)';
   }
@@ -2677,6 +2690,7 @@ function getNextSettlement(){
 
 function showTeamNoTeam(){
   inTeam=false;
+  contestStartTime=null; // 退出战队，重置结算计时
   // 隐藏 tab bar，显示无战队面板
   document.querySelector('#page-team .tab-bar').style.display='none';
   ['myTeam','invite','leaderboard'].forEach(id=>{
@@ -2879,6 +2893,7 @@ function submitCreateTeam(){
 
 function showNewTeamPage(name){
   inTeam=true;
+  contestStartTime=new Date(); // 从创建时刻开始计算第一次结算
   // 隐藏无战队面板，显示 tab bar 和 myTeam tab
   document.getElementById('teamTab-noTeam').style.display='none';
   document.querySelector('#page-team .tab-bar').style.display='';
