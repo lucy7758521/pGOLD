@@ -1180,6 +1180,14 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <tbody id="rank-tbody"></tbody>
     </table>
     <p class="tbl-note" data-i18n="rank.note">奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。</p>
+    <button onclick="downloadRankCSV()" style="display:flex;align-items:center;gap:8px;margin:14px auto 0;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:10px 20px;font-size:.82em;cursor:pointer;transition:all .2s"
+      onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      <span id="rank-dl-label">下载月榜数据 (CSV)</span>
+    </button>
   </div>
 </div>
 <!-- ══ TEAM ══ -->
@@ -2194,6 +2202,9 @@ function toggleTrack(id){
 function switchRankTab(tab){
   document.querySelectorAll('[data-rank]').forEach(b=>b.classList.toggle('active',b.dataset.rank===tab));
   renderRankTable(tab);
+  const names={monthly:'月榜',quarterly:'季榜',annual:'年榜'};
+  const label=document.getElementById('rank-dl-label');
+  if(label) label.textContent=`下载${names[tab]||''}数据 (CSV)`;
 }
 
 const RANK_DATA={
@@ -2285,6 +2296,27 @@ function renderRankTable(tab){
   }).join('');
   const myRankEl=document.getElementById('rank-my-rank');
   if(myRankEl) myRankEl.textContent='#'+data.myRank;
+}
+
+function downloadRankCSV(){
+  const activeBtn=document.querySelector('[data-rank].active');
+  const tab=activeBtn?activeBtn.dataset.rank:'monthly';
+  const data=RANK_DATA[tab];
+  if(!data) return;
+  const names={monthly:'月榜',quarterly:'季榜',annual:'年榜'};
+  const header='排名,地址,交易量,存入量(pGOLD),奖励(pGOLD),倍数\n';
+  const rows=data.rows.map(r=>`${r.r},${r.isMe?'YOU (Me)':r.addr},${r.vol},${r.deposit},${r.reward},${r.mult}`).join('\n');
+  const csv='﻿'+header+rows; // BOM 确保 Excel 正确显示中文
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`pGOLD_${names[tab]||tab}_Top100_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`${names[tab]}数据已下载`,'success');
 }
 
 /* 拖拽横向滚动 */
