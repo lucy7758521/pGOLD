@@ -55,10 +55,12 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
   background:none;border:none;cursor:pointer;border-radius:8px;margin-left:auto;}
 .menu-btn span{display:block;width:18px;height:1.5px;background:var(--text2);border-radius:2px;transition:all .25s;}
 
-/* DRAWER */
-.drawer-backdrop{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);}
+/* DRAWER — desktop: right side panel, mobile: bottom sheet */
+.drawer-backdrop{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(2px);}
 .drawer-backdrop.show{display:block;}
-.drawer{position:fixed;top:0;right:0;bottom:0;z-index:201;width:260px;
+
+/* Desktop drawer (right side) */
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:201;width:280px;
   background:var(--surface2);border-left:1px solid var(--border);
   transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
 .drawer.open{transform:translateX(0);}
@@ -67,11 +69,42 @@ body{font-family:-apple-system,'Segoe UI','Noto Sans SC','Microsoft YaHei',sans-
 .drawer-close{background:none;border:none;color:var(--text2);cursor:pointer;padding:4px 8px;font-size:1em;}
 .drawer-nav{display:flex;flex-direction:column;gap:2px;padding:12px;flex:1;overflow-y:auto;}
 .drawer-link{padding:12px 14px;border-radius:10px;font-size:.86em;color:var(--text2);
-  cursor:pointer;transition:all .15s;border:none;background:none;text-align:left;font-family:inherit;width:100%;}
+  cursor:pointer;transition:all .15s;border:none;background:none;text-align:left;font-family:inherit;width:100%;
+  display:flex;align-items:center;gap:10px;}
 .drawer-link:hover{color:var(--text);background:rgba(255,255,255,.04);}
 .drawer-link.active{color:var(--gold);background:rgba(212,168,67,.08);}
 .drawer-footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px;}
 .drawer-wallet{font-size:.68em;color:var(--text2);font-family:monospace;word-break:break-all;}
+
+/* Wallet card inside drawer */
+.drawer-wallet-card{background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.18);
+  border-radius:12px;padding:14px 16px;margin:12px 12px 0;}
+.drawer-wallet-addr{font-size:.72em;font-family:monospace;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.drawer-wallet-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.drawer-asset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;}
+.drawer-asset-cell{background:rgba(255,255,255,.04);border-radius:8px;padding:7px 6px;text-align:center;}
+.drawer-asset-label{font-size:.6em;color:var(--text2);margin-bottom:2px;}
+.drawer-asset-val{font-size:.78em;font-weight:700;color:var(--text1);}
+
+/* Nav grid inside drawer */
+.drawer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px;}
+.drawer-grid-item{display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 6px;border-radius:12px;border:none;background:rgba(255,255,255,.03);
+  cursor:pointer;font-family:inherit;color:var(--text2);font-size:.72em;transition:all .15s;
+  border:1px solid transparent;}
+.drawer-grid-item:hover{background:rgba(255,255,255,.07);color:var(--text);}
+.drawer-grid-item.active{background:rgba(212,168,67,.08);color:var(--gold);border-color:rgba(212,168,67,.2);}
+.drawer-grid-icon{font-size:1.4em;line-height:1;}
+
+/* Mobile bottom sheet */
+@media(max-width:480px){
+  .drawer{top:auto;right:0;left:0;bottom:0;width:100%;height:88dvh;
+    border-left:none;border-top:1px solid var(--border);border-radius:20px 20px 0 0;
+    transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
+  .drawer.open{transform:translateY(0);}
+  .drawer-header{justify-content:center;padding:10px 20px 14px;}
+  .drawer-drag{width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:4px;}
+}
 
 /* MAIN */
 .main{padding-top:var(--nav-h);}
@@ -610,26 +643,86 @@ tr:hover td{background:rgba(212,168,67,.03);}
 
 <!-- DRAWER -->
 <div class="drawer" id="drawer">
+  <!-- drag handle (mobile) / header (desktop) -->
   <div class="drawer-header">
-    <a class="nav-brand" href="index.html"><span class="nav-dot"></span>pGOLD</a>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <div class="drawer-drag" style="display:none" id="drawerDragHandle"></div>
+    <a class="nav-brand" href="index.html" id="drawerBrand"><span class="nav-dot"></span>pGOLD</a>
+    <button class="drawer-close" onclick="closeDrawer()" id="drawerCloseBtn">✕</button>
   </div>
-  <div class="drawer-nav" id="drawerNav">
-    <button class="drawer-link active" data-page="dashboard" onclick="switchPage('dashboard');closeDrawer()" data-i18n="nav.dashboard">总览</button>
-    <button class="drawer-link" data-page="ico" onclick="switchPage('ico');closeDrawer()" data-i18n="nav.ico">创世池 ICO</button>
-    <button class="drawer-link" data-page="staking" onclick="switchPage('staking');closeDrawer()" data-i18n="nav.staking">质押中心</button>
-    <button class="drawer-link" data-page="vesting" onclick="switchPage('vesting');closeDrawer()" data-i18n="nav.vesting">释放计划</button>
-    <button class="drawer-link" data-page="ranking" onclick="switchPage('ranking');closeDrawer()" data-i18n="nav.ranking">Top 100</button>
-    <button class="drawer-link" data-page="team" onclick="switchPage('team');closeDrawer()" data-i18n="nav.team">战队中心</button>
-    <button class="drawer-link" data-page="history" onclick="switchPage('history');closeDrawer()" data-i18n="nav.history">交易记录</button>
-  </div>
-  <div class="drawer-footer">
-    <div class="lang-toggle">
-      <button class="lang-btn active" data-lang="zh">中</button>
-      <button class="lang-btn" data-lang="en">EN</button>
+
+  <!-- wallet section -->
+  <div id="drawerWalletSection">
+    <!-- not connected -->
+    <div id="drawerNotConnected" style="padding:12px 12px 0">
+      <button class="btn btn-gold btn-full" onclick="connectWallet()" style="width:100%;justify-content:center;gap:8px;font-size:.9em">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        <span data-i18n="nav.connect">连接钱包</span>
+      </button>
     </div>
-    <div class="drawer-wallet" id="drawerWallet">0x0000...0000</div>
-    <a href="swap_v3.html" style="font-size:.78em;color:var(--gold);text-decoration:none;">⇄ Swap</a>
+    <!-- connected -->
+    <div id="drawerConnected" class="drawer-wallet-card" style="display:none">
+      <div class="drawer-wallet-addr">
+        <span class="drawer-wallet-dot"></span>
+        <span id="drawerWallet">0x0000...0000</span>
+      </div>
+      <div style="font-size:.78em;font-weight:700;color:var(--gold);margin-bottom:6px" id="drawerTotalAsset">— pGOLD</div>
+      <div class="drawer-asset-grid">
+        <div class="drawer-asset-cell">
+          <div class="drawer-asset-label">可用</div>
+          <div class="drawer-asset-val" id="drawerLiquid">—</div>
+        </div>
+        <div class="drawer-asset-cell">
+          <div class="drawer-asset-label">质押</div>
+          <div class="drawer-asset-val" id="drawerStaked">—</div>
+        </div>
+        <div class="drawer-asset-cell">
+          <div class="drawer-asset-label">释放</div>
+          <div class="drawer-asset-val" id="drawerVesting">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- nav grid -->
+  <div class="drawer-grid" id="drawerGrid">
+    <button class="drawer-grid-item active" data-page="dashboard" onclick="switchPage('dashboard');closeDrawer()">
+      <span class="drawer-grid-icon">🏠</span><span data-i18n="nav.dashboard">总览</span>
+    </button>
+    <button class="drawer-grid-item" data-page="ico" onclick="switchPage('ico');closeDrawer()">
+      <span class="drawer-grid-icon">🪙</span><span data-i18n="nav.ico">创世池</span>
+    </button>
+    <button class="drawer-grid-item" data-page="staking" onclick="switchPage('staking');closeDrawer()">
+      <span class="drawer-grid-icon">⚡</span><span data-i18n="nav.staking">质押中心</span>
+    </button>
+    <button class="drawer-grid-item" data-page="vesting" onclick="switchPage('vesting');closeDrawer()">
+      <span class="drawer-grid-icon">📅</span><span data-i18n="nav.vesting">释放计划</span>
+    </button>
+    <button class="drawer-grid-item" data-page="ranking" onclick="switchPage('ranking');closeDrawer()">
+      <span class="drawer-grid-icon">🏆</span><span data-i18n="nav.ranking">Top 100</span>
+    </button>
+    <button class="drawer-grid-item" data-page="team" onclick="switchPage('team');closeDrawer()">
+      <span class="drawer-grid-icon">🏴</span><span data-i18n="nav.team">战队中心</span>
+    </button>
+    <button class="drawer-grid-item" data-page="history" onclick="switchPage('history');closeDrawer()">
+      <span class="drawer-grid-icon">📒</span><span data-i18n="nav.history">交易记录</span>
+    </button>
+    <a href="swap_v3.html" class="drawer-grid-item" style="text-decoration:none">
+      <span class="drawer-grid-icon">⇄</span><span>Swap</span>
+    </a>
+  </div>
+
+  <div style="flex:1"></div>
+
+  <!-- footer -->
+  <div class="drawer-footer">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="zh">中</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button id="drawerDisconnectBtn" onclick="disconnectWallet()" style="display:none;font-size:.72em;color:var(--red);background:none;border:none;cursor:pointer">断开连接</button>
+    </div>
+    <div style="font-size:.62em;color:var(--text2);text-align:center">© pGOLD 2026</div>
   </div>
 </div>
 
@@ -1566,7 +1659,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
 const I18N = {
   zh:{
     'nav.dashboard':'总览','nav.ico':'创世池 ICO','nav.vesting':'释放计划',
-    'nav.ranking':'Top 100','nav.staking':'质押中心','nav.team':'战队中心','nav.history':'交易记录',
+    'nav.ranking':'Top 100','nav.staking':'质押中心','nav.team':'战队中心','nav.history':'交易记录','nav.connect':'连接钱包',
     'common.cancel':'取消','common.confirm':'确认','common.copied':'已复制','common.claim':'领取',
     'dash.netWorth':'净资产','dash.pgoldBalance':'余额','dash.vestedBalance':'待释放','dash.pendingDiv':'待领分红',
     'dash.trackA':'持币分红','dash.trackB':'Top 100','dash.trackC':'燃烧挖矿',
@@ -1627,7 +1720,7 @@ const I18N = {
   },
   en:{
     'nav.dashboard':'Overview','nav.ico':'Genesis ICO','nav.vesting':'Vesting',
-    'nav.ranking':'Top 100','nav.staking':'Staking','nav.team':'Team','nav.history':'History',
+    'nav.ranking':'Top 100','nav.staking':'Staking','nav.team':'Team','nav.history':'History','nav.connect':'Connect Wallet',
     'common.cancel':'Cancel','common.confirm':'Confirm','common.copied':'Copied','common.claim':'Claim',
     'dash.netWorth':'Net Worth','dash.pgoldBalance':'Balance','dash.vestedBalance':'Pending Release','dash.pendingDiv':'Pending Dividend',
     'dash.trackA':'Hold & Earn','dash.trackB':'Top 100','dash.trackC':'Burn Mining',
@@ -1706,6 +1799,7 @@ function switchPage(page){
   const el=document.getElementById('page-'+page);
   if(el)el.classList.add('active');
   document.querySelectorAll('.nav-link,.drawer-link').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  document.querySelectorAll('.drawer-grid-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
   window.scrollTo(0,0);
   document.title='pGOLD · '+(PAGE_TITLES[I18N.getLang()]||PAGE_TITLES.zh)[page]||'pGOLD DApp';
 }
@@ -3193,19 +3287,64 @@ function openBindInviter(){
 }
 
 /* ── CONNECT WALLET ── */
+let walletAddress=null;
+
+function updateDrawerAssets(){
+  const fmtN=v=>Math.round(v).toLocaleString('en-US');
+  const total=PORTFOLIO.liquid+PORTFOLIO.staked+PORTFOLIO.vesting;
+  const el=id=>document.getElementById(id);
+  if(el('drawerTotalAsset')) el('drawerTotalAsset').textContent=fmtN(total)+' pGOLD';
+  if(el('drawerLiquid')) el('drawerLiquid').textContent=fmtN(PORTFOLIO.liquid);
+  if(el('drawerStaked')) el('drawerStaked').textContent=fmtN(PORTFOLIO.staked);
+  if(el('drawerVesting')) el('drawerVesting').textContent=fmtN(PORTFOLIO.vesting);
+}
+
 async function connectWallet(){
   if(typeof window.ethereum==='undefined'){showToast('Please install MetaMask','error');return;}
   try{
     const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
     if(accounts[0]){
-      const addr=accounts[0];
-      const short=addr.slice(0,6)+'...'+addr.slice(-4);
+      walletAddress=accounts[0];
+      const short=walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
       document.getElementById('walletBadge').textContent=short;
-      document.getElementById('drawerWallet').textContent=addr;
-      showToast('Connected: '+short,'success');
+      document.getElementById('drawerWallet').textContent=walletAddress;
+      document.getElementById('drawerNotConnected').style.display='none';
+      document.getElementById('drawerConnected').style.display='block';
+      document.getElementById('drawerDisconnectBtn').style.display='block';
+      updateDrawerAssets();
+      showToast((I18N.getLang()==='en'?'Connected: ':'已连接：')+short,'success');
     }
   }catch(e){showToast('Connection rejected','error');}
 }
+
+function disconnectWallet(){
+  walletAddress=null;
+  const isEn=I18N.getLang()==='en';
+  document.getElementById('walletBadge').textContent='0x0000...0000';
+  document.getElementById('drawerWallet').textContent='0x0000...0000';
+  document.getElementById('drawerNotConnected').style.display='block';
+  document.getElementById('drawerConnected').style.display='none';
+  document.getElementById('drawerDisconnectBtn').style.display='none';
+  showToast(isEn?'Wallet disconnected':'钱包已断开','info');
+}
+
+/* mobile: show drag handle, hide brand+close */
+(function initDrawerLayout(){
+  function applyLayout(){
+    const isMobile=window.innerWidth<=480;
+    const drag=document.getElementById('drawerDragHandle');
+    const brand=document.getElementById('drawerBrand');
+    const closeBtn=document.getElementById('drawerCloseBtn');
+    if(drag) drag.style.display=isMobile?'block':'none';
+    if(brand) brand.style.display=isMobile?'none':'flex';
+    if(closeBtn) closeBtn.style.display=isMobile?'none':'block';
+  }
+  applyLayout();
+  window.addEventListener('resize',applyLayout);
+})();
+
+/* keep drawer grid active state in sync with switchPage — handled inside switchPage() */
+
 
 /* ── PRICE ── */
 const PORTFOLIO={liquid:1400,staked:800,vesting:2455,vp:240};
@@ -3233,6 +3372,9 @@ function updateDappPriceDisplays(p){
   set('port-vesting-usd',fmt(PORTFOLIO.vesting*p));
   set('port-vp-usd',fmt(PORTFOLIO.vp*p));
   set('port-total-usd','≈ '+fmt(total));
+
+  // 同步 drawer 资产摘要
+  if(walletAddress) updateDrawerAssets();
 
   // 更新 ICO 页面数据
   updateICODisplays(p);
