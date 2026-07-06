@@ -4668,6 +4668,8 @@ async function initWeb3(addr) {
       // re-init provider after switch
       web3Provider = new ethers.BrowserProvider(window.ethereum);
     }
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const walletAddr = accounts[0];
     web3Signer = await web3Provider.getSigner();
     contracts.pgold   = new ethers.Contract(CONTRACT_ADDRS.pgold,   ABI.pgold,   web3Signer);
     contracts.staking = new ethers.Contract(CONTRACT_ADDRS.staking, ABI.staking, web3Signer);
@@ -4679,10 +4681,17 @@ async function initWeb3(addr) {
     contracts.burnMining = new ethers.Contract(CONTRACT_ADDRS.burnMining, ABI.burnMining, web3Signer);
     contracts.team    = new ethers.Contract(CONTRACT_ADDRS.team,    ABI.team,    web3Signer);
     contracts.treasury = new ethers.Contract(CONTRACT_ADDRS.treasury, ABI.treasury, web3Provider);
-    await loadChainData(addr);
-    loadTeamData(addr); // non-blocking
+    loadChainData(walletAddr); // non-blocking — fails gracefully if node not running
+    loadTeamData(walletAddr);  // non-blocking
   } catch(e) {
-    console.error('initWeb3 failed', e);
+    if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+      showToast(isEn ? 'Connection cancelled' : '已取消连接', 'error');
+    } else if (e.code === 4902) {
+      showToast(isEn ? 'Please add the network to your wallet' : '请在钱包中添加对应网络', 'error');
+    } else {
+      console.error('initWeb3 failed', e);
+      showToast(isEn ? 'Network switch failed — check wallet network' : '网络切换失败，请检查钱包网络', 'error');
+    }
   }
 }
 

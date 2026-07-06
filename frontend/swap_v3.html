@@ -601,8 +601,9 @@ let walletAddress = null;
 let contracts = {};
 
 async function initWeb3() {
+  const isEn = I18N.getLang() === 'en';
   if (!window.ethereum) {
-    showToast('Please install MetaMask', 'error');
+    showToast(isEn ? 'Please install MetaMask' : '请安装 MetaMask', 'error');
     return false;
   }
 
@@ -653,11 +654,18 @@ async function initWeb3() {
     contracts.treasury = new ethers.Contract(CONTRACT_ADDRS.treasury, TREASURY_ABI, web3Provider);
 
     connected = true;
-    await loadChainData();
+    render(); // update UI immediately after wallet connected
+    loadChainData(); // non-blocking — fails gracefully if node not running
     return true;
   } catch (err) {
-    console.error('Web3 init error:', err);
-    showToast('Failed to connect wallet', 'error');
+    if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
+      showToast(isEn ? 'Connection cancelled' : '已取消连接', 'error');
+    } else if (err.code === 4902) {
+      showToast(isEn ? 'Please add the network to your wallet' : '请在钱包中添加对应网络', 'error');
+    } else {
+      console.error('Web3 init error:', err);
+      showToast(isEn ? 'Network switch failed — check wallet network' : '网络切换失败，请检查钱包网络', 'error');
+    }
     return false;
   }
 }
