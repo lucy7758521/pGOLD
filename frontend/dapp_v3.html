@@ -3278,63 +3278,9 @@ function switchRankTab(tab){
 }
 
 const RANK_DATA={
-  monthly:{mult:'300%',myRank:12,myAddr:'0xAbCd...1234',myVol:'$450K',myDeposit:800,myReward:2400,
-    rows:[
-      {r:1,addr:'0xAb...Ef01',vol:'$2.4M',deposit:5000,reward:15000,mult:'300%'},
-      {r:2,addr:'0xBc...Fg23',vol:'$1.8M',deposit:3200,reward:9600,mult:'300%'},
-      {r:3,addr:'0xCd...Gh45',vol:'$1.2M',deposit:2100,reward:6300,mult:'300%'},
-      {r:4,addr:'0xDe...Hi56',vol:'$980K',deposit:1800,reward:5400,mult:'300%'},
-      {r:5,addr:'0xEf...Ij67',vol:'$870K',deposit:1600,reward:4800,mult:'300%'},
-      {r:6,addr:'0xFg...Jk78',vol:'$760K',deposit:1400,reward:4200,mult:'300%'},
-      {r:7,addr:'0xGh...Kl89',vol:'$650K',deposit:1200,reward:3600,mult:'300%'},
-      {r:8,addr:'0xHi...Lm90',vol:'$580K',deposit:1100,reward:3300,mult:'300%'},
-      {r:9,addr:'0xIj...Mn01',vol:'$520K',deposit:1000,reward:3000,mult:'300%'},
-      {r:10,addr:'0xJk...No12',vol:'$490K',deposit:950,reward:2850,mult:'300%'},
-      {r:11,addr:'0xKl...Op23',vol:'$470K',deposit:820,reward:2460,mult:'300%'},
-      {r:12,addr:'YOU',vol:'$450K',deposit:800,reward:2400,mult:'300%',isMe:true},
-      {r:13,addr:'0xMn...Qr45',vol:'$430K',deposit:780,reward:2340,mult:'300%'},
-      {r:14,addr:'0xNo...Rs56',vol:'$410K',deposit:750,reward:2250,mult:'300%'},
-      {r:15,addr:'0xOp...St67',vol:'$390K',deposit:720,reward:2160,mult:'300%'},
-    ]
-  },
-  quarterly:{mult:'500%',myRank:8,myAddr:'0xAbCd...1234',myVol:'$1.2M',myDeposit:800,myReward:4000,
-    rows:[
-      {r:1,addr:'0xAb...Ef01',vol:'$6.8M',deposit:5000,reward:25000,mult:'500%'},
-      {r:2,addr:'0xBc...Fg23',vol:'$5.2M',deposit:3200,reward:16000,mult:'500%'},
-      {r:3,addr:'0xCd...Gh45',vol:'$3.8M',deposit:2100,reward:10500,mult:'500%'},
-      {r:4,addr:'0xDe...Hi56',vol:'$2.9M',deposit:1800,reward:9000,mult:'500%'},
-      {r:5,addr:'0xEf...Ij67',vol:'$2.4M',deposit:1600,reward:8000,mult:'500%'},
-      {r:6,addr:'0xFg...Jk78',vol:'$1.9M',deposit:1400,reward:7000,mult:'500%'},
-      {r:7,addr:'0xGh...Kl89',vol:'$1.6M',deposit:1200,reward:6000,mult:'500%'},
-      {r:8,addr:'YOU',vol:'$1.2M',deposit:800,reward:4000,mult:'500%',isMe:true},
-      {r:9,addr:'0xIj...Mn01',vol:'$1.1M',deposit:780,reward:3900,mult:'500%'},
-      {r:10,addr:'0xJk...No12',vol:'$980K',deposit:750,reward:3750,mult:'500%'},
-      {r:11,addr:'0xKl...Op23',vol:'$920K',deposit:720,reward:3600,mult:'500%'},
-      {r:12,addr:'0xLm...Pq34',vol:'$880K',deposit:690,reward:3450,mult:'500%'},
-      {r:13,addr:'0xMn...Qr45',vol:'$840K',deposit:660,reward:3300,mult:'500%'},
-      {r:14,addr:'0xNo...Rs56',vol:'$800K',deposit:630,reward:3150,mult:'500%'},
-      {r:15,addr:'0xOp...St67',vol:'$760K',deposit:600,reward:3000,mult:'500%'},
-    ]
-  },
-  annual:{mult:'1000%',myRank:5,myAddr:'0xAbCd...1234',myVol:'$4.8M',myDeposit:800,myReward:8000,
-    rows:[
-      {r:1,addr:'0xAb...Ef01',vol:'$28M',deposit:5000,reward:50000,mult:'1000%'},
-      {r:2,addr:'0xBc...Fg23',vol:'$21M',deposit:3200,reward:32000,mult:'1000%'},
-      {r:3,addr:'0xCd...Gh45',vol:'$16M',deposit:2100,reward:21000,mult:'1000%'},
-      {r:4,addr:'0xDe...Hi56',vol:'$11M',deposit:1800,reward:18000,mult:'1000%'},
-      {r:5,addr:'YOU',vol:'$4.8M',deposit:800,reward:8000,mult:'1000%',isMe:true},
-      {r:6,addr:'0xFg...Jk78',vol:'$7.2M',deposit:1400,reward:14000,mult:'1000%'},
-      {r:7,addr:'0xGh...Kl89',vol:'$6.4M',deposit:1200,reward:12000,mult:'1000%'},
-      {r:8,addr:'0xHi...Lm90',vol:'$5.8M',deposit:1100,reward:11000,mult:'1000%'},
-      {r:9,addr:'0xIj...Mn01',vol:'$5.2M',deposit:1000,reward:10000,mult:'1000%'},
-      {r:10,addr:'0xJk...No12',vol:'$4.6M',deposit:950,reward:9500,mult:'1000%'},
-      {r:11,addr:'0xKl...Op23',vol:'$4.2M',deposit:820,reward:8200,mult:'1000%'},
-      {r:12,addr:'0xLm...Pq34',vol:'$3.8M',deposit:780,reward:7800,mult:'1000%'},
-      {r:13,addr:'0xMn...Qr45',vol:'$3.4M',deposit:740,reward:7400,mult:'1000%'},
-      {r:14,addr:'0xNo...Rs56',vol:'$3.1M',deposit:700,reward:7000,mult:'1000%'},
-      {r:15,addr:'0xOp...St67',vol:'$2.8M',deposit:660,reward:6600,mult:'1000%'},
-    ]
-  }
+  monthly:  {mult:'300%', myRank:'--',myAddr:'--',myVol:'--',myDeposit:0,myReward:0, rows:[]},
+  quarterly:{mult:'500%', myRank:'--',myAddr:'--',myVol:'--',myDeposit:0,myReward:0, rows:[]},
+  annual:   {mult:'1000%',myRank:'--',myAddr:'--',myVol:'--',myDeposit:0,myReward:0, rows:[]}
 };
 
 function rankBadge(r){
@@ -3349,7 +3295,13 @@ function renderRankTable(tab){
   if(!data) return;
   const tbody=document.getElementById('rank-tbody');
   if(!tbody) return;
-  const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0});
+  const isEn=I18N.getLang()==='en';
+  if(!data.rows||data.rows.length===0){
+    tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text2);font-size:.85em">${isEn?'No ranking data yet — be the first to participate!':'暂无排名数据，快来成为第一名！'}</td></tr>`;
+    const myRankEl=document.getElementById('rank-my-rank');
+    if(myRankEl) myRankEl.textContent='--';
+    return;
+  }
   tbody.innerHTML=data.rows.map(row=>{
     const isMe=row.isMe;
     const addrCell=isMe
@@ -3411,25 +3363,9 @@ function downloadRankCSV(){
 
 
 /* ── TEAM TAB ── */
-const ALL_TEAMS=[
-  {r:1,name:'DRAGON',leader:'0xAA...BB',members:48,vol:'$12M',reward:6000},
-  {r:2,name:'PHOENIX',leader:'0xCC...DD',members:35,vol:'$8.2M',reward:4800},
-  {r:3,name:'TIGER_TEAM',leader:'0xAbCd',members:12,vol:'$3.4M',reward:2400},
-  {r:4,name:'WOLF_PACK',leader:'0xEE...FF',members:28,vol:'$2.8M',reward:1960},
-  {r:5,name:'EAGLE',leader:'0x11...22',members:22,vol:'$2.1M',reward:1470},
-  {r:6,name:'SHARK',leader:'0x33...44',members:19,vol:'$1.7M',reward:1190},
-  {r:7,name:'LION',leader:'0x55...66',members:17,vol:'$1.4M',reward:980},
-  {r:8,name:'BULL',leader:'0x77...88',members:15,vol:'$1.1M',reward:770},
-  {r:9,name:'BEAR',leader:'0x99...AA',members:14,vol:'$890K',reward:623},
-  {r:10,name:'FALCON',leader:'0xBB...CC',members:11,vol:'$720K',reward:504},
-  {r:11,name:'COBRA',leader:'0xDD...EE',members:10,vol:'$610K',reward:427},
-  {r:12,name:'PANDA',leader:'0xFF...00',members:9,vol:'$520K',reward:364},
-  {r:13,name:'RHINO',leader:'0x12...34',members:8,vol:'$430K',reward:301},
-  {r:14,name:'VIPER',leader:'0x56...78',members:7,vol:'$350K',reward:245},
-  {r:15,name:'THUNDER',leader:'0x9A...BC',members:6,vol:'$280K',reward:196},
-];
+const ALL_TEAMS=[];
 
-let inTeam=true; // 是否在战队中
+let inTeam=false;
 let contestStartTime=null; // 加入/创建战队时间，null=未入队
 
 function getNextSettlement(){
@@ -3499,7 +3435,11 @@ function renderNoTeamLeaderboard(){
   const tbody=document.getElementById('noteam-lb-tbody');
   if(!tbody||tbody.dataset.rendered) return;
   tbody.dataset.rendered='1';
-  tbody.innerHTML=ALL_TEAMS.map(t=>{
+  const isEn=I18N.getLang()==='en';
+  if(!ALL_TEAMS.length){
+    tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text2);font-size:.85em">${isEn?'No teams yet — create the first one!':'暂无战队，快来创建第一支！'}</td></tr>`;
+    return;
+  }
     const badge=t.r<=3?[
       `<span style="background:rgba(212,168,67,.15);color:#f0d078;border:1px solid rgba(212,168,67,.3);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
       `<span style="background:rgba(180,180,180,.1);color:#c0c0c0;border:1px solid rgba(180,180,180,.25);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
@@ -3561,26 +3501,17 @@ function openJoinTeamDirect(name){
   showTeamDetail(name);
 }
 
-const TEAM_MEMBERS=[
-  {r:1,addr:'0xAbCd...1234',vol:'$620K',pts:1240,isMe:true},
-  {r:2,addr:'0xBc...Fg23',vol:'$580K',pts:1160},
-  {r:3,addr:'0xCd...Gh45',vol:'$430K',pts:860},
-  {r:4,addr:'0xDe...Hi56',vol:'$390K',pts:780},
-  {r:5,addr:'0xEf...Ij67',vol:'$310K',pts:620},
-  {r:6,addr:'0xFg...Jk78',vol:'$270K',pts:540},
-  {r:7,addr:'0xGh...Kl89',vol:'$210K',pts:420},
-  {r:8,addr:'0xHi...Lm90',vol:'$180K',pts:360},
-  {r:9,addr:'0xIj...Mn01',vol:'$150K',pts:300},
-  {r:10,addr:'0xJk...No12',vol:'$120K',pts:240},
-  {r:11,addr:'0xKl...Op23',vol:'$90K',pts:180},
-  {r:12,addr:'0xLm...Pq34',vol:'$60K',pts:120},
-];
+const TEAM_MEMBERS=[];
 
 function renderTeamMembers(){
   const el=document.getElementById('team-member-list');
   if(!el||el.dataset.rendered) return;
   el.dataset.rendered='1';
-  el.innerHTML=TEAM_MEMBERS.map((m,i)=>{
+  const isEn=I18N.getLang()==='en';
+  if(!TEAM_MEMBERS.length){
+    el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--text2);font-size:.85em">${isEn?'No members yet':'暂无成员'}</div>`;
+    return;
+  }
     const bg=i%2===0?'':'background:rgba(255,255,255,.02)';
     const addrStyle=m.isMe?'color:var(--gold);font-weight:700':'font-family:monospace;font-size:.78em;color:var(--text2)';
     return `<div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;padding:8px 12px;${bg};border-top:1px solid var(--border)">
@@ -3620,18 +3551,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 else renderTeamMembers();
 
 /* ── HISTORY ── */
-let HIST_DATA=[
-  {time:'2026-06-26 09:15',type:'buy', amt:+50,  price:85.20, fee:10.65, note:'市价买入',   noteEn:'Market buy'},
-  {time:'2026-06-25 14:30',type:'sell',amt:-20,  price:84.80, fee:4.24,  note:'市价卖出',   noteEn:'Market sell'},
-  {time:'2026-06-25 10:15',type:'buy', amt:+100, price:85.00, fee:21.25, note:'限价买入',   noteEn:'Limit buy'},
-  {time:'2026-06-24 16:45',type:'stake',amt:200, price:null,  fee:null,  note:'A轨质押',    noteEn:'Track A stake'},
-  {time:'2026-06-24 08:00',type:'claim',amt:12.5,price:null,  fee:null,  note:'持仓分红',   noteEn:'Holding dividend'},
-  {time:'2026-06-23 11:20',type:'buy', amt:+30,  price:84.50, fee:6.34,  note:'市价买入',   noteEn:'Market buy'},
-  {time:'2026-06-22 15:00',type:'sell',amt:-50,  price:85.10, fee:10.64, note:'限价卖出',   noteEn:'Limit sell'},
-  {time:'2026-06-21 09:00',type:'claim',amt:8.2, price:null,  fee:null,  note:'Top100奖励', noteEn:'Top100 reward'},
-  {time:'2026-06-20 13:30',type:'stake',amt:100, price:null,  fee:null,  note:'B轨存入',    noteEn:'Track B deposit'},
-  {time:'2026-06-19 10:45',type:'buy', amt:+80,  price:83.90, fee:16.78, note:'市价买入',   noteEn:'Market buy'},
-];
+let HIST_DATA=[];
 
 // localStorage persistence — real txns override mock on load
 const HIST_KEY = 'pgold_hist_v1';
@@ -4074,11 +3994,7 @@ async function selectWallet(type){
         return;
       }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');return;}
     }
-    // fallback mock for demo when no provider available
-    const mockAddr='0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-    const names={walletconnect:'WalletConnect',coinbase:'Coinbase Wallet',binance:'Binance Wallet'};
-    showToast(isEn?`Connecting via ${names[type]}...`:`正在通过 ${names[type]} 连接...`,'info');
-    setTimeout(()=>_onWalletConnected(mockAddr, names[type]), 1200);
+    showToast(isEn?'Wallet not detected. Please install MetaMask or use a Web3 browser.':'未检测到钱包，请安装 MetaMask 或使用 Web3 浏览器。','error');
   }
 }
 
@@ -4091,6 +4007,9 @@ function _onWalletConnected(addr, walletName){
   document.getElementById('drawerNotConnected').style.display='none';
   document.getElementById('drawerConnected').style.display='block';
   document.getElementById('drawerDisconnectBtn').style.display='block';
+  // update invite link with real address
+  const inviteInput=document.getElementById('invite-link-input');
+  if(inviteInput) inviteInput.value=`https://pgold.io/r/${addr}`;
   updateDrawerAssets();
   showToast((isEn?`${walletName} connected: `:`${walletName} 已连接：`)+short,'success');
   if(typeof initWeb3 === 'function') initWeb3(addr).catch(console.error);
@@ -4538,22 +4457,22 @@ window.addEventListener('resize',()=>{
 </div>
 <script id="web3-layer">
 /* ════ WEB3 LAYER ════ */
-const CHAIN_ID = 31337;
+const CHAIN_ID = 421614;
 const CONTRACT_ADDRS = {
-  pgold:      '0x0165878A594ca255338adfa4d48449f69242Eb8F',
-  treasury:   '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853',
-  feeRouter:  '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318',
-  vesting:    '0x610178dA211FEF7D417bC0e6FeD39F05609AD788',
-  swap:       '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
-  staking:    '0x9A676e781A523b5d0C0e43731313A708CB607508',
-  ranking:    '0x68B1D87F95878fE05B998F19b66F4baba5De1aed',
-  burnMining: '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1',
-  team:       '0xc6e7DF5E7b4f2A278906862b61205850344D4e7d',
-  genesis:    '0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1',
-  vpgold:     '0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44',
-  oracle:     '0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f',
-  usdc:       '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-  paxg:       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+  pgold:       '0x8bAeC48a7F13100D57cf08448081Cf6a8620cF7F',
+  treasury:    '0x3EA388c46c22182FA938fcBF3D273Cc51b0f62C6',
+  feeRouter:   '0x07e59309002F6227149B7E3b7E893A016E6BB78a',
+  vesting:     '0x3b4fe6865663062942CcB00f69D30031F18F1159',
+  swap:        '0xEa5A9045e3a316610D5d874bb64fA23998645f32',
+  staking:     '0x910c77EE199a1F5c2E543131B35877cd880A8C46',
+  ranking:     '0xb152453d0b2DF9e169660D6f41F77B32F22C0270',
+  burnMining:  '0x5EfA5d6d5E410b215a2bF81175C7948D3029f139',
+  team:        '0x739CE2DcfD54c136630000a4C8BFe1765FA70E87',
+  genesis:     '0xc06464dc9Bb7974C0cDcD797076968846214709C',
+  vpgold:      '0x7D7Ba4cFB18978920Ef9009C938B45A290489ED6',
+  oracle:      '0x1fF552E5095b41fC2E07Fc53ed8D71A09dc8D585',
+  usdc:        '0x8E927ACEF4e77CCCc56bcfd94bE43B964D741E66',
+  paxg:        '0xfAfd86390438B9db79721a034Bf51Ee0570a9815'
 };
 
 const ABI = {
