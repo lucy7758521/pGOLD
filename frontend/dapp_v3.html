@@ -3988,9 +3988,13 @@ function updateDrawerAssets(){
 }
 
 function connectWallet(){
-  // show MetaMask detected status
+  const isMobile=/iPhone|iPad|Android/i.test(navigator.userAgent);
   const mmStatus=document.getElementById('metamask-status');
-  if(mmStatus) mmStatus.textContent=typeof window.ethereum!=='undefined'?'已检测到':'未安装';
+  if(mmStatus){
+    if(typeof window.ethereum!=='undefined') mmStatus.textContent='已检测到';
+    else if(isMobile) mmStatus.textContent='点击跳转';
+    else mmStatus.textContent='未安装';
+  }
   document.getElementById('walletModal').classList.add('show');
 }
 
@@ -4001,16 +4005,22 @@ function closeWalletModal(){
 async function selectWallet(type){
   const isEn=I18N.getLang()==='en';
   closeWalletModal();
+  const isMobile=/iPhone|iPad|Android/i.test(navigator.userAgent);
 
   if(type==='metamask'){
-    if(typeof window.ethereum==='undefined'){
-      showToast(isEn?'MetaMask not detected. Please install it.':'未检测到 MetaMask，请先安装','error');
-      return;
+    if(typeof window.ethereum!=='undefined'){
+      // Extension present (desktop) or injected by MetaMask mobile in-app browser
+      try{
+        const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        if(accounts[0]) _onWalletConnected(accounts[0], 'MetaMask');
+      }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+    } else if(isMobile){
+      // Redirect to MetaMask mobile deep link so it opens this dapp inside MM browser
+      const url=encodeURIComponent(location.href);
+      location.href=`https://metamask.app.link/dapp/${location.host}${location.pathname}`;
+    } else {
+      showToast(isEn?'MetaMask not detected. Please install the extension.':'未检测到 MetaMask，请安装浏览器扩展','error');
     }
-    try{
-      const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-      if(accounts[0]) _onWalletConnected(accounts[0], 'MetaMask');
-    }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
 
   } else if(type==='okx'){
     if(typeof window.okxwallet!=='undefined'){
@@ -4018,14 +4028,55 @@ async function selectWallet(type){
         const accounts=await window.okxwallet.request({method:'eth_requestAccounts'});
         if(accounts[0]) _onWalletConnected(accounts[0],'OKX Wallet');
       }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+    } else if(typeof window.ethereum!=='undefined'){
+      // Inside OKX in-app browser, window.ethereum is injected
+      try{
+        const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        if(accounts[0]) _onWalletConnected(accounts[0],'OKX Wallet');
+      }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+    } else if(isMobile){
+      location.href='okx://wallet/dapp/url?dappUrl='+encodeURIComponent(location.href);
     } else {
       showToast(isEn?'OKX Wallet not detected':'未检测到 OKX Wallet','error');
     }
 
+  } else if(type==='trust'){
+    if(typeof window.ethereum!=='undefined'){
+      try{
+        const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        if(accounts[0]) _onWalletConnected(accounts[0],'Trust Wallet');
+      }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+    } else if(isMobile){
+      location.href='trust://open_url?coin_id=60&url='+encodeURIComponent(location.href);
+    } else {
+      showToast(isEn?'Trust Wallet not detected':'未检测到 Trust Wallet','error');
+    }
+
+  } else if(type==='tokenpocket'){
+    if(typeof window.ethereum!=='undefined'){
+      try{
+        const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        if(accounts[0]) _onWalletConnected(accounts[0],'TokenPocket');
+      }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');}
+    } else if(isMobile){
+      location.href='tpoutside://pull?param='+encodeURIComponent(JSON.stringify({url:location.href}));
+    } else {
+      showToast(isEn?'TokenPocket not detected':'未检测到 TokenPocket','error');
+    }
+
   } else {
-    // WalletConnect / Coinbase / Trust / Binance / TokenPocket — simulate for demo
+    // WalletConnect / Coinbase / Binance — if window.ethereum injected (in-app browser), use it
+    if(typeof window.ethereum!=='undefined'){
+      try{
+        const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+        const names={walletconnect:'WalletConnect',coinbase:'Coinbase Wallet',binance:'Binance Wallet'};
+        if(accounts[0]) _onWalletConnected(accounts[0], names[type]||type);
+        return;
+      }catch(e){showToast(isEn?'Connection rejected':'已取消连接','error');return;}
+    }
+    // fallback mock for demo when no provider available
     const mockAddr='0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-    const names={walletconnect:'WalletConnect',coinbase:'Coinbase Wallet',trust:'Trust Wallet',binance:'Binance Wallet',tokenpocket:'TokenPocket'};
+    const names={walletconnect:'WalletConnect',coinbase:'Coinbase Wallet',binance:'Binance Wallet'};
     showToast(isEn?`Connecting via ${names[type]}...`:`正在通过 ${names[type]} 连接...`,'info');
     setTimeout(()=>_onWalletConnected(mockAddr, names[type]), 1200);
   }

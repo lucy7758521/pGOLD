@@ -1042,13 +1042,25 @@ function closeWalletModal(){
 async function selectWallet(type){
   const isEn = I18N.getLang() === 'en';
   closeWalletModal();
+  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+
+  // Helper: connect via any injected window.ethereum
+  async function connectViaInjected(walletName) {
+    try {
+      await initWeb3();
+    } catch(e) {
+      showToast(isEn ? 'Connection rejected' : '已取消连接', 'error');
+    }
+  }
 
   if(type === 'metamask'){
-    if(typeof window.ethereum === 'undefined'){
-      showToast(isEn ? 'MetaMask not detected. Please install it.' : '未检测到 MetaMask，请先安装', 'error');
-      return;
+    if(typeof window.ethereum !== 'undefined'){
+      await connectViaInjected('MetaMask');
+    } else if(isMobile){
+      location.href = 'https://metamask.app.link/dapp/' + location.host + location.pathname;
+    } else {
+      showToast(isEn ? 'MetaMask not detected. Please install the extension.' : '未检测到 MetaMask，请安装浏览器扩展', 'error');
     }
-    await initWeb3();
 
   } else if(type === 'okx'){
     if(typeof window.okxwallet !== 'undefined'){
@@ -1058,10 +1070,7 @@ async function selectWallet(type){
         if (Number(network.chainId) !== CHAIN_ID) {
           showToast(isEn ? 'Switching network...' : '正在切换网络...', 'info');
           try {
-            await window.okxwallet.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
-            });
+            await window.okxwallet.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x' + CHAIN_ID.toString(16) }] });
           } catch(switchErr) {
             showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
             return;
@@ -1080,19 +1089,36 @@ async function selectWallet(type){
       } catch(e){
         showToast(isEn ? 'Connection rejected' : '已取消连接', 'error');
       }
+    } else if(typeof window.ethereum !== 'undefined'){
+      await connectViaInjected('OKX Wallet');
+    } else if(isMobile){
+      location.href = 'okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(location.href);
     } else {
       showToast(isEn ? 'OKX Wallet not detected' : '未检测到 OKX 钱包', 'error');
     }
 
+  } else if(type === 'trust'){
+    if(typeof window.ethereum !== 'undefined'){
+      await connectViaInjected('Trust Wallet');
+    } else if(isMobile){
+      location.href = 'trust://open_url?coin_id=60&url=' + encodeURIComponent(location.href);
+    } else {
+      showToast(isEn ? 'Trust Wallet not detected' : '未检测到 Trust Wallet', 'error');
+    }
+
+  } else if(type === 'binance' || type === 'imtoken'){
+    if(typeof window.ethereum !== 'undefined'){
+      await connectViaInjected(type === 'binance' ? 'Binance Wallet' : 'imToken');
+    } else {
+      showToast(isEn ? 'Coming soon' : '即将推出', 'info');
+    }
+
   } else if(type === 'coinbase'){
-    if(typeof window.coinbaseWalletExtension !== 'undefined'){
-      showToast(isEn ? 'Coinbase Wallet support coming soon' : 'Coinbase 钱包支持即将推出', 'info');
+    if(typeof window.coinbaseWalletExtension !== 'undefined' || typeof window.ethereum !== 'undefined'){
+      await connectViaInjected('Coinbase Wallet');
     } else {
       showToast(isEn ? 'Coinbase Wallet not detected' : '未检测到 Coinbase 钱包', 'error');
     }
-
-  } else if(type === 'trust' || type === 'binance' || type === 'imtoken'){
-    showToast(isEn ? 'Coming soon' : '即将推出', 'info');
 
   } else if(type === 'walletconnect'){
     showToast(isEn ? 'WalletConnect coming soon' : 'WalletConnect 即将推出', 'info');
