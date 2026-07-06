@@ -618,6 +618,7 @@ async function initWeb3() {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
         });
+        web3Provider = new ethers.BrowserProvider(window.ethereum);
       } catch(switchErr) {
         if (switchErr.code === 4902) {
           const chainMeta = CHAIN_ID === 421614
@@ -631,16 +632,19 @@ async function initWeb3() {
                 blockExplorerUrls: [] };
           try {
             await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [chainMeta] });
+            web3Provider = new ethers.BrowserProvider(window.ethereum);
           } catch(addErr) {
-            showToast(isEn ? 'Failed to add network' : '添加网络失败', 'error');
-            return false;
+            // can't add chain — warn but continue so wallet still connects
+            showToast(isEn ? 'Network mismatch — some features may not work' : '网络不匹配，部分功能可能不可用', 'info');
           }
-        } else {
+        } else if (switchErr.code === 4001 || switchErr.code === 'ACTION_REJECTED') {
           showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
           return false;
+        } else {
+          // unknown switch error — warn but continue
+          showToast(isEn ? 'Network mismatch — some features may not work' : '网络不匹配，部分功能可能不可用', 'info');
         }
       }
-      web3Provider = new ethers.BrowserProvider(window.ethereum);
     }
 
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });

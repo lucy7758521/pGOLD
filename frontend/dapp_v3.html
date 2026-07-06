@@ -4642,11 +4642,11 @@ async function initWeb3(addr) {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
         });
+        web3Provider = new ethers.BrowserProvider(window.ethereum);
       } catch(switchErr) {
-        // 4902 = chain not added yet
         if (switchErr.code === 4902) {
           const chainMeta = CHAIN_ID === 421614
-            ? { chainId: '0x6' + (421614).toString(16), chainName: 'Arbitrum Sepolia',
+            ? { chainId: '0x' + (421614).toString(16), chainName: 'Arbitrum Sepolia',
                 nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
                 rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
                 blockExplorerUrls: ['https://sepolia.arbiscan.io'] }
@@ -4656,17 +4656,17 @@ async function initWeb3(addr) {
                 blockExplorerUrls: [] };
           try {
             await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [chainMeta] });
+            web3Provider = new ethers.BrowserProvider(window.ethereum);
           } catch(addErr) {
-            showToast(isEn ? 'Failed to add network' : '添加网络失败', 'error');
-            return;
+            showToast(isEn ? 'Network mismatch — some features may not work' : '网络不匹配，部分功能可能不可用', 'info');
           }
-        } else {
+        } else if (switchErr.code === 4001 || switchErr.code === 'ACTION_REJECTED') {
           showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
           return;
+        } else {
+          showToast(isEn ? 'Network mismatch — some features may not work' : '网络不匹配，部分功能可能不可用', 'info');
         }
       }
-      // re-init provider after switch
-      web3Provider = new ethers.BrowserProvider(window.ethereum);
     }
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     const walletAddr = accounts[0];
