@@ -701,6 +701,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
   .data-highlight{font-size:1.05em;}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
 <!-- DRAWER BACKDROP -->
@@ -733,15 +734,15 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div style="font-size:.78em;font-weight:700;color:var(--gold);margin-bottom:6px" id="drawerTotalAsset">— pGOLD</div>
       <div class="drawer-asset-grid">
         <div class="drawer-asset-cell">
-          <div class="drawer-asset-label">可用</div>
+          <div class="drawer-asset-label" data-i18n="drawer.liquid">可用</div>
           <div class="drawer-asset-val" id="drawerLiquid">—</div>
         </div>
         <div class="drawer-asset-cell">
-          <div class="drawer-asset-label">质押</div>
+          <div class="drawer-asset-label" data-i18n="drawer.staked">质押</div>
           <div class="drawer-asset-val" id="drawerStaked">—</div>
         </div>
         <div class="drawer-asset-cell">
-          <div class="drawer-asset-label">释放</div>
+          <div class="drawer-asset-label" data-i18n="drawer.vesting">释放</div>
           <div class="drawer-asset-val" id="drawerVesting">—</div>
         </div>
       </div>
@@ -785,7 +786,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <button class="lang-btn active" data-lang="zh">中</button>
         <button class="lang-btn" data-lang="en">EN</button>
       </div>
-      <button id="drawerDisconnectBtn" onclick="disconnectWallet()" style="display:none;font-size:.72em;color:var(--red);background:none;border:none;cursor:pointer">断开连接</button>
+      <button id="drawerDisconnectBtn" onclick="disconnectWallet()" style="display:none;font-size:.72em;color:var(--red);background:none;border:none;cursor:pointer" data-i18n="drawer.disconnect">断开连接</button>
     </div>
     <div style="font-size:.62em;color:var(--text2);text-align:center">© pGOLD 2026</div>
   </div>
@@ -805,7 +806,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
   </div>
   <div class="nav-right">
     <a href="swap_v3.html" class="btn btn-gold btn-sm" style="text-decoration:none">⇄ Swap</a>
-    <button class="notif-btn" id="notifBtn" onclick="toggleNotifPanel()" title="操作记录">
+    <button class="notif-btn" id="notifBtn" onclick="toggleNotifPanel()" data-i18n-title="notif.title">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -816,13 +817,13 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <button class="lang-btn active" data-lang="zh">中</button>
       <button class="lang-btn" data-lang="en">EN</button>
     </div>
-    <div class="wallet-badge" id="walletBadge">0x0000...0000</div>
+    <div class="wallet-badge" id="walletBadge" onclick="connectWallet()" style="cursor:pointer">0x0000...0000</div>
   </div>
   <button class="menu-btn" id="menuBtn" onclick="openDrawer()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
   <!-- 移动端单独的通知铃铛（nav-right 在移动端隐藏，这里补回来） -->
-  <button class="notif-btn nav-notif-mobile" style="display:none;margin-left:4px" id="notifBtnMobile" onclick="toggleNotifPanel()" title="操作记录">
+  <button class="notif-btn nav-notif-mobile" style="display:none;margin-left:4px" id="notifBtnMobile" onclick="toggleNotifPanel()" data-i18n-title="notif.title">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
       <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -838,10 +839,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <span id="ticker-price" style="color:var(--text);font-weight:700">$85.00</span>
   <span id="ticker-change" style="color:var(--muted)">—</span>
   <span class="ticker-sep">│</span>
-  <span style="color:var(--muted)">净资产</span>
+  <span style="color:var(--muted)" data-i18n="ticker.netWorth">净资产</span>
   <span id="ticker-nw" style="color:var(--gold);font-weight:600">$416,075</span>
   <span class="ticker-sep">│</span>
-  <span style="color:var(--muted)">持仓</span>
+  <span style="color:var(--muted)" data-i18n="ticker.holdings">持仓</span>
   <span id="ticker-pgold" style="color:var(--text)">4,895</span>
   <span style="color:var(--muted)">pGOLD</span>
   <span style="margin-left:auto;color:var(--green);letter-spacing:.5px;font-size:.9em;font-weight:700">● LIVE</span>
@@ -875,18 +876,18 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <div class="stats-row">
     <div class="stat-cell">
       <div class="sc-l" data-i18n="dash.pgoldBalance">余额</div>
-      <div class="sc-v">1,400 pGOLD</div>
+      <div class="sc-v" id="stat-balance-pgold">1,400 pGOLD</div>
       <div class="sc-h" id="stat-balance-usd">≈ $119,000</div>
     </div>
     <div class="stat-cell">
       <div class="sc-l" data-i18n="dash.vestedBalance">待释放</div>
-      <div class="sc-v" style="color:var(--purple)">2,455 pGOLD</div>
-      <div class="sc-h">10yr vesting</div>
+      <div class="sc-v" id="stat-vested-pgold" style="color:var(--purple)">0 pGOLD</div>
+      <div class="sc-h">vesting</div>
     </div>
     <div class="stat-cell">
       <div class="sc-l" data-i18n="dash.pendingDiv">待领分红</div>
-      <div class="sc-v" style="color:var(--green)">12.5 pGOLD</div>
-      <div class="sc-h">A轨 · 3.5% APY</div>
+      <div class="sc-v" id="stat-pending-pgold" style="color:var(--green)">0 pGOLD</div>
+      <div class="sc-h" data-i18n="dash.trackALabel">A轨 · 3.5% APY</div>
     </div>
   </div>
 
@@ -901,13 +902,13 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <div class="tr-name" data-i18n="dash.trackA">持币分红</div>
         <div class="tr-desc" data-i18n="stake.trackADesc">质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取</div>
       </div>
-      <div class="tr-val data-highlight" style="color:var(--green)">800 pGOLD</div>
+      <div class="tr-val data-highlight" id="track-a-staked-badge" style="color:var(--green)">0 pGOLD</div>
       <div class="tr-chevron" id="chev-tA">›</div>
     </div>
     <div class="track-detail" id="tA">
       <div class="td-grid">
-        <div class="td-item"><div class="td-l" data-i18n="stake.staked">已质押</div><div class="td-v">800 pGOLD</div></div>
-        <div class="td-item"><div class="td-l" data-i18n="stake.pending">待领分红</div><div class="td-v" style="color:var(--green)">12.5 pGOLD</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="stake.staked">已质押</div><div class="td-v" id="track-a-detail-staked">0 pGOLD</div></div>
+        <div class="td-item"><div class="td-l" data-i18n="stake.pending">待领分红</div><div class="td-v" id="track-a-detail-pending" style="color:var(--green)">0 pGOLD</div></div>
         <div class="td-item"><div class="td-l">APY</div><div class="td-v" style="color:var(--green)">3.5%</div></div>
       </div>
       <div class="td-actions">
@@ -939,7 +940,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div class="tr-badge">C</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="dash.trackC">燃烧挖矿</div>
-        <div class="tr-desc">手续费 × 10 补偿，C 轨奖励</div>
+        <div class="tr-desc" data-i18n="dash.trackCDesc">手续费 × 10 补偿，C 轨奖励</div>
       </div>
       <div class="tr-val data-highlight" style="color:var(--red)">$1,250</div>
       <div class="tr-chevron" id="chev-tC">›</div>
@@ -958,7 +959,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div class="tr-badge">D</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="dash.trackD">战队返佣</div>
-        <div class="tr-desc">直邀 20% · 间邀 5%</div>
+        <div class="tr-desc" data-i18n="dash.trackDDesc">直邀 20% · 间邀 5%</div>
       </div>
       <div class="tr-val data-highlight" style="color:var(--purple)">$340</div>
       <div class="tr-chevron" id="chev-tD">›</div>
@@ -979,7 +980,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div class="tr-badge">E</div>
       <div class="tr-main">
         <div class="tr-name" data-i18n="ico.title">创世池 ICO</div>
-        <div class="tr-desc">E 轨 · 创世池，3 年线性释放</div>
+        <div class="tr-desc" data-i18n="dash.trackEDesc">E 轨 · 创世池，3 年线性释放</div>
       </div>
       <div class="tr-val data-highlight" style="color:var(--gold)"><span id="dash-trackE-amount">420</span> pGOLD</div>
       <div class="tr-chevron" id="chev-tE">›</div>
@@ -1002,32 +1003,32 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <!-- Asset breakdown -->
   <div class="sec-hd">
     <h2 data-i18n="port.assets">资产明细</h2>
-    <a onclick="switchPage('history')" style="cursor:pointer" data-i18n="nav.history">全部记录 →</a>
+    <a onclick="switchPage('history')" style="cursor:pointer" data-i18n="dash.viewAll">全部记录 →</a>
   </div>
   <div class="asset-list">
     <div class="asset-row">
-      <span class="asset-label" data-i18n="port.liquid" style="display:flex;align-items:center;gap:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;"></span>流通 pGOLD
+      <span class="asset-label" style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;"></span><span data-i18n="port.liquid">流通 pGOLD</span>
       </span>
-      <span class="asset-amt">1,400</span>
+      <span class="asset-amt" id="port-liquid-amt">1,400</span>
       <span class="asset-usd" id="port-liquid-usd">$119,000</span>
     </div>
     <div class="asset-row">
-      <span class="asset-label" data-i18n="port.staked" style="display:flex;align-items:center;gap:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></span>质押中 pGOLD
+      <span class="asset-label" style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></span><span data-i18n="port.staked">质押中 pGOLD</span>
       </span>
-      <span class="asset-amt">800</span>
+      <span class="asset-amt" id="port-staked-amt">800</span>
       <span class="asset-usd" id="port-staked-usd">$68,000</span>
     </div>
     <div class="asset-row">
-      <span class="asset-label" data-i18n="port.vesting" style="display:flex;align-items:center;gap:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:var(--purple);flex-shrink:0;"></span>待释放 pGOLD
+      <span class="asset-label" style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--purple);flex-shrink:0;"></span><span data-i18n="port.vesting">待释放 pGOLD</span>
       </span>
-      <span class="asset-amt" style="color:var(--purple)">2,455</span>
+      <span class="asset-amt" id="port-vesting-amt" style="color:var(--purple)">2,455</span>
       <span class="asset-usd" id="port-vesting-usd">$208,675</span>
     </div>
     <div class="asset-row">
-      <span class="asset-label" data-i18n="port.vpBalance" style="display:flex;align-items:center;gap:8px">
+      <span class="asset-label" style="display:flex;align-items:center;gap:8px">
         <span style="width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;"></span>vPGOLD
       </span>
       <span class="asset-amt">240</span>
@@ -1061,9 +1062,9 @@ tr:hover td{background:rgba(212,168,67,.03);}
             stroke="var(--blue)" stroke-dasharray="4.9 95.1" stroke-dashoffset="-94.9"/>
         </svg>
         <div class="donut-legend" id="donut-legend">
-          <div class="legend-row"><span class="legend-dot" style="background:var(--gold)"></span><span class="legend-label">流通</span><span class="legend-pct" id="leg-liquid">28.6%</span></div>
-          <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span><span class="legend-label">质押</span><span class="legend-pct" id="leg-staked">16.3%</span></div>
-          <div class="legend-row"><span class="legend-dot" style="background:var(--purple)"></span><span class="legend-label">待释放</span><span class="legend-pct" id="leg-vesting">50.1%</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--gold)"></span><span class="legend-label" data-i18n="donut.liquid">流通</span><span class="legend-pct" id="leg-liquid">28.6%</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--green)"></span><span class="legend-label" data-i18n="donut.staked">质押</span><span class="legend-pct" id="leg-staked">16.3%</span></div>
+          <div class="legend-row"><span class="legend-dot" style="background:var(--purple)"></span><span class="legend-label" data-i18n="donut.vesting">待释放</span><span class="legend-pct" id="leg-vesting">50.1%</span></div>
           <div class="legend-row"><span class="legend-dot" style="background:var(--blue)"></span><span class="legend-label">vPGOLD</span><span class="legend-pct" id="leg-vp">4.9%</span></div>
         </div>
       </div>
@@ -1174,11 +1175,11 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </div>
     <!-- pGOLD 预览 -->
     <div class="ico-preview" id="icoPreview">
-      <div class="ico-preview-label">预计获得</div>
+      <div class="ico-preview-label" data-i18n="ico.previewLabel">预计获得</div>
       <div class="ico-preview-value">
         <span id="icoPreviewAmount">0</span> <span style="opacity:.7;font-size:.85em">pGOLD</span>
       </div>
-      <div class="ico-preview-note">按当前金价 $<span id="icoPreviewPrice">85.00</span>/pGOLD 计算</div>
+      <div class="ico-preview-note"><span data-i18n="ico.previewNote">按当前金价</span> $<span id="icoPreviewPrice">85.00</span>/pGOLD</div>
     </div>
     <!-- 快捷金额按钮 -->
     <div class="quick-amounts">
@@ -1204,7 +1205,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="cd-cell"><div class="cd-num" id="ico-cd-mins">--</div><div class="cd-label" data-i18n="ico.mins">分</div></div>
     <div class="cd-cell"><div class="cd-num" id="ico-cd-secs">--</div><div class="cd-label" data-i18n="ico.secs">秒</div></div>
   </div>
-  <div style="text-align:center;font-size:.7em;color:var(--muted);margin-bottom:20px" id="ico-phase-end">第2档 · D31-60</div>
+  <div style="text-align:center;font-size:.7em;color:var(--muted);margin-bottom:20px" id="ico-phase-end" data-i18n="ico.phaseEnd">第2档 · D31-60</div>
 
   <!-- 我的认购记录 -->
   <div class="sec-hd">
@@ -1220,7 +1221,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <th data-i18n="hist.fee">手续费</th>
         <th data-i18n="ico.status">状态</th>
       </tr></thead>
-      <tbody id="ico-hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">暂无记录</td></tr></tbody>
+      <tbody id="ico-hist-tbody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px" data-i18n="common.noRecords">暂无记录</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -1334,7 +1335,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div class="vest-head">
         <div>
           <div class="vest-name" data-i18n="vest.trackB">B轨 · 月榜奖励</div>
-          <div class="vest-meta">180 pGOLD · <span data-i18n="vest.linear">10年线性</span></div>
+          <div class="vest-meta">180 pGOLD · <span data-i18n="vest.linear">实时发放</span></div>
         </div>
         <span class="vest-pct" id="vest-b-pct" style="color:var(--blue)">2.5%</span>
       </div>
@@ -1348,7 +1349,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div class="vest-head">
         <div>
           <div class="vest-name" data-i18n="vest.trackC">C轨 · 燃烧补偿</div>
-          <div class="vest-meta">150 pGOLD · <span data-i18n="vest.linear">10年线性</span></div>
+          <div class="vest-meta">150 pGOLD · <span data-i18n="vest.linear">实时发放</span></div>
         </div>
         <span class="vest-pct" id="vest-c-pct" style="color:var(--red)">1.8%</span>
       </div>
@@ -1371,7 +1372,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <label data-i18n="vest.toAddr">接收地址</label>
       <div style="display:flex;gap:8px;align-items:center">
         <input type="text" id="vpAddr" placeholder="0x..." style="flex:1">
-        <button class="btn btn-ghost btn-sm" onclick="openQRScanner()" title="扫码填入地址" style="padding:8px 10px;flex-shrink:0">
+        <button class="btn btn-ghost btn-sm" onclick="openQRScanner()" title="扫码填入地址" data-i18n-title="qr.title" style="padding:8px 10px;flex-shrink:0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
             <rect x="3" y="14" width="7" height="7" rx="1"/>
@@ -1436,8 +1437,8 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <tbody id="rank-tbody"></tbody>
     </table>
     <div class="tbl-note" style="display:flex;flex-direction:column;gap:6px">
-      <span>💰 奖励 = 存入量 × 倍数，10年线性释放</span>
-      <span>🏅 排名是门票，存入量决定奖励基数</span>
+      <span data-i18n="rank.tblNote1">💰 奖励 = 存入量 × 倍数，实时发放</span>
+      <span data-i18n="rank.tblNote2">🏅 排名是门票，存入量决定奖励基数</span>
     </div>
   </div>
   <button onclick="downloadRankCSV()" style="display:flex;align-items:center;gap:8px;margin:14px auto 0;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:10px 20px;font-size:.82em;cursor:pointer;transition:all .2s"
@@ -1462,12 +1463,12 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="stat-cell"><div class="sc-l" data-i18n="team.direct">直邀人数</div><div class="sc-v" id="team-direct">8</div></div>
     <div class="stat-cell"><div class="sc-l" data-i18n="team.pendingComm">待领返佣</div><div class="sc-v" id="team-pending-comm" style="color:var(--purple)">$340</div></div>
     <div class="stat-cell">
-      <div class="sc-l">待领竞赛奖励</div>
+      <div class="sc-l" data-i18n="team.pendingContest">待领竞赛奖励</div>
       <div class="sc-v" id="team-contest-reward" style="color:var(--gold)">480 pGOLD</div>
       <div style="font-size:.68em;color:var(--text2);margin-top:3px;line-height:1.3">
         <span id="team-contest-countdown" style="color:var(--blue)">—</span>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="withConfirm('claimTeamReward')" style="margin-top:5px;font-size:.68em;padding:3px 10px;color:var(--gold);border-color:rgba(212,168,67,.3)">领取</button>
+      <button class="btn btn-ghost btn-sm" onclick="withConfirm('claimTeamReward')" style="margin-top:5px;font-size:.68em;padding:3px 10px;color:var(--gold);border-color:rgba(212,168,67,.3)" data-i18n="common.claim">领取</button>
     </div>
   </div>
   <div class="tab-bar" style="margin-top:28px">
@@ -1479,19 +1480,19 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <div id="teamTab-noTeam" style="display:none">
     <div style="text-align:center;padding:20px 0 10px">
       <div style="font-size:2em;margin-bottom:8px">🏴</div>
-      <div style="font-weight:700;font-size:1em;margin-bottom:4px">你还没有加入战队</div>
-      <div style="font-size:.78em;color:var(--text2)">加入或创建战队，参与月度竞赛赢取奖励</div>
+      <div style="font-weight:700;font-size:1em;margin-bottom:4px" data-i18n="team.noTeamTitle">你还没有加入战队</div>
+      <div style="font-size:.78em;color:var(--text2)" data-i18n="team.noTeamDesc">加入或创建战队，参与月度竞赛赢取奖励</div>
     </div>
     <div style="display:flex;gap:8px;margin:14px 0 20px">
-      <button class="btn btn-gold btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label">创建战队</span><span class="btn-spinner"></span></button>
-      <button class="btn btn-outline btn-full" onclick="openJoinTeam()" style="flex:1"><span class="btn-label">加入战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-gold btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label" data-i18n="team.createBtn">创建战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline btn-full" onclick="openJoinTeam()" style="flex:1"><span class="btn-label" data-i18n="team.joinBtn">加入战队</span><span class="btn-spinner"></span></button>
     </div>
     <!-- TOP100 战队列表 -->
-    <div style="font-size:.78em;color:var(--text2);font-weight:600;margin-bottom:10px;letter-spacing:.04em">战队 TOP 100</div>
+    <div style="font-size:.78em;color:var(--text2);font-weight:600;margin-bottom:10px;letter-spacing:.04em" data-i18n="team.top100">战队 TOP 100</div>
     <div class="tbl-wrap" id="noteam-lb-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none">
       <table id="noteam-lb-table" style="min-width:480px">
         <thead><tr>
-          <th>#</th><th>战队</th><th>队长</th><th>成员</th><th>交易量</th><th>奖励</th><th></th>
+          <th>#</th><th data-i18n="team.thTeam">战队</th><th data-i18n="team.thLeader">队长</th><th data-i18n="team.thMembers">成员</th><th data-i18n="team.thVol">交易量</th><th data-i18n="team.thReward">奖励</th><th></th>
         </tr></thead>
         <tbody id="noteam-lb-tbody"></tbody>
       </table>
@@ -1508,14 +1509,14 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </div>
     <div class="divider"></div>
     <div class="info-row">
-      <span class="info-label">战队等级</span>
+      <span class="info-label" data-i18n="team.level">战队等级</span>
       <span class="info-val" style="display:flex;align-items:center;gap:6px">
         <span id="team-level-badge" style="background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.3);padding:2px 10px;border-radius:20px;font-size:.82em;font-weight:700">LV.4 精英</span>
       </span>
     </div>
     <div class="divider"></div>
     <div class="info-row">
-      <span class="info-label">战队积分</span>
+      <span class="info-label" data-i18n="team.points">战队积分</span>
       <span id="team-points-val" class="info-val" style="color:var(--blue);font-weight:700">8,640 <span style="font-size:.75em;color:var(--text2)">pts</span></span>
     </div>
     <div class="divider"></div>
@@ -1540,10 +1541,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div class="divider"></div>
     <!-- 成员列表 -->
     <div style="margin-top:4px">
-      <div style="font-size:.78em;color:var(--text2);font-weight:600;margin-bottom:10px;letter-spacing:.04em">成员列表</div>
+      <div style="font-size:.78em;color:var(--text2);font-weight:600;margin-bottom:10px;letter-spacing:.04em" data-i18n="team.memberList">成员列表</div>
       <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden">
         <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;padding:7px 12px;background:rgba(255,255,255,.03);font-size:.72em;color:var(--text2);font-weight:600">
-          <span>#</span><span>地址</span><span style="text-align:right">交易量</span><span style="text-align:right">贡献积分</span>
+          <span>#</span><span data-i18n="rank.thTrader">地址</span><span style="text-align:right" data-i18n="team.thVol">交易量</span><span style="text-align:right" data-i18n="stake.formulaVal">存入×倍数</span>
         </div>
         <div id="team-member-list"></div>
       </div>
@@ -1553,12 +1554,12 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px">
       <div style="flex:1;height:1px;background:var(--border)"></div>
-      <span style="font-size:.72em;color:var(--text2);white-space:nowrap">或管理战队</span>
+      <span style="font-size:.72em;color:var(--text2);white-space:nowrap" data-i18n="team.orManage">或管理战队</span>
       <div style="flex:1;height:1px;background:var(--border)"></div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-outline btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label">创建新战队</span><span class="btn-spinner"></span></button>
-      <button class="btn btn-outline btn-full" onclick="openJoinTeam()" style="flex:1"><span class="btn-label">加入战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline btn-full" onclick="openCreateTeam()" style="flex:1"><span class="btn-label" data-i18n="team.createNew">创建新战队</span><span class="btn-spinner"></span></button>
+      <button class="btn btn-outline btn-full" onclick="openJoinTeam()" style="flex:1"><span class="btn-label" data-i18n="team.joinBtn">加入战队</span><span class="btn-spinner"></span></button>
     </div>
   </div>
   <div id="teamTab-invite" class="info-card" style="display:none">
@@ -1568,7 +1569,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div style="display:flex;gap:8px;align-items:center">
         <input id="invite-link-input" type="text" value="https://pgold.io/r/0xAbCd" readonly
           style="flex:1;background:rgba(212,168,67,.03);cursor:pointer">
-        <button class="btn btn-ghost btn-sm" onclick="copyInviteLink()" title="复制链接" style="flex-shrink:0;padding:8px 10px">
+        <button class="btn btn-ghost btn-sm" onclick="copyInviteLink()" data-i18n-title="team.copyLink" style="flex-shrink:0;padding:8px 10px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
           </svg>
@@ -1578,46 +1579,46 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <!-- 当前等级 -->
     <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:10px;padding:12px 16px;margin-bottom:14px">
       <div>
-        <div style="font-size:.72em;color:var(--text2);margin-bottom:3px">当前推荐等级</div>
-        <div style="font-weight:800;color:var(--gold);font-size:1em">⭐ 白银推荐人</div>
-        <div style="font-size:.72em;color:var(--text2);margin-top:3px">已推荐 8 人 · 月交易量 $450K</div>
+        <div style="font-size:.72em;color:var(--text2);margin-bottom:3px" data-i18n="team.commLevel">当前推荐等级</div>
+        <div style="font-weight:800;color:var(--gold);font-size:1em" data-i18n="team.curTierLabel">⭐ 白银推荐人</div>
+        <div style="font-size:.72em;color:var(--text2);margin-top:3px" data-i18n="team.curTierStats">已推荐 8 人 · 月交易量 $450K</div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:.72em;color:var(--text2);margin-bottom:3px">当前返佣比例</div>
+        <div style="font-size:.72em;color:var(--text2);margin-bottom:3px" data-i18n="team.commRate">当前返佣比例</div>
         <div style="font-size:1.4em;font-weight:800;color:var(--green)">4%</div>
       </div>
     </div>
     <!-- 等级返佣规则 -->
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px">
-      <div style="padding:10px 14px;font-size:.75em;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border)">返佣等级规则</div>
+      <div style="padding:10px 14px;font-size:.75em;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border)" data-i18n="team.commRules">返佣等级规则</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:8px 12px;font-size:.7em;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
-        <span>等级</span><span style="text-align:center">返佣</span><span style="text-align:center">推荐人数</span><span style="text-align:right">月交易量</span>
+        <span data-i18n="team.colLevel">等级</span><span style="text-align:center" data-i18n="team.colComm">返佣</span><span style="text-align:center" data-i18n="team.colReferrals">推荐人数</span><span style="text-align:right" data-i18n="team.colVol">月交易量</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-bottom:1px solid var(--border)">
-        <span style="color:var(--text2)">普通</span><span style="text-align:center;color:var(--text2)">3%</span><span style="text-align:center;color:var(--text2)">注册即可</span><span style="text-align:right;color:var(--text2)">—</span>
+        <span style="color:var(--text2)" data-i18n="team.tierNormal">普通</span><span style="text-align:center;color:var(--text2)">3%</span><span style="text-align:center;color:var(--text2)" data-i18n="team.tierSignup">注册即可</span><span style="text-align:right;color:var(--text2)">—</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-bottom:1px solid var(--border);background:rgba(212,168,67,.04)">
-        <span style="color:var(--gold);font-weight:700">⭐ 白银</span><span style="text-align:center;color:var(--green);font-weight:700">4%</span><span style="text-align:center">≥10 人</span><span style="text-align:right">$100K</span>
+        <span style="color:var(--gold);font-weight:700" data-i18n="team.tierSilver">⭐ 白银</span><span style="text-align:center;color:var(--green);font-weight:700">4%</span><span style="text-align:center" data-i18n="team.refGe10">≥10 人</span><span style="text-align:right">$100K</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-bottom:1px solid var(--border)">
-        <span style="color:var(--gold)">🥇 黄金</span><span style="text-align:center;color:var(--green);font-weight:700">5%</span><span style="text-align:center">≥50 人</span><span style="text-align:right">$1M</span>
+        <span style="color:var(--gold)" data-i18n="team.tierGold">🥇 黄金</span><span style="text-align:center;color:var(--green);font-weight:700">5%</span><span style="text-align:center" data-i18n="team.refGe50">≥50 人</span><span style="text-align:right">$1M</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 12px;font-size:.78em">
-        <span style="color:var(--blue)">💎 钻石</span><span style="text-align:center;color:var(--green);font-weight:700">5%+2%</span><span style="text-align:center">≥200 人</span><span style="text-align:right">$5M</span>
+        <span style="color:var(--blue)" data-i18n="team.tierDiamond">💎 钻石</span><span style="text-align:center;color:var(--green);font-weight:700">5%+2%</span><span style="text-align:center" data-i18n="team.refGe200">≥200 人</span><span style="text-align:right">$5M</span>
       </div>
     </div>
     <!-- 返佣数据 -->
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
-        <div><div style="font-size:.75em;color:var(--text2)">已推荐人数</div><div style="font-weight:700">8 人</div></div>
-        <div style="text-align:right"><div style="font-size:.72em;color:var(--text2)">有效推荐</div><div style="color:var(--green);font-weight:700">6 人</div></div>
+        <div><div style="font-size:.75em;color:var(--text2)" data-i18n="team.statReferrals">已推荐人数</div><div style="font-weight:700" data-i18n="team.statReferralsVal">8 人</div></div>
+        <div style="text-align:right"><div style="font-size:.72em;color:var(--text2)" data-i18n="team.statEffective">有效推荐</div><div style="color:var(--green);font-weight:700" data-i18n="team.statEffectiveVal">6 人</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
-        <div><div style="font-size:.75em;color:var(--text2)">本月返佣</div><div style="font-weight:700;color:var(--green)">$180</div></div>
-        <div style="text-align:right"><div style="font-size:.72em;color:var(--text2)">月上限</div><div style="color:var(--text2);font-weight:600">$200</div></div>
+        <div><div style="font-size:.75em;color:var(--text2)" data-i18n="team.statMonthComm">本月返佣</div><div style="font-weight:700;color:var(--green)">$180</div></div>
+        <div style="text-align:right"><div style="font-size:.72em;color:var(--text2)" data-i18n="team.statMonthCap">月上限</div><div style="color:var(--text2);font-weight:600">$200</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(148,103,189,.08);border:1px solid rgba(148,103,189,.2);border-radius:8px;padding:10px 14px">
-        <div style="font-size:.85em;font-weight:600">待领返佣合计</div>
+        <div style="font-size:.85em;font-weight:600" data-i18n="team.statPendingComm">待领返佣合计</div>
         <div style="color:var(--purple);font-weight:800;font-size:1.05em">$340</div>
       </div>
     </div>
@@ -1630,7 +1631,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
       <button class="btn btn-ghost btn-sm" onclick="downloadTeamLeaderboard()" style="font-size:.75em;display:flex;align-items:center;gap:5px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        下载 CSV
+        <span data-i18n="rank.dlCSV">下载 CSV</span>
       </button>
     </div>
     <div class="tbl-wrap" id="team-lb-wrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none">
@@ -1657,7 +1658,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </tbody>
       </table>
     </div>
-    <p style="font-size:.72em;color:var(--text2);padding:10px 4px;line-height:1.6">🏆 奖励单位：pGOLD，按战队交易量排名，每季结算一次</p>
+    <p style="font-size:.72em;color:var(--text2);padding:10px 4px;line-height:1.6" data-i18n="team.contestNote">🏆 奖励单位：pGOLD，按战队交易量排名，每季结算一次</p>
   </div>
 </div>
 
@@ -1667,7 +1668,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
     <span class="ledger-bg">📒</span>
     <div class="nw-label" data-i18n="nav.history">交易记录</div>
     <div class="nw-value">170 <span style="font-size:.4em;color:var(--text2)">pGOLD</span></div>
-    <div class="nw-sub">净买入 · 本月</div>
+    <div class="nw-sub" data-i18n="hist.nwSub">净买入 · 本月</div>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-top:28px">
     <div class="tab-bar" style="margin-top:0;flex:1">
@@ -1682,10 +1683,10 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <div style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap">
     <input type="date" id="hist-date-from" onchange="renderHistTable()"
       style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border);color:var(--text1);border-radius:8px;padding:6px 10px;font-size:.8em">
-    <span style="color:var(--text2);font-size:.82em;flex-shrink:0">至</span>
+    <span style="color:var(--text2);font-size:.82em;flex-shrink:0" data-i18n="hist.dateTo">至</span>
     <input type="date" id="hist-date-to" onchange="renderHistTable()"
       style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border);color:var(--text1);border-radius:8px;padding:6px 10px;font-size:.8em">
-    <button class="btn btn-ghost btn-sm" onclick="clearHistDates()" style="flex-shrink:0;font-size:.75em;padding:6px 10px">重置</button>
+    <button class="btn btn-ghost btn-sm" onclick="clearHistDates()" style="flex-shrink:0;font-size:.75em;padding:6px 10px" data-i18n="hist.reset">重置</button>
     <span id="hist-count" style="font-size:.75em;color:var(--text2);flex-shrink:0"></span>
   </div>
   <div class="tbl-wrap" id="hist-tbl-wrap" style="margin-top:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none">
@@ -1697,7 +1698,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
           <th data-i18n="hist.thAmt">数量</th>
           <th id="hist-th-price" data-i18n="hist.thPrice">价格</th>
           <th id="hist-th-fee" data-i18n="hist.thFee">手续费</th>
-          <th id="hist-th-extra">备注</th>
+          <th id="hist-th-extra" data-i18n="hist.extra">备注</th>
         </tr>
       </thead>
       <tbody id="hist-tbody"></tbody>
@@ -1707,7 +1708,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
   <div style="display:flex;justify-content:flex-end;margin-top:10px">
     <button class="btn btn-ghost btn-sm" onclick="downloadHistory()" style="font-size:.75em;display:flex;align-items:center;gap:5px">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      下载 CSV
+      <span data-i18n="hist.dlCSV">下载 CSV</span>
     </button>
   </div>
 </div>
@@ -1718,7 +1719,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <div class="modal-overlay" id="walletModal" style="align-items:flex-end" onclick="closeWalletModal()">
   <div class="modal-box" style="width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:0;overflow:hidden" onclick="event.stopPropagation()">
     <div style="padding:18px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-      <div style="font-size:.95em;font-weight:700">连接钱包</div>
+      <div style="font-size:.95em;font-weight:700" data-i18n="wallet.title">连接钱包</div>
       <button onclick="closeWalletModal()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1em;padding:4px 8px">✕</button>
     </div>
     <div style="padding:12px 16px 8px;display:flex;flex-direction:column;gap:8px" id="walletOptionsList">
@@ -1727,7 +1728,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" width="32" height="32" style="border-radius:8px" onerror="this.style.display='none'">
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">MetaMask</div>
-          <div style="font-size:.72em;color:var(--text2)">浏览器钱包扩展</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.metamaskDesc">浏览器钱包扩展</div>
         </div>
         <div id="metamask-status" style="font-size:.7em;color:var(--text2)"></div>
       </button>
@@ -1738,7 +1739,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">WalletConnect</div>
-          <div style="font-size:.72em;color:var(--text2)">扫码连接移动端钱包</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.wcDesc">扫码连接移动端钱包</div>
         </div>
       </button>
       <!-- Coinbase Wallet -->
@@ -1748,7 +1749,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">Coinbase Wallet</div>
-          <div style="font-size:.72em;color:var(--text2)">Coinbase 官方钱包</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.coinbaseDesc">Coinbase 官方钱包</div>
         </div>
       </button>
       <!-- OKX Wallet -->
@@ -1758,7 +1759,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">OKX Wallet</div>
-          <div style="font-size:.72em;color:var(--text2)">OKX 官方钱包</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.okxDesc">OKX 官方钱包</div>
         </div>
       </button>
       <!-- Trust Wallet -->
@@ -1768,7 +1769,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">Trust Wallet</div>
-          <div style="font-size:.72em;color:var(--text2)">移动端主流钱包</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.trustDesc">移动端主流钱包</div>
         </div>
       </button>
       <!-- Binance Wallet -->
@@ -1778,7 +1779,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">Binance Wallet</div>
-          <div style="font-size:.72em;color:var(--text2)">币安官方 Web3 钱包</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.binanceDesc">币安官方 Web3 钱包</div>
         </div>
       </button>
       <!-- TokenPocket -->
@@ -1788,7 +1789,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         </div>
         <div style="flex:1;text-align:left">
           <div style="font-size:.88em;font-weight:600">TokenPocket</div>
-          <div style="font-size:.72em;color:var(--text2)">TP 钱包，多链支持</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.tpDesc">TP 钱包，多链支持</div>
         </div>
       </button>
       <!-- 其他钱包 -->
@@ -1797,24 +1798,24 @@ tr:hover td{background:rgba(212,168,67,.03);}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
         </div>
         <div style="flex:1;text-align:left">
-          <div style="font-size:.88em;font-weight:600">其他钱包</div>
-          <div style="font-size:.72em;color:var(--text2)">手动输入钱包地址</div>
+          <div style="font-size:.88em;font-weight:600" data-i18n="wallet.other">其他钱包</div>
+          <div style="font-size:.72em;color:var(--text2)" data-i18n="wallet.manual">手动输入钱包地址</div>
         </div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="customWalletChevron" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <!-- 自定义地址输入 -->
       <div id="customWalletInput" style="display:none;padding:4px 4px 0">
         <div style="display:flex;gap:8px">
-          <input id="customWalletAddr" type="text" placeholder="输入 0x... 钱包地址"
+          <input id="customWalletAddr" type="text" placeholder="输入 0x... 钱包地址" data-i18n-placeholder="wallet.placeholder"
             style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text1);border-radius:10px;padding:10px 12px;font-size:.82em;font-family:monospace;outline:none"
             onkeydown="if(event.key==='Enter')confirmCustomWallet()">
-          <button onclick="confirmCustomWallet()" class="btn btn-gold btn-sm" style="flex-shrink:0;font-size:.8em">确认</button>
+          <button onclick="confirmCustomWallet()" class="btn btn-gold btn-sm" style="flex-shrink:0;font-size:.8em" data-i18n="common.confirm">确认</button>
         </div>
-        <div style="font-size:.67em;color:var(--text2);margin-top:6px;padding:0 2px">仅用于展示，不会发起签名请求</div>
+        <div style="font-size:.67em;color:var(--text2);margin-top:6px;padding:0 2px" data-i18n="wallet.disclaimer">仅用于展示，不会发起签名请求</div>
       </div>
     </div>
     <div style="padding:12px 16px 20px;font-size:.68em;color:var(--text2);text-align:center;border-top:1px solid var(--border);margin-top:4px">
-      连接即表示你同意 <span style="color:var(--gold)">服务条款</span> 和 <span style="color:var(--gold)">隐私政策</span>
+      <span data-i18n="wallet.terms">连接即表示你同意</span> <span style="color:var(--gold)" data-i18n="wallet.termsLink">服务条款</span> 和 <span style="color:var(--gold)" data-i18n="wallet.privacyLink">隐私政策</span>
     </div>
   </div>
 </div>
@@ -1834,7 +1835,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <!-- 四周遮罩 -->
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
       <!-- 扫描框上方文字 -->
-      <p style="position:relative;z-index:2;color:#fff;font-size:.9em;font-weight:600;margin:0 0 16px;text-shadow:0 1px 4px rgba(0,0,0,.8)">扫描钱包地址二维码</p>
+      <p style="position:relative;z-index:2;color:#fff;font-size:.9em;font-weight:600;margin:0 0 16px;text-shadow:0 1px 4px rgba(0,0,0,.8)" data-i18n="qr.title">扫描钱包地址二维码</p>
       <!-- 扫描框 -->
       <div style="position:relative;width:240px;height:240px;z-index:2;flex-shrink:0">
         <div style="position:absolute;inset:0;box-shadow:0 0 0 9999px rgba(0,0,0,.45);border-radius:4px"></div>
@@ -1872,11 +1873,11 @@ tr:hover td{background:rgba(212,168,67,.03);}
 <!-- 创建战队 Modal -->
 <div class="modal-overlay" id="createTeamModal">
   <div class="modal-box">
-    <h3>创建战队</h3>
+    <h3 data-i18n="team.createBtn">创建战队</h3>
     <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
       <div class="form-row">
-        <label>战队名称</label>
-        <input id="newTeamName" type="text" maxlength="20" placeholder="3-20 字符，字母/数字/下划线/中文"
+        <label data-i18n="team.name">战队名称</label>
+        <input id="newTeamName" type="text" maxlength="20" placeholder="3-20 字符，字母/数字/下划线/中文" data-i18n-placeholder="team.nameHint"
           style="background:rgba(212,168,67,.03)"
           oninput="updateCreateTeamPreview()">
         <div id="newTeamNameErr" style="font-size:.72em;color:var(--red);margin-top:4px;display:none"></div>
@@ -1885,34 +1886,34 @@ tr:hover td{background:rgba(212,168,67,.03);}
       <div style="background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:8px;padding:12px 14px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
-            <div style="font-size:.75em;color:var(--text2);margin-bottom:3px">创建保证金（固定）</div>
+            <div style="font-size:.75em;color:var(--text2);margin-bottom:3px" data-i18n="team.depositLabel">创建保证金（固定）</div>
             <div style="font-weight:800;font-size:1.1em;color:var(--gold)">100 pGOLD</div>
           </div>
           <div style="text-align:right">
-            <div style="font-size:.72em;color:var(--text2);margin-bottom:3px">可用余额</div>
+            <div style="font-size:.72em;color:var(--text2);margin-bottom:3px" data-i18n="team.availBal">可用余额</div>
             <div id="createTeamBalance" style="font-weight:700"></div>
           </div>
         </div>
-        <div style="font-size:.72em;color:var(--text2);margin-top:8px;line-height:1.5">保证金公开展示，所有人可见；退出或解散战队时退还</div>
+        <div style="font-size:.72em;color:var(--text2);margin-top:8px;line-height:1.5" data-i18n="team.depositDisclaimer">保证金公开展示，所有人可见；退出或解散战队时退还</div>
       </div>
       <div id="createTeamPreview" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:.82em;display:none">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="color:var(--text2)">战队名称</span>
+          <span style="color:var(--text2)" data-i18n="team.previewName">战队名称</span>
           <b id="previewName" style="color:var(--gold)">—</b>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="color:var(--text2)">质押保证金</span>
+          <span style="color:var(--text2)" data-i18n="team.previewDeposit">质押保证金</span>
           <b style="color:var(--green)">100 pGOLD</b>
         </div>
         <div style="display:flex;justify-content:space-between">
-          <span style="color:var(--text2)">扣款后余额</span>
+          <span style="color:var(--text2)" data-i18n="team.previewAfterBal">扣款后余额</span>
           <b id="previewBalance">—</b>
         </div>
       </div>
     </div>
     <div class="modal-actions" style="margin-top:18px">
-      <button class="btn btn-ghost" style="flex:1" onclick="closeCreateTeamModal()">取消</button>
-      <button class="btn btn-gold" style="flex:1" id="createTeamOkBtn" onclick="submitCreateTeam()">确认创建</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeCreateTeamModal()" data-i18n="modal.cancel">取消</button>
+      <button class="btn btn-gold" style="flex:1" id="createTeamOkBtn" onclick="submitCreateTeam()" data-i18n="team.confirmCreate">确认创建</button>
     </div>
   </div>
 </div>
@@ -1930,7 +1931,9 @@ const I18N = {
     'nav.ranking':'Top 100','nav.staking':'质押中心','nav.team':'战队中心','nav.history':'交易记录','nav.connect':'连接钱包',
     'common.cancel':'取消','common.confirm':'确认','common.copied':'已复制','common.claim':'领取',
     'dash.netWorth':'净资产','dash.pgoldBalance':'余额','dash.vestedBalance':'待释放','dash.pendingDiv':'待领分红',
-    'dash.trackA':'持币分红','dash.trackB':'Top 100','dash.trackC':'燃烧挖矿',
+    'dash.trackA':'持币分红','dash.trackB':'Top 100','dash.trackC':'燃烧挖矿','dash.trackALabel':'A轨 · 3.5% APY',
+    'dash.trackCDesc':'手续费 × 10 补偿，C 轨奖励','dash.trackDDesc':'直邀 20% · 间邀 5%','dash.trackEDesc':'E 轨 · 创世池，3 年线性释放',
+    'dash.viewAll':'全部记录 →',
     'dash.trackD':'战队返佣','dash.trackE':'创世池 ICO',
     'dash.tracks':'五轨概览','dash.goStake':'去质押','dash.monthRank':'当前月榜排名',
     'dash.assets':'资产明细',
@@ -1951,7 +1954,7 @@ const I18N = {
     'vest.overview':'释放总览','vest.released':'已释放','vest.pending':'待释放总量',
     'vest.nextRelease':'下次释放','vest.annualRelease':'年化释放','vest.progress':'各轨释放进度',
     'vest.trackE':'E轨 · 创世池','vest.trackB':'B轨 · 月榜奖励','vest.trackC':'C轨 · 燃烧补偿',
-    'vest.linear':'10年线性','vest.linear3y':'3年线性','vest.wrap':'包装为 vPGOLD',
+    'vest.linear':'实时发放','vest.linear3y':'3年线性','vest.wrap':'包装为 vPGOLD',
     'vest.vpCenter':'vPGOLD 转让中心','vest.vpBalance':'vPGOLD 余额',
     'vest.toAddr':'接收地址','vest.amount':'数量','vest.send':'发送',
     'vest.redeem':'赎回底层 pGOLD','vest.unwrap':'解包恢复释放计划','vest.claimAll':'一键领取全部',
@@ -1960,7 +1963,7 @@ const I18N = {
     'rank.monthly':'月榜','rank.quarterly':'季榜','rank.annual':'年榜',
     'rank.thRank':'排名','rank.thTrader':'交易者','rank.thVol':'交易量',
     'rank.thDeposit':'存入量','rank.thReward':'奖励','rank.thMult':'倍数',
-    'rank.note':'奖励 = 存入量 × 倍数，10年线性释放。排名是门票，存入量决定奖励基数。',
+    'rank.note':'奖励 = 存入量 × 倍数，实时发放。排名是门票，存入量决定奖励基数。',
     'stake.trackA':'A轨 · 持币分红','stake.trackB':'B轨 · Top100 存入锚定',
     'stake.trackADesc':'质押 pGOLD 享年化 3.5% 分红，按秒累积，随存随取',
     'stake.trackBDesc':'存入 pGOLD 锁定奖励基数。排名决定资格，存入量决定奖励大小',
@@ -1981,6 +1984,54 @@ const I18N = {
     'hist.all':'全部','hist.buy':'买入','hist.sell':'卖出','hist.stake':'质押','hist.claim':'领取',
     'hist.thTime':'时间','hist.thType':'类型','hist.thAmt':'数量','hist.thPrice':'价格','hist.thFee':'手续费',
     'hist.download':'⬇ 下载','hist.time':'时间','hist.price':'价格','hist.fee':'手续费',
+    'port.assets':'资产明细','port.liquid':'流通 pGOLD','port.staked':'质押中 pGOLD',
+    'port.vesting':'待释放 pGOLD','port.vpBalance':'vPGOLD','port.totalValue':'持仓总价值',
+    'drawer.liquid':'可用','drawer.staked':'质押','drawer.vesting':'释放',
+    'drawer.disconnect':'断开连接',
+    'ticker.netWorth':'净资产','ticker.holdings':'持仓',
+    'donut.liquid':'流通','donut.staked':'质押','donut.vesting':'待释放',
+    'ico.previewLabel':'预计获得','ico.previewNote':'按当前金价',
+    'ico.phaseEnd':'第2档 · D31-60',
+    'common.noRecords':'暂无记录',
+    'rank.tblNote1':'💰 奖励 = 存入量 × 倍数，实时发放',
+    'rank.tblNote2':'🏅 排名是门票，存入量决定奖励基数',
+    'rank.dlCSV':'下载',
+    'team.pendingContest':'待领竞赛奖励',
+    'team.noTeamTitle':'你还没有加入战队','team.noTeamDesc':'加入或创建战队，参与月度竞赛赢取奖励',
+    'team.top100':'战队 TOP 100',
+    'team.noTeamJoin':'加入',
+    'team.level':'战队等级','team.points':'战队积分',
+    'team.memberList':'成员列表',
+    'team.orManage':'或管理战队',
+    'team.createNew':'创建新战队',
+    'team.commLevel':'当前推荐等级','team.commRate':'当前返佣比例',
+    'team.commRules':'返佣等级规则',
+    'team.colLevel':'等级','team.colComm':'返佣','team.colReferrals':'推荐人数','team.colVol':'月交易量',
+    'team.tierNormal':'普通','team.tierSilver':'⭐ 白银','team.tierGold':'🥇 黄金','team.tierDiamond':'💎 钻石',
+    'team.tierSignup':'注册即可','team.refGe10':'≥10 人','team.refGe50':'≥50 人','team.refGe200':'≥200 人',
+    'team.copyLink':'复制链接','team.curTierLabel':'⭐ 白银推荐人','team.curTierStats':'已推荐 8 人 · 月交易量 $450K',
+    'team.statReferrals':'已推荐人数','team.statEffective':'有效推荐',
+    'team.statReferralsVal':'8 人','team.statEffectiveVal':'6 人',
+    'team.statMonthComm':'本月返佣','team.statMonthCap':'月上限','team.statPendingComm':'待领返佣合计',
+    'team.contestNote':'🏆 奖励单位：pGOLD，按战队交易量排名，每季结算一次',
+    'hist.nwSub':'净买入 · 本月','hist.dateTo':'至','hist.reset':'重置','hist.dlCSV':'下载 CSV',
+    'hist.extra':'备注',
+    'wallet.title':'连接钱包',
+    'wallet.metamaskDesc':'浏览器钱包扩展','wallet.wcDesc':'扫码连接移动端钱包',
+    'wallet.coinbaseDesc':'Coinbase 官方钱包','wallet.okxDesc':'OKX 官方钱包',
+    'wallet.trustDesc':'移动端主流钱包','wallet.binanceDesc':'币安官方 Web3 钱包',
+    'wallet.tpDesc':'TP 钱包，多链支持',
+    'wallet.other':'其他钱包','wallet.manual':'手动输入钱包地址',
+    'wallet.placeholder':'输入 0x... 钱包地址',
+    'wallet.disclaimer':'仅用于展示，不会发起签名请求',
+    'wallet.terms':'连接即表示你同意','wallet.termsLink':'服务条款','wallet.privacyLink':'隐私政策',
+    'qr.title':'扫描钱包地址二维码','qr.status':'将二维码对准框内','qr.torch':'开启闪光灯',
+    'team.depositLabel':'创建保证金（固定）','team.availBal':'可用余额',
+    'team.depositDisclaimer':'保证金公开展示，所有人可见；退出或解散战队时退还',
+    'team.previewName':'战队名称','team.previewDeposit':'质押保证金','team.previewAfterBal':'扣款后余额',
+    'team.confirmCreate':'确认创建',
+    'team.nameHint':'3-20 字符，字母/数字/下划线/中文',
+    'notif.title':'操作记录','notif.clear':'清除','notif.empty':'暂无记录',
     'modal.default':'确认操作','modal.cancel':'取消','modal.ok':'确认',
     'modal.stake':'确认质押','modal.unstake':'确认解质押','modal.deposit':'确认存入',
     'modal.withdraw':'确认取出','modal.claim':'确认领取','modal.wrap':'确认包装',
@@ -1995,7 +2046,9 @@ const I18N = {
     'nav.ranking':'Top 100','nav.staking':'Staking','nav.team':'Team','nav.history':'History','nav.connect':'Connect Wallet',
     'common.cancel':'Cancel','common.confirm':'Confirm','common.copied':'Copied','common.claim':'Claim',
     'dash.netWorth':'Net Worth','dash.pgoldBalance':'Balance','dash.vestedBalance':'Pending Release','dash.pendingDiv':'Pending Dividend',
-    'dash.trackA':'Hold & Earn','dash.trackB':'Top 100','dash.trackC':'Burn Mining',
+    'dash.trackA':'Hold & Earn','dash.trackB':'Top 100','dash.trackC':'Burn Mining','dash.trackALabel':'Track A · 3.5% APY',
+    'dash.trackCDesc':'Fee × 10 compensation, Track C reward','dash.trackDDesc':'L1: 20% · L2: 5%','dash.trackEDesc':'Track E · Genesis, 3yr linear vesting',
+    'dash.viewAll':'All Records →',
     'dash.trackD':'Referral','dash.trackE':'Genesis ICO',
     'dash.tracks':'Five Tracks','dash.goStake':'Stake','dash.monthRank':'Monthly Rank',
     'dash.assets':'Assets',
@@ -2016,7 +2069,7 @@ const I18N = {
     'vest.overview':'Vesting Overview','vest.released':'Released','vest.pending':'Pending Total',
     'vest.nextRelease':'Next Release','vest.annualRelease':'Annual Release','vest.progress':'Track Progress',
     'vest.trackE':'Track E · Genesis','vest.trackB':'Track B · Monthly Reward','vest.trackC':'Track C · Burn Comp',
-    'vest.linear':'10yr Linear','vest.linear3y':'3yr Linear','vest.wrap':'Wrap to vPGOLD',
+    'vest.linear':'Instant','vest.linear3y':'3yr Linear','vest.wrap':'Wrap to vPGOLD',
     'vest.vpCenter':'vPGOLD Transfer Center','vest.vpBalance':'vPGOLD Balance',
     'vest.toAddr':'Recipient Address','vest.amount':'Amount','vest.send':'Send',
     'vest.redeem':'Redeem pGOLD','vest.unwrap':'Unwrap','vest.claimAll':'Claim All',
@@ -2025,7 +2078,7 @@ const I18N = {
     'rank.monthly':'Monthly','rank.quarterly':'Quarterly','rank.annual':'Annual',
     'rank.thRank':'Rank','rank.thTrader':'Trader','rank.thVol':'Volume',
     'rank.thDeposit':'Deposit','rank.thReward':'Reward','rank.thMult':'Mult',
-    'rank.note':'Reward = Deposit × Multiplier, 10yr linear vesting. Rank is the ticket, deposit size determines reward.',
+    'rank.note':'Reward = Deposit × Multiplier, instant distribution. Rank is the ticket, deposit size determines reward.',
     'stake.trackA':'Track A · Hold & Earn','stake.trackB':'Track B · Top100 Anchor',
     'stake.trackADesc':'Stake pGOLD for 3.5% APY, accrued per second, withdraw anytime',
     'stake.trackBDesc':'Deposit pGOLD to lock reward base. Rank determines eligibility, deposit determines reward',
@@ -2046,6 +2099,54 @@ const I18N = {
     'hist.all':'All','hist.buy':'Buy','hist.sell':'Sell','hist.stake':'Stake','hist.claim':'Claim',
     'hist.thTime':'Time','hist.thType':'Type','hist.thAmt':'Amount','hist.thPrice':'Price','hist.thFee':'Fee',
     'hist.download':'⬇ Download','hist.time':'Time','hist.price':'Price','hist.fee':'Fee',
+    'port.assets':'Assets','port.liquid':'Liquid pGOLD','port.staked':'Staked pGOLD',
+    'port.vesting':'Vesting pGOLD','port.vpBalance':'vPGOLD','port.totalValue':'Total Value',
+    'drawer.liquid':'Liquid','drawer.staked':'Staked','drawer.vesting':'Vesting',
+    'drawer.disconnect':'Disconnect',
+    'ticker.netWorth':'Net Worth','ticker.holdings':'Holdings',
+    'donut.liquid':'Liquid','donut.staked':'Staked','donut.vesting':'Vesting',
+    'ico.previewLabel':'Estimated Amount','ico.previewNote':'At current price',
+    'ico.phaseEnd':'Tier 2 · D31-60',
+    'common.noRecords':'No records',
+    'rank.tblNote1':'💰 Reward = Deposit × Multiplier, instant distribution',
+    'rank.tblNote2':'🏅 Rank is the ticket, deposit size determines reward',
+    'rank.dlCSV':'Download',
+    'team.pendingContest':'Pending Contest Reward',
+    'team.noTeamTitle':'You have not joined a team','team.noTeamDesc':'Join or create a team to compete in monthly contests',
+    'team.top100':'Team TOP 100',
+    'team.noTeamJoin':'Join',
+    'team.level':'Team Level','team.points':'Team Points',
+    'team.memberList':'Member List',
+    'team.orManage':'or manage team',
+    'team.createNew':'Create New Team',
+    'team.commLevel':'Current Referral Tier','team.commRate':'Current Commission Rate',
+    'team.commRules':'Commission Tier Rules',
+    'team.colLevel':'Tier','team.colComm':'Commission','team.colReferrals':'Referrals','team.colVol':'Monthly Vol.',
+    'team.tierNormal':'Normal','team.tierSilver':'⭐ Silver','team.tierGold':'🥇 Gold','team.tierDiamond':'💎 Diamond',
+    'team.tierSignup':'On signup','team.refGe10':'≥10 refs','team.refGe50':'≥50 refs','team.refGe200':'≥200 refs',
+    'team.copyLink':'Copy link','team.curTierLabel':'⭐ Silver Referrer','team.curTierStats':'8 referrals · $450K/mo vol.',
+    'team.statReferrals':'Referrals','team.statEffective':'Active',
+    'team.statReferralsVal':'8','team.statEffectiveVal':'6',
+    'team.statMonthComm':'Monthly Comm.','team.statMonthCap':'Monthly Cap','team.statPendingComm':'Total Pending',
+    'team.contestNote':'🏆 Reward in pGOLD, ranked by team volume, settled quarterly',
+    'hist.nwSub':'Net Buy · This Month','hist.dateTo':'to','hist.reset':'Reset','hist.dlCSV':'Download CSV',
+    'hist.extra':'Note',
+    'wallet.title':'Connect Wallet',
+    'wallet.metamaskDesc':'Browser wallet extension','wallet.wcDesc':'Scan to connect mobile wallet',
+    'wallet.coinbaseDesc':'Coinbase official wallet','wallet.okxDesc':'OKX official wallet',
+    'wallet.trustDesc':'Mobile mainstream wallet','wallet.binanceDesc':'Binance official Web3 wallet',
+    'wallet.tpDesc':'TokenPocket, multi-chain',
+    'wallet.other':'Other Wallet','wallet.manual':'Enter wallet address manually',
+    'wallet.placeholder':'Enter 0x... wallet address',
+    'wallet.disclaimer':'For display only, no signature requests',
+    'wallet.terms':'By connecting you agree to','wallet.termsLink':'Terms of Service','wallet.privacyLink':'Privacy Policy',
+    'qr.title':'Scan Wallet QR Code','qr.status':'Align QR code within the frame','qr.torch':'Turn on torch',
+    'team.depositLabel':'Creation Deposit (Fixed)','team.availBal':'Available Balance',
+    'team.depositDisclaimer':'Deposit is public; returned when leaving or dissolving the team',
+    'team.previewName':'Team Name','team.previewDeposit':'Staked Deposit','team.previewAfterBal':'Balance After',
+    'team.confirmCreate':'Confirm Create',
+    'team.nameHint':'3-20 chars, letters/digits/underscore/Chinese',
+    'notif.title':'Activity Log','notif.clear':'Clear','notif.empty':'No records',
     'modal.default':'Confirm Action','modal.cancel':'Cancel','modal.ok':'Confirm',
     'modal.stake':'Confirm Stake','modal.unstake':'Confirm Unstake','modal.deposit':'Confirm Deposit',
     'modal.withdraw':'Confirm Withdraw','modal.claim':'Confirm Claim','modal.wrap':'Confirm Wrap',
@@ -2096,13 +2197,57 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
 /* ── I18N ── */
 function renderI18n(){
   const lang=I18N.getLang();
-  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+  const isEn=lang==='en';
+  document.documentElement.lang=isEn?'en':'zh-CN';
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const txt=t(el.dataset.i18n);
     if(txt&&txt!==el.dataset.i18n)el.textContent=txt;
   });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const txt=t(el.dataset.i18nPlaceholder);
+    if(txt&&txt!==el.dataset.i18nPlaceholder)el.placeholder=txt;
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{
+    const txt=t(el.dataset.i18nTitle);
+    if(txt&&txt!==el.dataset.i18nTitle)el.title=txt;
+  });
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
   document.title='pGOLD · '+(PAGE_TITLES[lang]||PAGE_TITLES.zh)[currentPage]||'pGOLD DApp';
+  // re-render dynamic strings that embed i18n text at runtime
+  updateVestingDisplays();
+  const rankDlLabel=document.getElementById('rank-dl-label');
+  if(rankDlLabel){
+    const activeRankTab=document.querySelector('[data-rank].active')?.dataset.rank||'monthly';
+    const names={monthly:'月榜',quarterly:'季榜',annual:'年榜'};
+    const namesEn={monthly:'Monthly',quarterly:'Quarterly',annual:'Annual'};
+    rankDlLabel.textContent=isEn?`Download ${namesEn[activeRankTab]||''} Data (CSV)`:`下载${names[activeRankTab]||''}数据 (CSV)`;
+  }
+  const qrStatus=document.getElementById('qrStatus');
+  if(qrStatus&&qrStatus.textContent) qrStatus.textContent=isEn?'Align QR code within the frame':'将二维码对准框内';
+  const qrTorchLabel=document.getElementById('qrTorchLabel');
+  if(qrTorchLabel) qrTorchLabel.textContent=_torchOn?(isEn?'Turn off torch':'关闭闪光灯'):(isEn?'Turn on torch':'开启闪光灯');
+  if(typeof renderHistTable==='function'&&document.getElementById('hist-tbody')) renderHistTable();
+  // re-render team level badge / next-level text
+  const LEVEL_NAMES_ZH=['新兵','学徒','精英','传奇','神话'];
+  const LEVEL_NAMES_EN=['Rookie','Apprentice','Elite','Legend','Mythic'];
+  const levelBadgeEl=document.getElementById('team-level-badge');
+  if(levelBadgeEl){
+    const m=levelBadgeEl.textContent.match(/LV\.(\d+)/);
+    if(m){
+      const lv=parseInt(m[1]);
+      const names=isEn?LEVEL_NAMES_EN:LEVEL_NAMES_ZH;
+      levelBadgeEl.textContent=`LV.${lv} ${names[lv-1]||''}`;
+    }
+  }
+  const levelNextEl=document.getElementById('team-level-next');
+  if(levelNextEl){
+    const m=levelNextEl.textContent.match(/(\d+)/);
+    if(m){
+      const lv=parseInt(m[1]);
+      const names=isEn?LEVEL_NAMES_EN:LEVEL_NAMES_ZH;
+      levelNextEl.textContent=isEn?`Next: LV.${lv} ${names[lv-1]||''}`:`距 LV.${lv} ${names[lv-1]||''}`;
+    }
+  }
 }
 document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{
   I18N.setLang(b.dataset.lang);
@@ -2202,12 +2347,12 @@ function withConfirm(action,track){
       ?`<b>Deposit ${fmtN(amount)} pGOLD to Track B</b><br>
         New total deposited: ${fmtN(newTotal)} pGOLD<br><br>
         <span style="color:var(--blue)">Reward multiplier: 300% (Top 100)</span><br>
-        <span style="color:var(--green)">Est. 10-yr total reward: ${total10y} pGOLD</span><br>
+        <span style="color:var(--green)">Est. total reward: ${total10y} pGOLD</span><br>
         <span style="color:var(--green)">Est. daily reward: ${daily} pGOLD / day</span>`
       :`<b>存入 ${fmtN(amount)} pGOLD 至 B轨锚定</b><br>
         锚定后总存入：${fmtN(newTotal)} pGOLD<br><br>
         <span style="color:var(--blue)">收益率：300%（月榜前100）</span><br>
-        <span style="color:var(--green)">预计10年总收益：${total10y} pGOLD</span><br>
+        <span style="color:var(--green)">预计总收益：${total10y} pGOLD</span><br>
         <span style="color:var(--green)">日收益估算：${daily} pGOLD / 天</span>`;
 
   } else if(action==='withdraw'){
@@ -2291,7 +2436,7 @@ function withConfirm(action,track){
     if(!addr){showToast(isEn?'Enter recipient address':'请输入接收地址','error');return;}
     if(amt<=0){showToast(isEn?'Enter amount':'请输入数量','error');return;}
     if(amt>VEST_DATA.vp){showToast(isEn?'Insufficient vPGOLD balance':'vPGOLD 余额不足','error');return;}
-    pendingAction={action,track,addr,amount:amt};
+    pendingAction={action,track,toAddr:addr,amount:amt};
     titleTxt=isEn?'Send vPGOLD':'发送 vPGOLD';
     const shortAddr=addr.length>12?`${addr.slice(0,8)}...${addr.slice(-6)}`:addr;
     details=isEn
@@ -2330,20 +2475,15 @@ function withConfirm(action,track){
     titleTxt=isEn?'Unwrap vPGOLD':'解包 vPGOLD';
     details=isEn
       ?`<b>Unwrap ${fmtN(unwrapAmt)} vPGOLD → Vesting Plan</b><br><br>
-        <span style="color:var(--green)">✓ Restores original 10-year linear release schedule</span><br>
+        <span style="color:var(--green)">✓ Restores original vesting plan</span><br>
         <span style="color:var(--green)">✓ Release continues at the original pace</span><br>
         <span style="color:var(--text2)">Remaining vPGOLD after unwrap: ${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`
       :`<b>解包 ${fmtN(unwrapAmt)} vPGOLD → 释放计划</b><br><br>
-        <span style="color:var(--green)">✓ 恢复原始 10 年线性释放计划</span><br>
+        <span style="color:var(--green)">✓ 恢复原始释放计划</span><br>
         <span style="color:var(--green)">✓ 释放将继续按原节奏执行</span><br>
         <span style="color:var(--text2)">解包后剩余 vPGOLD：${fmtN(VEST_DATA.vp-unwrapAmt)}</span>`;
 
   } else if(action==='claimTeamReward'){
-    const timeLeft=getNextSettlement()-new Date();
-    if(timeLeft>0){
-      showToast(isEn?'Contest rewards are not yet available. Please wait for the monthly settlement.':'竞赛奖励尚未结算，请等待每月1日结算后再领取。','error');
-      return;
-    }
     const contestEl=document.getElementById('team-contest-reward');
     const teamRewardAmt=parseFloat((contestEl||{}).textContent)||0;
     const teamName=(document.querySelector('#page-team .nw-value')||{}).textContent||'TIGER_TEAM';
@@ -2433,143 +2573,289 @@ function execAction(){
   const icoBtn=document.getElementById('icoBtn');
   if(icoBtn && action==='subscribe') icoBtn.classList.add('loading');
 
-  setTimeout(()=>{
+  const _web3Ready = contracts.pgold && web3Signer;
+
+  (async ()=>{
     if(icoBtn) icoBtn.classList.remove('loading');
 
-    // 90% 成功率模拟（subscribe 始终成功）
-    const success = action==='subscribe' || Math.random()>0.1;
-
-    if(!success){
-      const claimActions=['claim','claimAll'];
-      if(claimActions.includes(action)){
-        showToast(isEn?'Reward claim failed, please retry':'领取奖励失败，请重试','error');
-      } else {
-        showToast(isEn?'Transaction failed, please try again':'操作失败，请稍后重试','error');
+    // ── helper: run chain tx, show feedback, refresh data ──
+    async function _chain(label, fn) {
+      showToast(isEn?'Transaction submitted...':'交易提交中...','info');
+      try {
+        await sendTx(fn);
+        await loadChainData(walletAddress);
+        return true;
+      } catch(e) {
+        if(e.code===4001||e.code==='ACTION_REJECTED') {
+          showToast(isEn?'Cancelled':'已取消','error');
+        } else {
+          console.error(label, e);
+          showToast(isEn?'Transaction failed, please try again':'交易失败，请重试','error');
+        }
+        return false;
       }
-      return;
+    }
+
+    if(!_web3Ready){
+      // fallback mock (no wallet / wrong chain)
+      const success = action==='subscribe' || Math.random()>0.1;
+      if(!success){
+        showToast(isEn?'Transaction failed, please try again':'操作失败，请稍后重试','error');
+        return;
+      }
     }
 
     if(action==='subscribe'){
       const pgoldAmount=parseFloat(actionData.pgold);
       const points=actionData.points;
-      ICO_DATA.yourAmount+=pgoldAmount;
-      ICO_DATA.yourPoints+=points;
-      ICO_DATA.subscribed+=pgoldAmount;
-      updateICODisplays(dappPgoldPrice);
-      const inp=document.getElementById('icoAmount');
-      if(inp){inp.value='';updateICOPreview();}
-      pushHist('buy',pgoldAmount,'创世池认购',dappPgoldPrice,+(pgoldAmount*dappPgoldPrice*0.005).toFixed(2));
-      showToast(isEn?'Subscription successful!':'认购成功！','success');
+      const usdcAmt=parseFloat(actionData.usdc)||0;
+      let ok = true;
+      if(_web3Ready){
+        const usdcWei=ethers.parseUnits(usdcAmt.toFixed(6),6);
+        ok = await _chain('subscribe', async()=>{
+          await approveIfNeeded(contracts.usdc, CONTRACT_ADDRS.genesis, usdcWei);
+          return contracts.genesis.subscribe(usdcWei);
+        });
+      }
+      if(ok){
+        ICO_DATA.yourAmount+=pgoldAmount;
+        ICO_DATA.yourPoints+=points;
+        ICO_DATA.subscribed+=pgoldAmount;
+        updateICODisplays(dappPgoldPrice);
+        const inp=document.getElementById('icoAmount');
+        if(inp){inp.value='';updateICOPreview();}
+        pushHist('buy',pgoldAmount,isEn?'Genesis ICO':'创世池认购',dappPgoldPrice,+(pgoldAmount*dappPgoldPrice*0.005).toFixed(2));
+        showToast(isEn?'Subscription successful!':'认购成功！','success');
+      }
 
     } else if(action==='stake'){
       const amt=parseFloat(actionData.amount)||0;
-      STAKE_DATA.staked+=amt;
-      PORTFOLIO.liquid=Math.max(0,PORTFOLIO.liquid-amt);
-      document.getElementById('stakeAmount').value='';
-      updateStakeDisplays();
-      pushHist('stake',amt,'A轨质押');
-      showToast(isEn?`Staked ${amt.toFixed(2)} pGOLD successfully`:`成功质押 ${amt.toFixed(2)} pGOLD`,'success');
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready){
+        const needApprove=(await contracts.pgold.allowance(walletAddress, CONTRACT_ADDRS.staking)) < amtWei;
+        if(needApprove){
+          showToast(isEn?'Step 1/2 — approve in wallet':'第 1/2 步 — 请在钱包确认授权','info');
+          try{ const tx=await contracts.pgold.approve(CONTRACT_ADDRS.staking, amtWei); await tx.wait(); }
+          catch(e){ showToast(isEn?'Approval cancelled':'授权已取消','error'); ok=false; }
+        }
+        if(ok){
+          ok=await _chain('stake (2/2)', ()=>contracts.staking.stake(amtWei));
+        }
+      } else {
+        STAKE_DATA.staked+=amt; PORTFOLIO.liquid=Math.max(0,PORTFOLIO.liquid-amt);
+      }
+      if(ok){
+        document.getElementById('stakeAmount').value='';
+        updateStakeDisplays();
+        pushHist('stake',amt,isEn?'Track A Stake':'A轨质押');
+        showToast(isEn?`Staked ${amt.toFixed(2)} pGOLD successfully`:`成功质押 ${amt.toFixed(2)} pGOLD`,'success');
+      }
 
     } else if(action==='unstake'){
       const amt=parseFloat(actionData.amount)||0;
-      STAKE_DATA.staked=Math.max(0,STAKE_DATA.staked-amt);
-      STAKE_DATA.pending=Math.max(0,STAKE_DATA.pending*(STAKE_DATA.staked/Math.max(STAKE_DATA.staked+amt,1)));
-      PORTFOLIO.liquid+=amt;
-      document.getElementById('stakeAmount').value='';
-      updateStakeDisplays();
-      pushHist('sell',amt,'A轨解质押');
-      showToast(isEn?`Unstaked ${amt.toFixed(2)} pGOLD successfully`:`成功解质押 ${amt.toFixed(2)} pGOLD`,'success');
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready){
+        ok=await _chain('unstake', ()=>contracts.staking.withdraw(amtWei));
+      } else {
+        STAKE_DATA.staked=Math.max(0,STAKE_DATA.staked-amt);
+        STAKE_DATA.pending=Math.max(0,STAKE_DATA.pending*(STAKE_DATA.staked/Math.max(STAKE_DATA.staked+amt,1)));
+        PORTFOLIO.liquid+=amt;
+      }
+      if(ok){
+        document.getElementById('stakeAmount').value='';
+        updateStakeDisplays();
+        pushHist('sell',amt,isEn?'Track A Unstake':'A轨解质押');
+        showToast(isEn?`Unstaked ${amt.toFixed(2)} pGOLD successfully`:`成功解质押 ${amt.toFixed(2)} pGOLD`,'success');
+      }
 
     } else if(action==='claimReward'){
-      const claimed=STAKE_DATA.pending;
-      STAKE_DATA.pending=0;
-      PORTFOLIO.liquid+=claimed;
-      updateStakeDisplays();
-      pushHist('claim',claimed,'A轨持仓分红');
-      showToast(isEn?`Claimed ${claimed.toFixed(2)} pGOLD`:`已领取 ${claimed.toFixed(2)} pGOLD`,'success');
+      let ok=true;
+      if(_web3Ready){
+        ok=await _chain('claimReward', ()=>contracts.staking.claimReward());
+      } else {
+        const claimed=STAKE_DATA.pending; STAKE_DATA.pending=0; PORTFOLIO.liquid+=claimed;
+        pushHist('claim',claimed,isEn?'Track A Dividend':'A轨持仓分红');
+      }
+      if(ok){
+        updateStakeDisplays();
+        showToast(isEn?'Reward claimed successfully':'领取奖励成功','success');
+      }
 
     } else if(action==='deposit'){
       const amt=parseFloat(actionData.amount)||0;
-      STAKE_DATA.deposited+=amt;
-      PORTFOLIO.liquid=Math.max(0,PORTFOLIO.liquid-amt);
-      document.getElementById('depositAmount').value='';
-      updateStakeDisplays();
-      pushHist('stake',amt,'B轨存入');
-      showToast(isEn?`Deposited ${amt.toFixed(2)} pGOLD to Track B`:`成功存入 ${amt.toFixed(2)} pGOLD 至 B轨`,'success');
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready){
+        const needApprove=(await contracts.pgold.allowance(walletAddress, CONTRACT_ADDRS.ranking)) < amtWei;
+        if(needApprove){
+          showToast(isEn?'Step 1/2 — approve in wallet':'第 1/2 步 — 请在钱包确认授权','info');
+          try{ const tx=await contracts.pgold.approve(CONTRACT_ADDRS.ranking, amtWei); await tx.wait(); }
+          catch(e){ showToast(isEn?'Approval cancelled':'授权已取消','error'); ok=false; }
+        }
+        if(ok){
+          ok=await _chain('deposit (2/2)', ()=>contracts.ranking.depositStake(amtWei));
+        }
+      } else {
+        STAKE_DATA.deposited+=amt; PORTFOLIO.liquid=Math.max(0,PORTFOLIO.liquid-amt);
+      }
+      if(ok){
+        document.getElementById('depositAmount').value='';
+        updateStakeDisplays();
+        pushHist('stake',amt,isEn?'Track B Deposit':'B轨存入');
+        showToast(isEn?`Deposited ${amt.toFixed(2)} pGOLD to Track B`:`成功存入 ${amt.toFixed(2)} pGOLD 至 B轨`,'success');
+      }
 
     } else if(action==='withdraw'){
       const amt=parseFloat(actionData.amount)||0;
-      STAKE_DATA.deposited=Math.max(0,STAKE_DATA.deposited-amt);
-      PORTFOLIO.liquid+=amt;
-      document.getElementById('withdrawAmount').value='';
-      updateStakeDisplays();
-      pushHist('sell',amt,'B轨取出');
-      showToast(isEn?`Withdrew ${amt.toFixed(2)} pGOLD from Track B`:`已从 B轨取出 ${amt.toFixed(2)} pGOLD`,'success');
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready){
+        ok=await _chain('withdraw', ()=>contracts.ranking.withdrawStake(amtWei));
+      } else {
+        STAKE_DATA.deposited=Math.max(0,STAKE_DATA.deposited-amt); PORTFOLIO.liquid+=amt;
+      }
+      if(ok){
+        document.getElementById('withdrawAmount')&&(document.getElementById('withdrawAmount').value='');
+        updateStakeDisplays();
+        pushHist('sell',amt,isEn?'Track B Withdraw':'B轨取出');
+        showToast(isEn?`Withdrew ${amt.toFixed(2)} pGOLD from Track B`:`已从 B轨取出 ${amt.toFixed(2)} pGOLD`,'success');
+      }
 
     } else if(action==='claim'){
-      const tr=VEST_DATA.tracks[actionData.track];
-      if(tr&&tr.periodsLeft>0){
-        tr.released+=tr.perPeriod;
-        tr.periodsLeft-=1;
-        VEST_DATA.released+=tr.perPeriod;
-        VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
-        PORTFOLIO.liquid+=tr.perPeriod;
-        pushHist('claim',tr.perPeriod,`释放计划-${actionData.track}轨`);
+      let ok=true;
+      if(_web3Ready && actionData.scheduleId!=null){
+        ok=await _chain('claim', ()=>contracts.vesting.claim(actionData.scheduleId));
+      } else {
+        const tr=VEST_DATA.tracks[actionData.track];
+        if(tr&&tr.periodsLeft>0){
+          tr.released+=tr.perPeriod; tr.periodsLeft-=1;
+          VEST_DATA.released+=tr.perPeriod; VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
+          PORTFOLIO.liquid+=tr.perPeriod;
+          pushHist('claim',tr.perPeriod,isEn?`Vesting-Track ${actionData.track}`:`释放计划-${actionData.track}轨`);
+        }
       }
-      updateVestingDisplays();
-      showToast(isEn?'Reward claimed successfully':'领取奖励成功','success');
+      if(ok){ updateVestingDisplays(); showToast(isEn?'Reward claimed successfully':'领取奖励成功','success'); }
 
     } else if(action==='claimAll'){
-      let totalClaimed=0;
-      ['E','B','C'].forEach(k=>{
-        const tr=VEST_DATA.tracks[k];
-        if(tr&&tr.periodsLeft>0){
-          tr.released+=tr.perPeriod;
-          tr.periodsLeft-=1;
-          VEST_DATA.released+=tr.perPeriod;
-          VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
-          PORTFOLIO.liquid+=tr.perPeriod;
-          totalClaimed+=tr.perPeriod;
+      let ok=true;
+      if(_web3Ready){
+        const scheduleIds = await contracts.vesting.getBeneficiarySchedules(walletAddress);
+        if(!scheduleIds || scheduleIds.length===0){
+          showToast(isEn?'No vesting schedule found':'未找到释放计划','error');
+          ok=false;
         }
-      });
-      if(totalClaimed>0) pushHist('claim',totalClaimed,'释放计划-一键领取');
-      updateVestingDisplays();
-      showToast(isEn?'All rewards claimed successfully':'全部奖励领取成功','success');
+        if(ok){
+          showToast(isEn?'Claiming all schedules...':'正在领取所有释放计划...','info');
+          for(const id of scheduleIds){
+            try{ const tx=await contracts.vesting.claim(id); await tx.wait(); }catch(e){ /* skip unclaimable */ }
+          }
+          await loadChainData(walletAddress);
+        }
+      } else {
+        let totalClaimed=0;
+        ['E','B','C'].forEach(k=>{
+          const tr=VEST_DATA.tracks[k];
+          if(tr&&tr.periodsLeft>0){
+            tr.released+=tr.perPeriod; tr.periodsLeft-=1;
+            VEST_DATA.released+=tr.perPeriod; VEST_DATA.total=Math.max(0,VEST_DATA.total-tr.perPeriod);
+            PORTFOLIO.liquid+=tr.perPeriod; totalClaimed+=tr.perPeriod;
+          }
+        });
+        if(totalClaimed>0) pushHist('claim',totalClaimed,isEn?'Vesting-Claim All':'释放计划-一键领取');
+      }
+      if(ok){ updateVestingDisplays(); showToast(isEn?'All rewards claimed successfully':'全部奖励领取成功','success'); }
 
     } else if(action==='wrap'){
       const amt=parseFloat(actionData.amount)||0;
-      VEST_DATA.vp+=amt;
-      VEST_DATA.total=Math.max(0,VEST_DATA.total-amt);
-      updateVestingDisplays();
-      pushHist('stake',amt,'vPGOLD 包装');
-      showToast(isEn?'Wrapped to vPGOLD successfully':'已成功包装为 vPGOLD','success');
+      let ok=true;
+      if(_web3Ready){
+        const ids = await contracts.vesting.getBeneficiarySchedules(walletAddress);
+        if(!ids || ids.length===0){ showToast(isEn?'No vesting schedule found':'未找到释放计划','error'); ok=false; }
+        if(ok){
+          const scheduleId = ids[0];
+          showToast(isEn?'Step 1/2 — confirm transfer in wallet':'第 1/2 步 — 确认转让受益人','info');
+          try{
+            const tx1 = await contracts.vesting.transferBeneficiary(scheduleId, CONTRACT_ADDRS.vpgold);
+            await tx1.wait();
+          } catch(e){ showToast(isEn?'Transfer cancelled':'转让已取消','error'); ok=false; }
+          if(ok) ok = await _chain('wrap (2/2)', ()=>contracts.vpgold.wrap(scheduleId));
+        }
+      } else {
+        VEST_DATA.vp+=amt; VEST_DATA.total=Math.max(0,VEST_DATA.total-amt);
+      }
+      if(ok){
+        updateVestingDisplays();
+        pushHist('stake',amt,isEn?'vPGOLD Wrap':'vPGOLD 包装');
+        showToast(isEn?'Wrapped to vPGOLD successfully':'已成功包装为 vPGOLD','success');
+      }
 
     } else if(action==='transferVp'){
       const amt=parseFloat(actionData.amount)||0;
-      VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
-      document.getElementById('vpAddr').value='';
-      document.getElementById('vpAmount').value='';
-      updateVestingDisplays();
-      pushHist('sell',amt,'vPGOLD 转账');
-      showToast(isEn?'vPGOLD sent successfully':'vPGOLD 已发送','success');
+      const toAddr=actionData.toAddr||'';
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready && toAddr){
+        ok=await _chain('transferVp', ()=>contracts.vpgold.transfer(toAddr, amtWei));
+      } else {
+        VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
+      }
+      if(ok){
+        document.getElementById('vpAddr').value='';
+        document.getElementById('vpAmount').value='';
+        updateVestingDisplays();
+        pushHist('sell',amt,isEn?'vPGOLD Transfer':'vPGOLD 转账');
+        showToast(isEn?'vPGOLD sent successfully':'vPGOLD 已发送','success');
+      }
 
     } else if(action==='claimVp'){
       const amt=parseFloat(actionData.amount)||0;
-      VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
-      PORTFOLIO.liquid+=amt;
-      document.getElementById('vpAmount').value='';
-      updateVestingDisplays();
-      pushHist('claim',amt,'vPGOLD 赎回');
-      showToast(isEn?'Redeemed successfully, pGOLD credited':'赎回成功，pGOLD 已到账','success');
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready){
+        const ids = await contracts.vesting.getBeneficiarySchedules(CONTRACT_ADDRS.vpgold);
+        if(!ids || ids.length===0 || ids[0]===0n){
+          showToast(isEn?'No wrapped schedule found':'未找到已包装的释放计划','error');
+          ok=false;
+        }
+        if(ok){
+          const scheduleId = ids[0];
+          ok=await _chain('claimVp', ()=>contracts.vpgold.claimUnderlying(scheduleId));
+        }
+      } else {
+        VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt); PORTFOLIO.liquid+=amt;
+      }
+      if(ok){
+        document.getElementById('vpAmount')&&(document.getElementById('vpAmount').value='');
+        updateVestingDisplays();
+        pushHist('claim',amt,isEn?'vPGOLD Redeem':'vPGOLD 赎回');
+        showToast(isEn?'Redeemed successfully, pGOLD credited':'赎回成功，pGOLD 已到账','success');
+      }
 
     } else if(action==='unwrapVp'){
       const amt=parseFloat(actionData.amount)||0;
-      VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt);
-      VEST_DATA.total+=amt;
-      document.getElementById('vpAmount').value='';
-      updateVestingDisplays();
-      pushHist('stake',amt,'vPGOLD 解包');
-      showToast(isEn?'Unwrapped successfully, vesting plan restored':'解包成功，释放计划已恢复','success');
+      const amtWei=ethers.parseEther(amt.toString());
+      let ok=true;
+      if(_web3Ready){
+        const ids = await contracts.vesting.getBeneficiarySchedules(CONTRACT_ADDRS.vpgold);
+        if(!ids || ids.length===0 || ids[0]===0n){
+          showToast(isEn?'No wrapped schedule found':'未找到已包装的释放计划','error');
+          ok=false;
+        }
+        if(ok){
+          const scheduleId = ids[0];
+          ok=await _chain('unwrapVp', ()=>contracts.vpgold.unwrap(scheduleId, amtWei));
+        }
+      } else {
+        VEST_DATA.vp=Math.max(0,VEST_DATA.vp-amt); VEST_DATA.total+=amt;
+      }
+      if(ok){
+        document.getElementById('vpAmount')&&(document.getElementById('vpAmount').value='');
+        updateVestingDisplays();
+        pushHist('stake',amt,isEn?'vPGOLD Unwrap':'vPGOLD 解包');
+        showToast(isEn?'Unwrapped successfully, vesting plan restored':'解包成功，释放计划已恢复','success');
+      }
 
     } else if(action==='claimTeamReward'){
       const reward=actionData.reward||0;
@@ -2578,7 +2864,7 @@ function execAction(){
       const contestEl=document.getElementById('team-contest-reward');
       if(contestEl) contestEl.textContent='0 pGOLD';
       updateDappPriceDisplays(dappPgoldPrice);
-      pushHist('claim',reward,'战队竞赛奖励');
+      pushHist('claim',reward,isEn?'Team Contest Reward':'战队竞赛奖励');
       showToast(isEn?`${fmtN(reward)} pGOLD contest reward credited`:`${fmtN(reward)} pGOLD 竞赛奖励已到账`,'success');
 
     } else if(action==='leaveTeam'){
@@ -2601,23 +2887,38 @@ function execAction(){
       updateDappPriceDisplays(dappPgoldPrice);
       const comm=document.getElementById('team-pending-comm');
       if(comm) comm.textContent='$0';
-      pushHist('claim',pgoldAmt,'邀请返佣');
+      pushHist('claim',pgoldAmt,isEn?'Referral Commission':'邀请返佣');
       showToast(isEn?`$${amt} commission credited (${fmtN(pgoldAmt)} pGOLD)`:`$${amt} 返佣已到账（${fmtN(pgoldAmt)} pGOLD）`,'success');
 
     } else if(action==='createTeam'){
-      const name=pendingAction.teamName||'NEW_TEAM';
-      showToast(isEn?`Team "${name}" created successfully`:`战队「${name}」创建成功`,'success');
+      const name=actionData.teamName||'NEW_TEAM';
+      let ok=true;
+      if(_web3Ready){
+        ok=await _chain('createTeam', ()=>contracts.team.createTeam(name));
+      }
+      if(ok){
+        contestStartTime=new Date();
+        inTeam=true;
+        showToast(isEn?`Team "${name}" created successfully`:`战队「${name}」创建成功`,'success');
+      }
 
     } else if(action==='joinTeam'){
-      const name=pendingAction.teamName||'';
-      contestStartTime=new Date(); // 从加入时刻开始计算第一次结算
-      inTeam=true;
-      showToast(isEn?`Joined team "${name}" successfully`:`已成功加入战队「${name}」`,'success');
+      const teamId=actionData.teamId||0;
+      const name=actionData.teamName||'';
+      let ok=true;
+      if(_web3Ready && teamId>0){
+        ok=await _chain('joinTeam', ()=>contracts.team.joinTeam(teamId));
+      }
+      if(ok){
+        contestStartTime=new Date(); // 从加入时刻开始计算第一次结算
+        inTeam=true;
+        showToast(isEn?`Joined team "${name}" successfully`:`已成功加入战队「${name}」`,'success');
+      }
 
     } else {
       showToast(t('common.confirm')+'!','success');
     }
-  },1500);
+  })();
 }
 
 function confirmAction(){
@@ -2626,27 +2927,34 @@ function confirmAction(){
 }
 
 /* ── STAKING STATE ── */
-const STAKE_DATA={staked:800,pending:12.5,deposited:800};
+const STAKE_DATA={staked:0,pending:0,deposited:0};
 const VEST_DATA={
-  total:2455,released:245,nextRelease:68,annual:820,
-  vp:240,
+  total:0,released:0,nextRelease:0,annual:0,
+  vp:0,
   tracks:{
-    E:{total:2400,released:138,periods:36,periodsLeft:35,perPeriod:68.6},
-    B:{total:180,released:4.5,periods:120,periodsLeft:118,perPeriod:1.5},
-    C:{total:150,released:2.7,periods:120,periodsLeft:118,perPeriod:1.25},
+    E:{total:0,released:0,periods:36,periodsLeft:36,perPeriod:0},
+    B:{total:0,released:0,periods:120,periodsLeft:120,perPeriod:0},
+    C:{total:0,released:0,periods:120,periodsLeft:120,perPeriod:0},
   }
 };
 
 function updateStakeDisplays(){
   const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-  PORTFOLIO.staked=STAKE_DATA.staked; // keep portfolio in sync
-  // A轨 nw-value
+  PORTFOLIO.staked=STAKE_DATA.staked;
   const nwEl=document.getElementById('stake-staked-val');
   if(nwEl)nwEl.innerHTML=`${fmtN(STAKE_DATA.staked)} <span style="font-size:.4em;color:var(--text2)">pGOLD</span>`;
   set('stake-pending-val',fmtN(STAKE_DATA.pending));
   set('stake-deposit-stat',fmtN(STAKE_DATA.deposited));
   set('stake-deposit-val',fmtN(STAKE_DATA.deposited));
+  // dashboard stat cells
+  set('stat-vested-pgold',fmtN(PORTFOLIO.vesting)+' pGOLD');
+  set('stat-pending-pgold',fmtN(STAKE_DATA.pending)+' pGOLD');
+  // track-A row + detail
+  const taBadge=document.getElementById('track-a-staked-badge');
+  if(taBadge)taBadge.textContent=fmtN(STAKE_DATA.staked)+' pGOLD';
+  set('track-a-detail-staked',fmtN(STAKE_DATA.staked)+' pGOLD');
+  set('track-a-detail-pending',fmtN(STAKE_DATA.pending)+' pGOLD');
   updateDappPriceDisplays(dappPgoldPrice);
 }
 
@@ -2668,7 +2976,7 @@ function updateVestingDisplays(){
     const remEl=document.getElementById(`vest-${t.toLowerCase()}-remain`);
     if(pctEl)pctEl.textContent=pct+'%';
     if(barEl)barEl.style.width=pct+'%';
-    if(remEl)remEl.textContent=`剩余 ${tr.periodsLeft}/${tr.periods} 期`;
+    if(remEl)remEl.textContent=I18N.getLang()==='en'?`${tr.periodsLeft}/${tr.periods} periods left`:`剩余 ${tr.periodsLeft}/${tr.periods} 期`;
   });
   PORTFOLIO.vesting=VEST_DATA.total;
   PORTFOLIO.vp=VEST_DATA.vp;
@@ -2743,7 +3051,7 @@ function closeQRScanner(){
   if(modal) modal.classList.remove('show');
   const label=document.getElementById('qrTorchLabel');
   const btn=document.getElementById('qrTorchBtn');
-  if(label) label.textContent='开启闪光灯';
+  if(label) label.textContent=I18N.getLang()==='en'?'Turn on torch':'开启闪光灯';
   if(btn){btn.style.background='rgba(255,255,255,.12)';btn.style.borderColor='rgba(255,255,255,.2)';}
 }
 
@@ -2913,8 +3221,9 @@ function switchRankTab(tab){
   document.querySelectorAll('[data-rank]').forEach(b=>b.classList.toggle('active',b.dataset.rank===tab));
   renderRankTable(tab);
   const names={monthly:'月榜',quarterly:'季榜',annual:'年榜'};
+  const namesEn={monthly:'Monthly',quarterly:'Quarterly',annual:'Annual'};
   const label=document.getElementById('rank-dl-label');
-  if(label) label.textContent=`下载${names[tab]||''}数据 (CSV)`;
+  if(label){const isEn=I18N.getLang()==='en';label.textContent=isEn?`Download ${namesEn[tab]||''} Data (CSV)`:`下载${names[tab]||''}数据 (CSV)`;}
 }
 
 const RANK_DATA={
@@ -3013,20 +3322,22 @@ function downloadRankCSV(){
   const tab=activeBtn?activeBtn.dataset.rank:'monthly';
   const data=RANK_DATA[tab];
   if(!data) return;
+  const isEn=I18N.getLang()==='en';
   const names={monthly:'月榜',quarterly:'季榜',annual:'年榜'};
-  const header='排名,地址,交易量,存入量(pGOLD),奖励(pGOLD),倍数\n';
+  const namesEn={monthly:'Monthly',quarterly:'Quarterly',annual:'Annual'};
+  const header=isEn?'Rank,Address,Volume,Deposit(pGOLD),Reward(pGOLD),Multiplier\n':'排名,地址,交易量,存入量(pGOLD),奖励(pGOLD),倍数\n';
   const rows=data.rows.map(r=>`${r.r},${r.isMe?'YOU (Me)':r.addr},${r.vol},${r.deposit},${r.reward},${r.mult}`).join('\n');
-  const csv='﻿'+header+rows; // BOM 确保 Excel 正确显示中文
+  const csv='﻿'+header+rows;
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;
-  a.download=`pGOLD_${names[tab]||tab}_Top100_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download=`pGOLD_${(isEn?namesEn:names)[tab]||tab}_Top100_${new Date().toISOString().slice(0,10)}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast(`${names[tab]}数据已下载`,'success');
+  showToast(isEn?`${namesEn[tab]} data downloaded`:`${names[tab]}数据已下载`,'success');
 }
 
 /* 拖拽横向滚动 */
@@ -3084,11 +3395,17 @@ function getNextSettlement(){
 // 竞赛奖励倒计时：每月1日0时结算
 (function initContestCountdown(){
   function formatCountdown(ms){
-    if(ms<=0) return '可领取';
+    const isEn=I18N.getLang()==='en';
+    if(ms<=0) return isEn?'Claimable':'可领取';
     const d=Math.floor(ms/86400000);
     const h=Math.floor((ms%86400000)/3600000);
     const m=Math.floor((ms%3600000)/60000);
     const s=Math.floor((ms%60000)/1000);
+    if(isEn){
+      if(d>0) return `Settles in ${d}d ${h}h ${m}m`;
+      if(h>0) return `Settles in ${h}h ${m}m ${s}s`;
+      return `Settles in ${m}m ${s}s`;
+    }
     if(d>0) return `${d}天 ${h}时 ${m}分后结算`;
     if(h>0) return `${h}时 ${m}分 ${s}秒后结算`;
     return `${m}分 ${s}秒后结算`;
@@ -3096,12 +3413,13 @@ function getNextSettlement(){
   function tick(){
     const el=document.getElementById('team-contest-countdown');
     if(!el) return;
+    const isEn=I18N.getLang()==='en';
     const now=new Date();
     const settle=getNextSettlement();
     const diff=settle-now;
     const isFirst=contestStartTime&&(new Date(contestStartTime.getTime()+30*24*3600*1000))>now;
-    const prefix=isFirst?'首次结算：':'下次结算：';
-    el.textContent=diff<=0?'可领取':(prefix+formatCountdown(diff));
+    const prefix=isFirst?(isEn?'First settlement: ':'首次结算：'):(isEn?'Next settlement: ':'下次结算：');
+    el.textContent=diff<=0?(isEn?'Claimable':'可领取'):(prefix+formatCountdown(diff));
     if(diff<=0) el.style.color='var(--green)';
     else el.style.color='var(--blue)';
   }
@@ -3122,7 +3440,7 @@ function showTeamNoTeam(){
   if(noTeamEl) noTeamEl.style.display='';
   // 更新顶部 nw-block
   document.querySelector('#page-team .nw-value').textContent='—';
-  document.querySelector('#page-team .nw-sub').textContent='未加入战队';
+  document.querySelector('#page-team .nw-sub').textContent=I18N.getLang()==='en'?'No team joined':'未加入战队';
   renderNoTeamLeaderboard();
 }
 
@@ -3143,7 +3461,7 @@ function renderNoTeamLeaderboard(){
       <td>${t.members}</td>
       <td>${t.vol}</td>
       <td style="color:var(--green);font-weight:600">${t.reward.toLocaleString()}</td>
-      <td><button onclick="openJoinTeamDirect('${t.name}')" style="background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);color:var(--gold);border-radius:6px;padding:3px 10px;font-size:.75em;cursor:pointer;white-space:nowrap">加入</button></td>
+      <td><button onclick="openJoinTeamDirect('${t.name}')" style="background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);color:var(--gold);border-radius:6px;padding:3px 10px;font-size:.75em;cursor:pointer;white-space:nowrap">${I18N.getLang()==='en'?'Join':'加入'}</button></td>
     </tr>`;
   }).join('');
   // 初始化拖拽
@@ -3164,7 +3482,8 @@ function showTeamDetail(name){
   const team=ALL_TEAMS.find(t=>t.name===name);
   if(!team) return;
   const isEn=I18N.getLang()==='en';
-  pendingAction={action:'joinTeam',teamName:name};
+  // 使用 team.r (排名) 作为临时 teamId，因为 ALL_TEAMS 是 mock 数据
+  pendingAction={action:'joinTeam',teamId:team.r,teamName:name};
   document.getElementById('modalTitle').textContent=isEn?`Team: ${name}`:`战队：${name}`;
   document.getElementById('modalMsg').innerHTML=
     `<div style="display:flex;flex-direction:column;gap:8px">
@@ -3242,16 +3561,16 @@ else renderTeamMembers();
 
 /* ── HISTORY ── */
 let HIST_DATA=[
-  {time:'2026-06-26 09:15',type:'buy', amt:+50,  price:85.20, fee:10.65, note:'市价买入'},
-  {time:'2026-06-25 14:30',type:'sell',amt:-20,  price:84.80, fee:4.24,  note:'市价卖出'},
-  {time:'2026-06-25 10:15',type:'buy', amt:+100, price:85.00, fee:21.25, note:'限价买入'},
-  {time:'2026-06-24 16:45',type:'stake',amt:200, price:null,  fee:null,  note:'A轨质押'},
-  {time:'2026-06-24 08:00',type:'claim',amt:12.5,price:null,  fee:null,  note:'持仓分红'},
-  {time:'2026-06-23 11:20',type:'buy', amt:+30,  price:84.50, fee:6.34,  note:'市价买入'},
-  {time:'2026-06-22 15:00',type:'sell',amt:-50,  price:85.10, fee:10.64, note:'限价卖出'},
-  {time:'2026-06-21 09:00',type:'claim',amt:8.2, price:null,  fee:null,  note:'Top100奖励'},
-  {time:'2026-06-20 13:30',type:'stake',amt:100, price:null,  fee:null,  note:'B轨存入'},
-  {time:'2026-06-19 10:45',type:'buy', amt:+80,  price:83.90, fee:16.78, note:'市价买入'},
+  {time:'2026-06-26 09:15',type:'buy', amt:+50,  price:85.20, fee:10.65, note:'市价买入',   noteEn:'Market buy'},
+  {time:'2026-06-25 14:30',type:'sell',amt:-20,  price:84.80, fee:4.24,  note:'市价卖出',   noteEn:'Market sell'},
+  {time:'2026-06-25 10:15',type:'buy', amt:+100, price:85.00, fee:21.25, note:'限价买入',   noteEn:'Limit buy'},
+  {time:'2026-06-24 16:45',type:'stake',amt:200, price:null,  fee:null,  note:'A轨质押',    noteEn:'Track A stake'},
+  {time:'2026-06-24 08:00',type:'claim',amt:12.5,price:null,  fee:null,  note:'持仓分红',   noteEn:'Holding dividend'},
+  {time:'2026-06-23 11:20',type:'buy', amt:+30,  price:84.50, fee:6.34,  note:'市价买入',   noteEn:'Market buy'},
+  {time:'2026-06-22 15:00',type:'sell',amt:-50,  price:85.10, fee:10.64, note:'限价卖出',   noteEn:'Limit sell'},
+  {time:'2026-06-21 09:00',type:'claim',amt:8.2, price:null,  fee:null,  note:'Top100奖励', noteEn:'Top100 reward'},
+  {time:'2026-06-20 13:30',type:'stake',amt:100, price:null,  fee:null,  note:'B轨存入',    noteEn:'Track B deposit'},
+  {time:'2026-06-19 10:45',type:'buy', amt:+80,  price:83.90, fee:16.78, note:'市价买入',   noteEn:'Market buy'},
 ];
 
 function fmtHistTime(){
@@ -3316,7 +3635,7 @@ function renderHistTable(){
       <td><span class="badge ${typeBadge[r.type]}" style="border-radius:5px">${lbl}</span></td>
       <td style="color:${typeColor[r.type]};font-weight:600">${amtStr}</td>
       ${priceCell}${feeCell}
-      <td style="font-size:.8em;color:var(--text2)">${r.note}</td>
+      <td style="font-size:.8em;color:var(--text2)">${isEn?(r.noteEn||r.note):r.note}</td>
     </tr>`;
   }).join('');
 }
@@ -3403,15 +3722,15 @@ function closeCreateTeamModal(){
 }
 
 function updateCreateTeamPreview(){
+  const isEn=I18N.getLang()==='en';
   const name=document.getElementById('newTeamName').value.trim();
   const errEl=document.getElementById('newTeamNameErr');
   const preview=document.getElementById('createTeamPreview');
   errEl.style.display='none';
   if(name.length>=3){
-    // 同名检查
     const exists=ALL_TEAMS.some(t=>t.name.toLowerCase()===name.toLowerCase());
     if(exists){
-      errEl.textContent='战队名称已存在，请换一个';
+      errEl.textContent=isEn?'Team name already taken, try another':'战队名称已存在，请换一个';
       errEl.style.display='';
       preview.style.display='none';
       return;
@@ -3420,7 +3739,7 @@ function updateCreateTeamPreview(){
     document.getElementById('previewName').textContent=name;
     const bal=PORTFOLIO.liquid-100;
     const balEl=document.getElementById('previewBalance');
-    balEl.textContent=(bal>=0?bal.toFixed(2):'余额不足')+' pGOLD';
+    balEl.textContent=(bal>=0?bal.toFixed(2):(isEn?'Insufficient balance':'余额不足'))+' pGOLD';
     balEl.style.color=bal>=0?'var(--text1)':'var(--red)';
   } else {
     preview.style.display='none';
@@ -3428,27 +3747,27 @@ function updateCreateTeamPreview(){
 }
 
 function submitCreateTeam(){
+  const isEn=I18N.getLang()==='en';
   const name=document.getElementById('newTeamName').value.trim();
   const errEl=document.getElementById('newTeamNameErr');
   if(name.length<3||name.length>20){
-    errEl.textContent='战队名称需 3-20 个字符';errEl.style.display='';return;
+    errEl.textContent=isEn?'Team name must be 3-20 characters':'战队名称需 3-20 个字符';errEl.style.display='';return;
   }
   if(!/^[a-zA-Z0-9_一-龥]+$/.test(name)){
-    errEl.textContent='仅支持字母、数字、下划线和中文';errEl.style.display='';return;
+    errEl.textContent=isEn?'Only letters, digits, underscore, or Chinese':'仅支持字母、数字、下划线和中文';errEl.style.display='';return;
   }
   if(ALL_TEAMS.some(t=>t.name.toLowerCase()===name.toLowerCase())){
-    errEl.textContent='战队名称已存在，请换一个';errEl.style.display='';return;
+    errEl.textContent=isEn?'Team name already taken, try another':'战队名称已存在，请换一个';errEl.style.display='';return;
   }
   if(PORTFOLIO.liquid<100){
-    errEl.textContent='可用余额不足 100 pGOLD';errEl.style.display='';return;
+    errEl.textContent=isEn?'Insufficient balance (need 100 pGOLD)':'可用余额不足 100 pGOLD';errEl.style.display='';return;
   }
   PORTFOLIO.liquid-=100;
   updateDappPriceDisplays(dappPgoldPrice);
-  // 加入 ALL_TEAMS 列表
   ALL_TEAMS.unshift({r:0,name,leader:'YOU',members:1,vol:'$0',reward:0,stake:100,isLeader:true});
   closeCreateTeamModal();
   showNewTeamPage(name);
-  showToast(`战队「${name}」创建成功！`,'success');
+  showToast(isEn?`Team "${name}" created!`:`战队「${name}」创建成功！`,'success');
 }
 
 function showNewTeamPage(name){
@@ -3460,7 +3779,7 @@ function showNewTeamPage(name){
   switchTeamTab('myTeam');
   // 更新顶部
   document.querySelector('#page-team .nw-value').textContent=name;
-  document.querySelector('#page-team .nw-sub').textContent='#— · 1 成员';
+  document.querySelector('#page-team .nw-sub').textContent=I18N.getLang()==='en'?'#— · 1 member':'#— · 1 成员';
   // 更新战队名称、等级、积分
   const nameEl=document.querySelector('#teamTab-myTeam .info-val[style*="gold"]');
   if(nameEl) nameEl.textContent=name;
@@ -3481,11 +3800,11 @@ function showNewTeamPage(name){
   const levelNext=document.getElementById('team-level-next');
   const progressText=document.getElementById('team-progress-text');
   const progressBar=document.getElementById('team-progress-bar');
-  if(levelBadge) levelBadge.textContent='LV.1 新兵';
+  if(levelBadge) levelBadge.textContent=I18N.getLang()==='en'?'LV.1 Rookie':'LV.1 新兵';
   if(pointsVal) pointsVal.innerHTML='0 <span style="font-size:.75em;color:var(--text2)">pts</span>';
   if(membersVal) membersVal.textContent='1 / 50';
   if(rewardVal) rewardVal.textContent='0 pGOLD';
-  if(levelNext) levelNext.textContent='距 LV.2 学徒';
+  if(levelNext) levelNext.textContent=I18N.getLang()==='en'?'Next: LV.2 Apprentice':'距 LV.2 学徒';
   if(progressText) progressText.textContent='0 / 500 pts';
   if(progressBar) progressBar.style.width='0%';
   // 清空成员列表，只保留队长自己
@@ -3493,7 +3812,7 @@ function showNewTeamPage(name){
   if(memberList) memberList.innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;padding:9px 12px;font-size:.78em;border-top:1px solid var(--border)">
       <span style="color:var(--gold);font-weight:700">1</span>
-      <span style="color:var(--gold)">YOU (队长)</span>
+      <span style="color:var(--gold)">YOU ${I18N.getLang()==='en'?'(Leader)':'(队长)'}</span>
       <span style="text-align:right">$0</span>
       <span style="text-align:right;color:var(--blue)">0 pts</span>
     </div>`;
@@ -3503,8 +3822,8 @@ function showNewTeamPage(name){
     leaderBadgeArea.style.display='';
     leaderBadgeArea.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:8px;padding:10px 14px;margin-bottom:8px">
-        <div style="font-size:.78em;color:var(--gold);font-weight:700">👑 你是队长</div>
-        <div style="font-size:.78em;color:var(--text2)">已质押保证金：<b style="color:var(--green)">100 pGOLD</b></div>
+        <div style="font-size:.78em;color:var(--gold);font-weight:700">👑 ${I18N.getLang()==='en'?'You are leader':'你是队长'}</div>
+        <div style="font-size:.78em;color:var(--text2)">${I18N.getLang()==='en'?'Staked deposit:':'已质押保证金：'}<b style="color:var(--green)">100 pGOLD</b></div>
       </div>`;
   }
 }
@@ -3539,29 +3858,42 @@ function copyInviteLink(){  const input=document.getElementById('invite-link-inp
 
 function openJoinTeam(){
   const isEn=I18N.getLang()==='en';
-  const name=prompt(isEn?'Enter team name to join:':'输入要加入的战队名称：');
-  if(!name) return;
-  const trimmed=name.trim();
-  if(!trimmed){showToast(isEn?'Please enter a team name':'请输入战队名称','error');return;}
-  pendingAction={action:'joinTeam',teamName:trimmed};
+  const input=prompt(isEn?'Enter team ID to join:':'输入要加入的战队 ID：');
+  if(!input) return;
+  const teamId=parseInt(input.trim());
+  if(!teamId || teamId<=0){showToast(isEn?'Please enter a valid team ID':'请输入有效的战队 ID','error');return;}
+  pendingAction={action:'joinTeam',teamId:teamId};
   document.getElementById('modalTitle').textContent=isEn?'Join Team':'加入战队';
   document.getElementById('modalMsg').innerHTML=isEn
-    ?`<b>Join team: <span style="color:var(--gold)">${trimmed}</span></b><br><br>
+    ?`<b>Join team ID: <span style="color:var(--gold)">${teamId}</span></b><br><br>
       <span style="color:var(--text2)">· You will contribute your trading volume to the team</span><br>
       <span style="color:var(--text2)">· Team rewards are shared based on contribution points</span><br>
       <span style="color:var(--text2)">· You can leave the team at any time (forfeits unclaimed rewards)</span>`
-    :`<b>加入战队：<span style="color:var(--gold)">${trimmed}</span></b><br><br>
+    :`<b>加入战队 ID：<span style="color:var(--gold)">${teamId}</span></b><br><br>
       <span style="color:var(--text2)">· 你的交易量将计入战队总量</span><br>
       <span style="color:var(--text2)">· 战队奖励按贡献积分分配</span><br>
       <span style="color:var(--text2)">· 可随时退出（未领奖励将被没收）</span>`;
   document.getElementById('confirmModal').classList.add('show');
 }
 
-function openBindInviter(){
+async function openBindInviter(){
+  const isEn=I18N.getLang()==='en';
   const addr=prompt(t('team.promptAddr'));
   if(!addr)return;
   if(!/^0x[0-9a-fA-F]{40}$/.test(addr)){showToast(t('team.invalidAddr'),'error');return;}
-  showToast(t('team.bound')+': '+addr.slice(0,8)+'...','success');
+  if(walletAddress && contracts.team){
+    try{
+      showToast(isEn?'Submitting...':'提交中...','info');
+      const tx=await contracts.team.bindInviter(addr);
+      await tx.wait();
+      showToast(t('team.bound')+': '+addr.slice(0,8)+'...','success');
+    }catch(e){
+      if(e.code===4001||e.code==='ACTION_REJECTED') showToast(isEn?'Cancelled':'已取消','error');
+      else showToast(isEn?'Bind failed, please try again':'绑定失败，请重试','error');
+    }
+  } else {
+    showToast(t('team.bound')+': '+addr.slice(0,8)+'...','success');
+  }
 }
 
 /* ── CONNECT WALLET ── */
@@ -3632,6 +3964,7 @@ function _onWalletConnected(addr, walletName){
   document.getElementById('drawerDisconnectBtn').style.display='block';
   updateDrawerAssets();
   showToast((isEn?`${walletName} connected: `:`${walletName} 已连接：`)+short,'success');
+  if(typeof initWeb3 === 'function') initWeb3(addr).catch(console.error);
 }
 
 function toggleCustomWallet(){
@@ -3686,7 +4019,8 @@ function disconnectWallet(){
 
 
 /* ── PRICE ── */
-const PORTFOLIO={liquid:1400,staked:800,vesting:2455,vp:240};
+const PORTFOLIO={liquid:0,staked:0,vesting:0,vp:0};
+let balanceVisible = true;
 const ICO_CAP_PGOLD=1000;
 let dappPgoldPrice=85;
 
@@ -3707,6 +4041,11 @@ function updateDappPriceDisplays(p){
 
   // 更新统计卡片和持仓明细
   set('stat-balance-usd','≈ '+fmt((PORTFOLIO.liquid+PORTFOLIO.staked)*p));
+  const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:2});
+  set('stat-balance-pgold', fmtN(PORTFOLIO.liquid)+' pGOLD');
+  set('port-liquid-amt', fmtN(PORTFOLIO.liquid));
+  set('port-staked-amt', fmtN(PORTFOLIO.staked));
+  set('port-vesting-amt', fmtN(PORTFOLIO.vesting));
   set('port-liquid-usd',fmt(PORTFOLIO.liquid*p));
   set('port-staked-usd',fmt(PORTFOLIO.staked*p));
   set('port-vesting-usd',fmt(PORTFOLIO.vesting*p));
@@ -3767,7 +4106,6 @@ fetchPAXGPrice();
 setInterval(fetchPAXGPrice,60*1000);
 
 /* ════ BALANCE VISIBILITY TOGGLE ════ */
-let balanceVisible = true;
 function toggleBalance(){
   balanceVisible = !balanceVisible;
   const nwTotal = document.getElementById('nw-total');
@@ -3996,24 +4334,29 @@ function updateIcoHistTable(){
   if(!tbody) return;
   const records=HIST_DATA.filter(r=>r.type==='buy');
   if(records.length===0){
-    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">暂无认购记录</td></tr>';
+    const isEn=I18N.getLang()==='en';
+    tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">${isEn?'No subscription records':'暂无认购记录'}</td></tr>`;
     return;
   }
-  tbody.innerHTML=records.map(r=>`
+  tbody.innerHTML=records.map(r=>{
+    const isEn=I18N.getLang()==='en';
+    return `
     <tr>
       <td style="color:var(--muted);font-size:.85em">${r.time}</td>
       <td style="color:var(--gold);font-weight:600">${r.amt.toLocaleString('en-US',{maximumFractionDigits:4})} pGOLD</td>
       <td style="font-family:monospace;font-size:.85em">${r.price?'$'+r.price.toFixed(2):'—'}</td>
       <td style="color:var(--muted);font-size:.85em">${r.fee?'$'+r.fee.toFixed(2):'—'}</td>
-      <td><span style="font-size:.75em;padding:2px 8px;border-radius:5px;background:rgba(16,185,129,.1);color:var(--green)">已确认</span></td>
-    </tr>`).join('');
+      <td><span style="font-size:.75em;padding:2px 8px;border-radius:5px;background:rgba(16,185,129,.1);color:var(--green)">${isEn?'Confirmed':'已确认'}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 function downloadIcoHist(){
+  const isEn=I18N.getLang()==='en';
   const records=HIST_DATA.filter(r=>r.type==='buy');
-  if(!records.length){showToast('暂无认购记录','error');return;}
-  const rows=[['时间','认购pGOLD','价格USD','手续费USD','状态']];
-  records.forEach(r=>rows.push([r.time,r.amt,r.price||'',r.fee||'','已确认']));
+  if(!records.length){showToast(isEn?'No subscription records':'暂无认购记录','error');return;}
+  const rows=[isEn?['Time','pGOLD','Price USD','Fee USD','Status']:['时间','认购pGOLD','价格USD','手续费USD','状态']];
+  records.forEach(r=>rows.push([r.time,r.amt,r.price||'',r.fee||'',isEn?'Confirmed':'已确认']));
   const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
@@ -4039,13 +4382,176 @@ window.addEventListener('resize',()=>{
 <!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notifPanel">
   <div class="notif-hd">
-    <span class="notif-hd-title">操作记录</span>
-    <button class="notif-clear-btn" onclick="clearNotifPanel()">清除</button>
+    <span class="notif-hd-title" data-i18n="notif.title">操作记录</span>
+    <button class="notif-clear-btn" onclick="clearNotifPanel()" data-i18n="notif.clear">清除</button>
   </div>
   <div class="notif-scroll" id="notifScroll">
-    <div class="notif-empty" id="notifEmpty">暂无记录</div>
+    <div class="notif-empty" id="notifEmpty" data-i18n="notif.empty">暂无记录</div>
   </div>
 </div>
+<script id="web3-layer">
+/* ════ WEB3 LAYER ════ */
+const CHAIN_ID = 31337;
+const CONTRACT_ADDRS = {
+  pgold:      '0x0165878A594ca255338adfa4d48449f69242Eb8F',
+  treasury:   '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853',
+  feeRouter:  '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318',
+  vesting:    '0x610178dA211FEF7D417bC0e6FeD39F05609AD788',
+  swap:       '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
+  staking:    '0x9A676e781A523b5d0C0e43731313A708CB607508',
+  ranking:    '0x68B1D87F95878fE05B998F19b66F4baba5De1aed',
+  burnMining: '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1',
+  team:       '0xc6e7DF5E7b4f2A278906862b61205850344D4e7d',
+  genesis:    '0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1',
+  vpgold:     '0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44',
+  oracle:     '0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f',
+  usdc:       '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  paxg:       '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+};
+
+const ABI = {
+  pgold: [
+    {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  ],
+  staking: [
+    {"inputs":[{"name":"amount","type":"uint256"}],"name":"stake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[],"name":"claimReward","outputs":[{"name":"reward","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[],"name":"updateRewardRate","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"account","type":"address"}],"name":"getStakeInfo","outputs":[{"name":"staked","type":"uint256"},{"name":"earned_","type":"uint256"},{"name":"accumulated","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"totalStaked","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"rewardRate","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  ],
+  vesting: [
+    {"inputs":[{"name":"scheduleId","type":"uint256"}],"name":"getSchedule","outputs":[{"components":[{"name":"totalAmount","type":"uint256"},{"name":"claimedAmount","type":"uint256"},{"name":"startTime","type":"uint256"},{"name":"duration","type":"uint256"},{"name":"beneficiary","type":"address"},{"name":"originalBeneficiary","type":"address"},{"name":"scheduleType","type":"uint8"},{"name":"exists","type":"bool"}],"name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"scheduleId","type":"uint256"}],"name":"getClaimableAmount","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"scheduleId","type":"uint256"}],"name":"claim","outputs":[{"name":"amount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"user","type":"address"}],"name":"getVestingState","outputs":[{"name":"vested","type":"uint256"},{"name":"pending","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"beneficiary","type":"address"}],"name":"getBeneficiarySchedules","outputs":[{"name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"scheduleId","type":"uint256"},{"name":"newBeneficiary","type":"address"}],"name":"transferBeneficiary","outputs":[],"stateMutability":"nonpayable","type":"function"}
+  ],
+  ranking: [
+    {"inputs":[{"name":"amount","type":"uint256"}],"name":"depositStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"amount","type":"uint256"}],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[],"name":"claimReward","outputs":[{"name":"vestingId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"user","type":"address"}],"name":"getStake","outputs":[{"name":"amount","type":"uint256"},{"name":"active","type":"bool"}],"stateMutability":"view","type":"function"}
+  ],
+  genesis: [
+    {"inputs":[{"name":"usdcAmount","type":"uint256"}],"name":"subscribe","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"name":"usdcAmount","type":"uint256"},{"name":"backedPgold","type":"uint256"},{"name":"poolAllocation","type":"uint256"},{"name":"vested","type":"uint256"},{"name":"pending","type":"uint256"},{"name":"tier","type":"uint8"}],"stateMutability":"view","type":"function"}
+  ],
+  vpgold: [
+    {"inputs":[{"name":"scheduleId","type":"uint256"}],"name":"wrap","outputs":[{"name":"vAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"scheduleId","type":"uint256"},{"name":"vAmount","type":"uint256"}],"name":"unwrap","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"scheduleId","type":"uint256"}],"name":"claimUnderlying","outputs":[{"name":"pGOLDAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"stateMutability":"view","type":"function"}
+  ],
+  usdc: [
+    {"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  ],
+  burnMining: [
+    {"inputs":[{"name":"amount","type":"uint256"}],"name":"lockStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"amount","type":"uint256"}],"name":"addStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"user","type":"address"}],"name":"getBurnStake","outputs":[{"name":"amount","type":"uint256"},{"name":"lockUntil","type":"uint256"},{"name":"active","type":"bool"}],"stateMutability":"view","type":"function"}
+  ],
+  team: [
+    {"inputs":[{"name":"name","type":"string"}],"name":"createTeam","outputs":[{"name":"teamId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"teamId","type":"uint256"}],"name":"joinTeam","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"inviter","type":"address"}],"name":"bindInviter","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"user","type":"address"}],"name":"userTeam","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"teamId","type":"uint256"}],"name":"teams","outputs":[{"name":"id","type":"uint256"},{"name":"captain","type":"address"},{"name":"name","type":"string"},{"name":"memberCount","type":"uint256"},{"name":"createdAt","type":"uint256"},{"name":"active","type":"bool"}],"stateMutability":"view","type":"function"}
+  ],
+  treasury: [
+    {"inputs":[],"name":"goldPriceUSD","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  ]
+};
+
+let web3Provider = null, web3Signer = null, contracts = {};
+
+async function initWeb3(addr) {
+  const isEn = I18N.getLang() === 'en';
+  if (typeof ethers === 'undefined') {
+    showToast(isEn ? 'ethers.js not loaded' : 'ethers.js 未加载', 'error');
+    return;
+  }
+  try {
+    web3Provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await web3Provider.getNetwork();
+    if (Number(network.chainId) !== CHAIN_ID) {
+      showToast(isEn
+        ? `Wrong network — please switch to Hardhat (chainId ${CHAIN_ID})`
+        : `网络不对，请切换到 Hardhat 网络（chainId ${CHAIN_ID}）`, 'error');
+      return;
+    }
+    web3Signer = await web3Provider.getSigner();
+    contracts.pgold   = new ethers.Contract(CONTRACT_ADDRS.pgold,   ABI.pgold,   web3Signer);
+    contracts.staking = new ethers.Contract(CONTRACT_ADDRS.staking, ABI.staking, web3Signer);
+    contracts.vesting = new ethers.Contract(CONTRACT_ADDRS.vesting, ABI.vesting, web3Signer);
+    contracts.ranking = new ethers.Contract(CONTRACT_ADDRS.ranking, ABI.ranking, web3Signer);
+    contracts.genesis = new ethers.Contract(CONTRACT_ADDRS.genesis, ABI.genesis, web3Signer);
+    contracts.vpgold  = new ethers.Contract(CONTRACT_ADDRS.vpgold,  ABI.vpgold,  web3Signer);
+    contracts.usdc    = new ethers.Contract(CONTRACT_ADDRS.usdc,    ABI.usdc,    web3Signer);
+    contracts.burnMining = new ethers.Contract(CONTRACT_ADDRS.burnMining, ABI.burnMining, web3Signer);
+    contracts.team    = new ethers.Contract(CONTRACT_ADDRS.team,    ABI.team,    web3Signer);
+    contracts.treasury = new ethers.Contract(CONTRACT_ADDRS.treasury, ABI.treasury, web3Provider);
+    await loadChainData(addr);
+  } catch(e) {
+    console.error('initWeb3 failed', e);
+  }
+}
+
+async function loadChainData(addr) {
+  try {
+    const [liquid, stakeInfo, vpBal, rankStake, vestState, goldPrice] = await Promise.all([
+      contracts.pgold.balanceOf(addr),
+      contracts.staking.getStakeInfo(addr),
+      contracts.vpgold.balanceOf(addr),
+      contracts.ranking.getStake(addr),
+      contracts.vesting.getVestingState(addr),
+      contracts.treasury.goldPriceUSD()
+    ]);
+    PORTFOLIO.liquid  = parseFloat(ethers.formatEther(liquid));
+    PORTFOLIO.staked  = parseFloat(ethers.formatEther(stakeInfo.staked));
+    PORTFOLIO.vp      = parseFloat(ethers.formatEther(vpBal));
+    PORTFOLIO.vesting = parseFloat(ethers.formatEther(vestState.vested));
+    STAKE_DATA.staked  = PORTFOLIO.staked;
+    STAKE_DATA.pending = parseFloat(ethers.formatEther(stakeInfo.earned_));
+    STAKE_DATA.deposited = parseFloat(ethers.formatEther(rankStake.amount));
+    VEST_DATA.total = PORTFOLIO.vesting;
+    VEST_DATA.vp    = PORTFOLIO.vp;
+    // goldPriceUSD is 8 decimals (USD/gram), same as pGOLD price
+    dappPgoldPrice = parseFloat(ethers.formatUnits(goldPrice, 8));
+    updateStakeDisplays();
+    if (typeof updateVestingDisplays === 'function') updateVestingDisplays();
+    if (typeof updateDappPriceDisplays === 'function') updateDappPriceDisplays(dappPgoldPrice);
+    if (typeof updateDrawerAssets === 'function') updateDrawerAssets();
+  } catch(e) {
+    console.error('loadChainData failed', e);
+  }
+}
+
+async function approveIfNeeded(tokenContract, spender, amount) {
+  const signerAddr = await web3Signer.getAddress();
+  const allowance = await tokenContract.allowance(signerAddr, spender);
+  if (allowance < amount) {
+    const tx = await tokenContract.approve(spender, amount);
+    await tx.wait();
+  }
+}
+
+async function sendTx(fn) {
+  const tx = await fn();
+  return await tx.wait();
+}
+</script>
 </body>
 </html>
 <!-- Cache bust: 1783072824 -->

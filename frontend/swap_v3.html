@@ -169,6 +169,8 @@ body > * { position:relative; z-index:1; }
 .btn-sell:hover:not(:disabled){box-shadow:0 6px 32px rgba(239,68,68,.35), 0 2px 12px rgba(239,68,68,.2);}
 .btn-connect{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:#000;font-weight:900;box-shadow:0 4px 24px rgba(212,168,67,.3), 0 2px 8px rgba(212,168,67,.2);}
 .btn-connect:hover:not(:disabled){box-shadow:0 6px 32px rgba(212,168,67,.4), 0 2px 12px rgba(212,168,67,.25);}
+.btn-disconnect{background:rgba(255,255,255,.04);color:var(--text2);border:1px solid rgba(255,255,255,.1);}
+.btn-disconnect:hover:not(:disabled){background:rgba(255,80,80,.08);color:#ff5050;border-color:rgba(255,80,80,.3);}
 .btn-enter{background:rgba(255,255,255,.03);color:var(--muted);border:1px dashed rgba(212,168,67,.15);}
 
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -289,7 +291,17 @@ body > * { position:relative; z-index:1; }
   .swap-card{transition:border-color .3s, box-shadow .3s;}
   .swap-card:hover{border-color:rgba(212,168,67,.18);box-shadow:0 20px 80px rgba(0,0,0,.65), 0 0 40px rgba(212,168,67,.06);}
 }
+
+/* ══ Wallet Selection Modal ══ */
+.wallet-option-btn{
+  display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;
+  border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.03);
+  cursor:pointer;font-family:inherit;color:var(--text);transition:all .15s;
+}
+.wallet-option-btn:hover{background:rgba(212,168,67,.06);border-color:rgba(212,168,67,.25);}
+.wallet-option-btn:active{transform:scale(.98);}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
 
@@ -419,6 +431,86 @@ body > * { position:relative; z-index:1; }
   </div>
 </div>
 
+<!-- Wallet Selection Modal -->
+<div class="modal-overlay" id="walletModal" onclick="closeWalletModal()">
+  <div class="modal-box" style="width:100%;max-width:420px;padding:0;overflow:hidden" onclick="event.stopPropagation()">
+    <div style="padding:18px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:.95em;font-weight:700" id="walletModalTitle">连接钱包</div>
+      <button onclick="closeWalletModal()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1em;padding:4px 8px">✕</button>
+    </div>
+    <div style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:8px">
+      <!-- MetaMask -->
+      <button class="wallet-option-btn" onclick="selectWallet('metamask')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" width="32" height="32" style="border-radius:8px" onerror="this.style.display='none'">
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">MetaMask</div>
+          <div style="font-size:.72em;color:var(--text2)" id="metamaskDesc">浏览器钱包扩展</div>
+        </div>
+      </button>
+      <!-- OKX Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('okx')">
+        <div style="width:32px;height:32px;border-radius:8px;background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="color:#fff;font-weight:700;font-size:.9em">OKX</span>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">OKX Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)" id="okxDesc">OKX 钱包扩展</div>
+        </div>
+      </button>
+      <!-- WalletConnect -->
+      <button class="wallet-option-btn" onclick="selectWallet('walletconnect')">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3b99fc,#1a6fd8);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M6.1 8.5c3.3-3.2 8.5-3.2 11.8 0l.4.4c.2.2.2.4 0 .6l-1.3 1.3c-.1.1-.3.1-.4 0l-.5-.5c-2.3-2.2-6-2.2-8.3 0l-.6.5c-.1.1-.3.1-.4 0L5.5 9.5c-.2-.2-.2-.4 0-.6l.6-.4zm14.6 2.7l1.2 1.1c.2.2.2.4 0 .6l-5.3 5.1c-.2.2-.4.2-.6 0l-3.8-3.6c-.1-.1-.2-.1-.3 0l-3.8 3.6c-.2.2-.4.2-.6 0L2.2 12.9c-.2-.2-.2-.4 0-.6l1.2-1.1c.2-.2.4-.2.6 0l3.8 3.6c.1.1.2.1.3 0l3.8-3.6c.2-.2.4-.2.6 0l3.8 3.6c.1.1.2.1.3 0l3.8-3.6c.1-.2.4-.2.6 0z"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">WalletConnect</div>
+          <div style="font-size:.72em;color:var(--text2)" id="wcDesc">扫码连接移动端钱包</div>
+        </div>
+      </button>
+      <!-- Coinbase Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('coinbase')">
+        <div style="width:32px;height:32px;border-radius:8px;background:#0052ff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12zm-1.5-17.5h3c.276 0 .5.224.5.5v3h3c.276 0 .5.224.5.5v3c0 .276-.224.5-.5.5h-3v3c0 .276-.224.5-.5.5h-3c-.276 0-.5-.224-.5-.5v-3h-3c-.276 0-.5-.224-.5-.5v-3c0-.276.224-.5.5-.5h3v-3c0-.276.224-.5.5-.5z"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">Coinbase Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)" id="coinbaseDesc">Coinbase 钱包扩展</div>
+        </div>
+      </button>
+      <!-- Trust Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('trust')">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3375bb,#66a9e8);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm0 18.5c-4.05-1.26-7-5.28-7-9.5V8.3l7-3.89 7 3.89V11c0 4.22-2.95 8.24-7 9.5z"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">Trust Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)" id="trustDesc">Trust Wallet 扩展</div>
+        </div>
+      </button>
+      <!-- Binance Wallet -->
+      <button class="wallet-option-btn" onclick="selectWallet('binance')">
+        <div style="width:32px;height:32px;border-radius:8px;background:#f3ba2f;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#000"><path d="M8.5 12L12 8.5 15.5 12 12 15.5 8.5 12zm6.5-6.5L12 2.5 9 5.5 5.5 2 2 5.5 5.5 9 2 12.5 5.5 16 2 19.5 5.5 23 9 19.5 12 23l3-3.5 3.5 3.5L22 19.5 18.5 16 22 12.5 18.5 9 22 5.5 18.5 2 15 5.5z"/></svg>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">Binance Wallet</div>
+          <div style="font-size:.72em;color:var(--text2)" id="binanceDesc">Binance 钱包扩展</div>
+        </div>
+      </button>
+      <!-- imToken -->
+      <button class="wallet-option-btn" onclick="selectWallet('imtoken')">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#11c4d1,#0f9aac);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="color:#fff;font-weight:800;font-size:.7em">im</span>
+        </div>
+        <div style="flex:1;text-align:left">
+          <div style="font-size:.88em;font-weight:600">imToken</div>
+          <div style="font-size:.72em;color:var(--text2)" id="imtokenDesc">imToken 钱包</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast-area"><div class="toast" id="toast"></div></div>
 
@@ -435,7 +527,7 @@ const I18N = {
     'swap.minReceived':'最少获得','swap.recent':'最近交易',
     'swap.slippageTolerance':'滑点容忍度',
     'swap.enterAmountHint':'请输入金额','swap.exceedsBalance':'余额不足',
-    'swap.walletRequired':'请先连接钱包','swap.review':'预览交易',
+    'swap.walletRequired':'请先连接钱包','swap.disconnect':'断开钱包连接','swap.review':'预览交易',
     'swap.swapping':'交易处理中...','swap.youPay':'支付','swap.youReceive':'获得',
     'swap.noTrades':'暂无交易','swap.success':'交易成功',
     'swap.modalTitle':'确认交易','swap.rate':'汇率','swap.feeLabel':'手续费 (0.25%)',
@@ -453,7 +545,7 @@ const I18N = {
     'swap.minReceived':'Min Received','swap.recent':'Recent Trades',
     'swap.slippageTolerance':'Slippage Tolerance',
     'swap.enterAmountHint':'Enter Amount','swap.exceedsBalance':'Exceeds Balance',
-    'swap.walletRequired':'Connect Wallet','swap.review':'Review Swap',
+    'swap.walletRequired':'Connect Wallet','swap.disconnect':'Disconnect Wallet','swap.review':'Review Swap',
     'swap.swapping':'Swapping...','swap.youPay':'You Pay','swap.youReceive':'You Receive',
     'swap.noTrades':'No trades yet','swap.success':'Swap Successful',
     'swap.modalTitle':'Confirm Swap','swap.rate':'Rate','swap.feeLabel':'Fee (0.25%)',
@@ -470,6 +562,144 @@ const I18N = {
 };
 
 const t=k=>I18N.t(k);
+
+// ══════════════════════════════════════════════════════════
+// Web3 Configuration
+// ══════════════════════════════════════════════════════════
+const CHAIN_ID = 31337;
+const CONTRACT_ADDRS = {
+  pgold:    '0x0165878A594ca255338adfa4d48449f69242Eb8F',
+  usdc:     '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  swap:     '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
+  treasury: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853'
+};
+
+const SWAP_ABI = [
+  'function buy(uint256 usdcIn, uint256 minPGOLDOut) external returns (uint256)',
+  'function sell(uint256 pgoldIn, uint256 minUSDCOut) external returns (uint256)',
+  'function getBuyQuote(uint256 usdcIn) external view returns (uint256 pgoldOut, uint256 fee)',
+  'function getSellQuote(uint256 pgoldIn) external view returns (uint256 usdcOut, uint256 fee)',
+  'function getPrice() external view returns (uint256)',
+  'function reserveUSDC() external view returns (uint256)',
+  'function reservePGOLD() external view returns (uint256)'
+];
+
+const TOKEN_ABI = [
+  'function balanceOf(address) external view returns (uint256)',
+  'function approve(address spender, uint256 amount) external returns (bool)',
+  'function allowance(address owner, address spender) external view returns (uint256)'
+];
+
+const TREASURY_ABI = [
+  'function goldPriceUSD() external view returns (uint256)',
+  'function paxgPriceUSD() external view returns (uint256)'
+];
+
+let web3Provider = null;
+let web3Signer = null;
+let walletAddress = null;
+let contracts = {};
+
+async function initWeb3() {
+  if (!window.ethereum) {
+    showToast('Please install MetaMask', 'error');
+    return false;
+  }
+
+  try {
+    web3Provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await web3Provider.getNetwork();
+
+    if (Number(network.chainId) !== CHAIN_ID) {
+      showToast('Please switch to Hardhat network (Chain ID 31337)', 'error');
+      return false;
+    }
+
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    walletAddress = accounts[0];
+    web3Signer = await web3Provider.getSigner();
+
+    // Initialize contracts
+    contracts.pgold = new ethers.Contract(CONTRACT_ADDRS.pgold, TOKEN_ABI, web3Signer);
+    contracts.usdc = new ethers.Contract(CONTRACT_ADDRS.usdc, TOKEN_ABI, web3Signer);
+    contracts.swap = new ethers.Contract(CONTRACT_ADDRS.swap, SWAP_ABI, web3Signer);
+    contracts.treasury = new ethers.Contract(CONTRACT_ADDRS.treasury, TREASURY_ABI, web3Provider);
+
+    connected = true;
+    await loadChainData();
+    return true;
+  } catch (err) {
+    console.error('Web3 init error:', err);
+    showToast('Failed to connect wallet', 'error');
+    return false;
+  }
+}
+
+async function loadChainData() {
+  if (!walletAddress || !contracts.pgold) return;
+
+  try {
+    // Load balances
+    const pgoldBal = await contracts.pgold.balanceOf(walletAddress);
+    const usdcBal = await contracts.usdc.balanceOf(walletAddress);
+
+    balances.pgold = parseFloat(ethers.formatEther(pgoldBal));
+    balances.usdc = parseFloat(ethers.formatUnits(usdcBal, 6));
+
+    // Load pool reserves
+    const reserveUSDC = await contracts.swap.reserveUSDC();
+    const reservePGOLD = await contracts.swap.reservePGOLD();
+
+    pool.usdc = parseFloat(ethers.formatUnits(reserveUSDC, 6));
+    pool.pgold = parseFloat(ethers.formatEther(reservePGOLD));
+
+    // Load Treasury price (8 decimals, USD/gram)
+    if (contracts.treasury) {
+      try {
+        const goldPrice = await contracts.treasury.goldPriceUSD();
+        const priceUSD = parseFloat(ethers.formatUnits(goldPrice, 8));
+
+        // Override pool display price with Treasury price for quote calculations
+        // This makes the UI show realistic prices while keeping AMM mechanics
+        if (pool.pgold > 0 && priceUSD > 0) {
+          pool.usdc = pool.pgold * priceUSD;
+        }
+
+        console.log('Treasury gold price:', priceUSD, 'USDC/gram');
+      } catch (err) {
+        console.warn('Treasury price fetch failed, using pool price:', err.message);
+      }
+    }
+
+    render();
+  } catch (err) {
+    console.error('Load chain data error:', err);
+  }
+}
+
+async function approveIfNeeded(tokenContract, spender, amount) {
+  const allowance = await tokenContract.allowance(walletAddress, spender);
+  if (allowance < amount) {
+    const tx = await tokenContract.approve(spender, amount);
+    await tx.wait();
+  }
+}
+
+async function sendTx(fn) {
+  try {
+    const tx = await fn();
+    await tx.wait();
+    return true;
+  } catch (err) {
+    if (err.code === 4001 || err.code === 'ACTION_REJECTED') {
+      showToast(t('swap.walletRequired'), 'error');
+    } else {
+      console.error('Transaction error:', err);
+      showToast('Transaction failed', 'error');
+    }
+    return false;
+  }
+}
 
 let mode='buy',slippage=.5,currentQuote=null,swapping=false,connected=false;
 let pool={usdc:1000000,pgold:11765};
@@ -519,8 +749,9 @@ function render(){
   if(dappHeaderEl)dappHeaderEl.textContent=t('nav.dappHeader');
 
   updateSwapButton();
-  el('walletBtn',connected?'0xAbCd...Ef01':t('common.connect'));
-  el('walletAddr',connected?'0xAbCd...Ef01':t('common.notConnected'));
+  const shortAddr = walletAddress ? `${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}` : '';
+  el('walletBtn', connected ? shortAddr : t('common.connect'));
+  el('walletAddr', connected ? shortAddr : t('common.notConnected'));
 
   if(pool.pgold>0){
     const price=pool.usdc/pool.pgold;
@@ -549,7 +780,7 @@ function updateSwapButton(){
   const val=parseFloat(el('inputPay').value)||0;
   if(swapping){btn.className='swap-btn btn-buy';btn.disabled=true;txt.innerHTML='<span class="spinner"></span> '+t('swap.swapping');return;}
   if(!connected){btn.className='swap-btn btn-connect';btn.disabled=false;txt.textContent=t('swap.walletRequired');return;}
-  if(val<=0){btn.className='swap-btn btn-enter';btn.disabled=true;txt.textContent=t('swap.enterAmountHint');return;}
+  if(val<=0){btn.className='swap-btn btn-disconnect';btn.disabled=false;txt.textContent=t('swap.disconnect');return;}
   const maxBal=mode==='buy'?balances.usdc:balances.pgold;
   if(val>maxBal+.0001){btn.className=mode==='buy'?'swap-btn btn-buy':'swap-btn btn-sell';btn.disabled=true;txt.textContent=t('swap.exceedsBalance');return;}
   btn.className=mode==='buy'?'swap-btn btn-buy':'swap-btn btn-sell';btn.disabled=false;txt.textContent=t('swap.review');
@@ -616,7 +847,7 @@ function setSlippage(val){slippage=val;onInput();render();}
 function onSwapClick(){
   if(!connected){toggleWallet();return;}
   const val=parseFloat(el('inputPay').value)||0;
-  if(val<=0)return;
+  if(val<=0){toggleWallet();return;}
   const maxBal=mode==='buy'?balances.usdc:balances.pgold;
   if(val>maxBal)return;
   if(!currentQuote)return;
@@ -638,18 +869,199 @@ function openConfirm(){
 }
 
 function closeConfirm(){el('confirmModal').classList.remove('show');}
-function doSwap(){
-  closeConfirm();if(!currentQuote)return;
-  const q=currentQuote;swapping=true;updateSwapButton();
-  setTimeout(()=>{
-    if(mode==='buy'){balances.usdc-=q.inputVal;balances.pgold+=q.out;pool.usdc+=(q.inputVal-q.fee);pool.pgold-=q.out;trades.push({type:'BUY',pgold:q.out,price:q.price,time:new Date().toLocaleTimeString()});}
-    else{balances.pgold-=q.inputVal;balances.usdc+=q.out;pool.pgold+=q.inputVal;pool.usdc-=(q.out+q.fee);trades.push({type:'SELL',pgold:q.inputVal,price:q.price,time:new Date().toLocaleTimeString()});}
-    el('inputPay','');el('inputReceive','');el('rowPay').classList.remove('warn');el('rowImpact').style.display='none';
-    currentQuote=null;swapping=false;showToast(t('swap.success'),'success');render();
-  },600);
+async function doSwap(){
+  closeConfirm();
+  if(!currentQuote) return;
+
+  const q = currentQuote;
+  const isBuy = mode === 'buy';
+
+  swapping = true;
+  updateSwapButton();
+
+  // Web3 mode - call real contract
+  if (contracts.swap && walletAddress) {
+    const isEn = I18N.getLang() === 'en';
+
+    try {
+      showToast(isEn ? 'Transaction submitted...' : '交易提交中...', 'info');
+
+      if (isBuy) {
+        // Buy pGOLD with USDC
+        const usdcAmount = ethers.parseUnits(q.inputVal.toFixed(6), 6);
+
+        // Get real AMM quote from contract for accurate minOut
+        const [pgoldOut] = await contracts.swap.getBuyQuote(usdcAmount);
+        const minPGOLD = pgoldOut * BigInt(Math.floor((1 - slippage / 100) * 10000)) / 10000n;
+
+        // Check and approve USDC (one-time unlimited approval)
+        const currentAllowance = await contracts.usdc.allowance(walletAddress, CONTRACT_ADDRS.swap);
+        if (currentAllowance < usdcAmount) {
+          showToast(isEn ? 'Step 1/2 — approve USDC in wallet (one-time)' : '第 1/2 步 — 请在钱包确认 USDC 授权（一次性）', 'info');
+          const approveTx = await contracts.usdc.approve(CONTRACT_ADDRS.swap, ethers.MaxUint256);
+          await approveTx.wait();
+        }
+
+        showToast(isEn ? 'Step 2/2 — confirm swap in wallet' : '第 2/2 步 — 请在钱包确认交易', 'info');
+        const ok = await sendTx(() => contracts.swap.buy(usdcAmount, minPGOLD, Math.floor(Date.now() / 1000) + 1200));
+
+        if (ok) {
+          await loadChainData();
+          trades.push({type:'BUY', pgold:q.out, price:q.price, time:new Date().toLocaleTimeString()});
+          showToast(t('swap.success'), 'success');
+        }
+      } else {
+        // Sell pGOLD for USDC
+        // Use on-chain balance if user is selling near-max to avoid float precision overflow
+        const onChainBal = await contracts.pgold.balanceOf(walletAddress);
+        const inputBig = ethers.parseEther(q.inputVal.toFixed(18));
+        const pgoldAmount = inputBig > onChainBal ? onChainBal : inputBig;
+
+        // Get real AMM quote from contract for accurate minOut
+        const [usdcOut] = await contracts.swap.getSellQuote(pgoldAmount);
+        const minUSDC = usdcOut * BigInt(Math.floor((1 - slippage / 100) * 10000)) / 10000n;
+
+        // Check and approve pGOLD (one-time unlimited approval)
+        const currentAllowance = await contracts.pgold.allowance(walletAddress, CONTRACT_ADDRS.swap);
+        if (currentAllowance < pgoldAmount) {
+          showToast(isEn ? 'Step 1/2 — approve pGOLD in wallet (one-time)' : '第 1/2 步 — 请在钱包确认 pGOLD 授权（一次性）', 'info');
+          const approveTx = await contracts.pgold.approve(CONTRACT_ADDRS.swap, ethers.MaxUint256);
+          await approveTx.wait();
+        }
+
+        showToast(isEn ? 'Step 2/2 — confirm swap in wallet' : '第 2/2 步 — 请在钱包确认交易', 'info');
+        const ok = await sendTx(() => contracts.swap.sell(pgoldAmount, minUSDC, Math.floor(Date.now() / 1000) + 1200));
+
+        if (ok) {
+          await loadChainData();
+          trades.push({type:'SELL', pgold:q.inputVal, price:q.price, time:new Date().toLocaleTimeString()});
+          showToast(t('swap.success'), 'success');
+        }
+      }
+    } catch (err) {
+      console.error('Swap error:', err);
+      showToast('Swap failed', 'error');
+    } finally {
+      swapping = false;
+      el('inputPay', '');
+      el('inputReceive', '');
+      el('rowPay').classList.remove('warn');
+      el('rowImpact').style.display = 'none';
+      currentQuote = null;
+      updateSwapButton();
+      render();
+    }
+  } else {
+    // Mock mode - fallback
+    setTimeout(() => {
+      if(isBuy){
+        balances.usdc -= q.inputVal;
+        balances.pgold += q.out;
+        pool.usdc += (q.inputVal - q.fee);
+        pool.pgold -= q.out;
+        trades.push({type:'BUY', pgold:q.out, price:q.price, time:new Date().toLocaleTimeString()});
+      } else {
+        balances.pgold -= q.inputVal;
+        balances.usdc += q.out;
+        pool.pgold += q.inputVal;
+        pool.usdc -= (q.out + q.fee);
+        trades.push({type:'SELL', pgold:q.inputVal, price:q.price, time:new Date().toLocaleTimeString()});
+      }
+      el('inputPay', '');
+      el('inputReceive', '');
+      el('rowPay').classList.remove('warn');
+      el('rowImpact').style.display = 'none';
+      currentQuote = null;
+      swapping = false;
+      showToast(t('swap.success'), 'success');
+      render();
+    }, 600);
+  }
 }
 
-function toggleWallet(){connected=!connected;render();}
+async function toggleWallet(){
+  if (!connected) {
+    openWalletModal();
+  } else {
+    // Disconnect
+    if (confirm(I18N.getLang() === 'en' ? 'Disconnect wallet?' : '断开钱包连接？')) {
+      connected = false;
+      walletAddress = null;
+      web3Provider = null;
+      web3Signer = null;
+      contracts = {};
+      render();
+    }
+  }
+}
+
+function openWalletModal(){
+  const isEn = I18N.getLang() === 'en';
+  el('walletModalTitle', isEn ? 'Connect Wallet' : '连接钱包');
+  el('metamaskDesc', isEn ? 'Browser wallet extension' : '浏览器钱包扩展');
+  el('okxDesc', isEn ? 'OKX Wallet extension' : 'OKX 钱包扩展');
+  el('wcDesc', isEn ? 'Scan to connect mobile wallet' : '扫码连接移动端钱包');
+  el('coinbaseDesc', isEn ? 'Coinbase Wallet extension' : 'Coinbase 钱包扩展');
+  el('trustDesc', isEn ? 'Trust Wallet extension' : 'Trust Wallet 扩展');
+  el('binanceDesc', isEn ? 'Binance Wallet extension' : 'Binance 钱包扩展');
+  el('imtokenDesc', isEn ? 'imToken wallet' : 'imToken 钱包');
+  document.getElementById('walletModal').classList.add('show');
+}
+
+function closeWalletModal(){
+  document.getElementById('walletModal').classList.remove('show');
+}
+
+async function selectWallet(type){
+  const isEn = I18N.getLang() === 'en';
+  closeWalletModal();
+
+  if(type === 'metamask'){
+    if(typeof window.ethereum === 'undefined'){
+      showToast(isEn ? 'MetaMask not detected. Please install it.' : '未检测到 MetaMask，请先安装', 'error');
+      return;
+    }
+    await initWeb3();
+
+  } else if(type === 'okx'){
+    if(typeof window.okxwallet !== 'undefined'){
+      try{
+        web3Provider = new ethers.BrowserProvider(window.okxwallet);
+        const network = await web3Provider.getNetwork();
+        if (Number(network.chainId) !== CHAIN_ID) {
+          showToast(isEn ? 'Please switch to Hardhat network' : '请切换到 Hardhat 测试网络', 'error');
+          return;
+        }
+        const accounts = await window.okxwallet.request({method:'eth_requestAccounts'});
+        walletAddress = accounts[0];
+        web3Signer = await web3Provider.getSigner();
+        contracts.pgold = new ethers.Contract(CONTRACT_ADDRS.pgold, TOKEN_ABI, web3Signer);
+        contracts.usdc = new ethers.Contract(CONTRACT_ADDRS.usdc, TOKEN_ABI, web3Signer);
+        contracts.swap = new ethers.Contract(CONTRACT_ADDRS.swap, SWAP_ABI, web3Signer);
+        contracts.treasury = new ethers.Contract(CONTRACT_ADDRS.treasury, TREASURY_ABI, web3Provider);
+        connected = true;
+        await loadChainData();
+      } catch(e){
+        showToast(isEn ? 'Connection rejected' : '已取消连接', 'error');
+      }
+    } else {
+      showToast(isEn ? 'OKX Wallet not detected' : '未检测到 OKX 钱包', 'error');
+    }
+
+  } else if(type === 'coinbase'){
+    if(typeof window.coinbaseWalletExtension !== 'undefined'){
+      showToast(isEn ? 'Coinbase Wallet support coming soon' : 'Coinbase 钱包支持即将推出', 'info');
+    } else {
+      showToast(isEn ? 'Coinbase Wallet not detected' : '未检测到 Coinbase 钱包', 'error');
+    }
+
+  } else if(type === 'trust' || type === 'binance' || type === 'imtoken'){
+    showToast(isEn ? 'Coming soon' : '即将推出', 'info');
+
+  } else if(type === 'walletconnect'){
+    showToast(isEn ? 'WalletConnect coming soon' : 'WalletConnect 即将推出', 'info');
+  }
+}
 
 let toastTimer;
 function showToast(msg,type){

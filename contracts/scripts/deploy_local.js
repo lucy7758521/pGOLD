@@ -124,7 +124,7 @@ async function main() {
   await treasury.setMintAuthorized(deployed.VestingManager, true);
 
   const PGOLDSwap = await hre.ethers.getContractFactory("PGOLDSwap");
-  const swap = await PGOLDSwap.deploy(deployed.PGOLDToken, deployed.USDC, deployed.FeeRouter);
+  const swap = await PGOLDSwap.deploy(deployed.PGOLDToken, deployed.USDC, deployed.FeeRouter, deployed.Treasury);
   await swap.waitForDeployment();
   deployed.PGOLDSwap = await swap.getAddress();
   console.log(`  ✅ PGOLDSwap: ${deployed.PGOLDSwap}`);
@@ -393,14 +393,14 @@ async function main() {
   // Alice sells pGOLD
   const sellAmt = pgold("500");
   await pGOLD.connect(alice).approve(deployed.PGOLDSwap, sellAmt);
-  const sellTx = await swap.connect(alice).sell(sellAmt, 0);
+  const sellTx = await swap.connect(alice).sell(sellAmt, 0, 9999999999);
   await sellTx.wait();
   console.log(`  🔴 Alice sold: ${fmtPgold(sellAmt)} → USDC`);
 
   // Bob buys pGOLD
   const buyAmt = usdc("85000");
   await mockUSDC.connect(bob).approve(deployed.PGOLDSwap, buyAmt);
-  const buyTx = await swap.connect(bob).buy(buyAmt, 0);
+  const buyTx = await swap.connect(bob).buy(buyAmt, 0, 9999999999);
   await buyTx.wait();
   console.log(`  🟢 Bob bought: ${fmtUSD(fromUsdc(buyAmt))} USDC → pGOLD`);
 
@@ -409,7 +409,7 @@ async function main() {
     const smallAmt = usdc("850");
     await mockUSDC.mint(charlie.address, smallAmt);
     await mockUSDC.connect(charlie).approve(deployed.PGOLDSwap, smallAmt);
-    await swap.connect(charlie).buy(smallAmt, 0);
+    await swap.connect(charlie).buy(smallAmt, 0, 9999999999);
   }
   console.log(`  📊 10 small trades by Charlie`);
 
@@ -532,7 +532,7 @@ async function main() {
     await mockUSDC.mint(charlie.address, amt);
     await mockUSDC.connect(charlie).approve(deployed.PGOLDSwap, amt);
     try {
-      await swap.connect(charlie).buy(amt, 0);
+      await swap.connect(charlie).buy(amt, 0, 9999999999);
     } catch (e) { /* skip pool imbalance errors */ }
   }
 
@@ -582,6 +582,12 @@ async function main() {
 main()
   .then((report) => {
     console.log("\n✅ All phases passed. Ready for testnet deployment.");
+    // Auto-sync addresses to frontend files
+    try {
+      require("./sync_addresses.js");
+    } catch(e) {
+      console.warn("  ⚠️  sync_addresses.js failed:", e.message);
+    }
     process.exit(0);
   })
   .catch((error) => {
