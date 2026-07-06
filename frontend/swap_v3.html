@@ -566,12 +566,12 @@ const t=k=>I18N.t(k);
 // ══════════════════════════════════════════════════════════
 // Web3 Configuration
 // ══════════════════════════════════════════════════════════
-const CHAIN_ID = 31337;
+const CHAIN_ID = 421614;
 const CONTRACT_ADDRS = {
-  pgold:    '0x0165878A594ca255338adfa4d48449f69242Eb8F',
-  usdc:     '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-  swap:     '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0',
-  treasury: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853'
+  pgold:       '0x8bAeC48a7F13100D57cf08448081Cf6a8620cF7F',
+  usdc:        '0x8E927ACEF4e77CCCc56bcfd94bE43B964D741E66',
+  swap:        '0xEa5A9045e3a316610D5d874bb64fA23998645f32',
+  treasury:    '0x3EA388c46c22182FA938fcBF3D273Cc51b0f62C6'
 };
 
 const SWAP_ABI = [
@@ -634,15 +634,15 @@ async function initWeb3() {
             await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [chainMeta] });
             web3Provider = new ethers.BrowserProvider(window.ethereum);
           } catch(addErr) {
-            // can't add chain — warn but continue so wallet still connects
-            showToast(isEn ? 'Network mismatch — some features may not work' : '网络不匹配，部分功能可能不可用', 'info');
+            showToast(isEn ? 'Please switch to Arbitrum Sepolia in MetaMask' : '请在 MetaMask 中切换到 Arbitrum Sepolia 网络', 'error');
+            return false;
           }
         } else if (switchErr.code === 4001 || switchErr.code === 'ACTION_REJECTED') {
           showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
           return false;
         } else {
-          // unknown switch error — warn but continue
-          showToast(isEn ? 'Network mismatch — some features may not work' : '网络不匹配，部分功能可能不可用', 'info');
+          showToast(isEn ? 'Please switch to Arbitrum Sepolia in MetaMask' : '请在 MetaMask 中切换到 Arbitrum Sepolia 网络', 'error');
+          return false;
         }
       }
     }
