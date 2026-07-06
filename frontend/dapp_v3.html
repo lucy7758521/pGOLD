@@ -3302,6 +3302,7 @@ function renderRankTable(tab){
     if(myRankEl) myRankEl.textContent='--';
     return;
   }
+  const fmtN=v=>parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0});
   tbody.innerHTML=data.rows.map(row=>{
     const isMe=row.isMe;
     const addrCell=isMe
@@ -3440,6 +3441,7 @@ function renderNoTeamLeaderboard(){
     tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text2);font-size:.85em">${isEn?'No teams yet — create the first one!':'暂无战队，快来创建第一支！'}</td></tr>`;
     return;
   }
+  tbody.innerHTML=ALL_TEAMS.map(t=>{
     const badge=t.r<=3?[
       `<span style="background:rgba(212,168,67,.15);color:#f0d078;border:1px solid rgba(212,168,67,.3);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
       `<span style="background:rgba(180,180,180,.1);color:#c0c0c0;border:1px solid rgba(180,180,180,.25);padding:2px 7px;border-radius:5px;font-size:.78em;font-weight:700">${t.r}</span>`,
@@ -3512,6 +3514,7 @@ function renderTeamMembers(){
     el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--text2);font-size:.85em">${isEn?'No members yet':'暂无成员'}</div>`;
     return;
   }
+  el.innerHTML=TEAM_MEMBERS.map((m,i)=>{
     const bg=i%2===0?'':'background:rgba(255,255,255,.02)';
     const addrStyle=m.isMe?'color:var(--gold);font-weight:700':'font-family:monospace;font-size:.78em;color:var(--text2)';
     return `<div style="display:grid;grid-template-columns:1fr 2fr 1fr 1fr;padding:8px 12px;${bg};border-top:1px solid var(--border)">
