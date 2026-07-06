@@ -575,8 +575,8 @@ const CONTRACT_ADDRS = {
 };
 
 const SWAP_ABI = [
-  'function buy(uint256 usdcIn, uint256 minPGOLDOut) external returns (uint256)',
-  'function sell(uint256 pgoldIn, uint256 minUSDCOut) external returns (uint256)',
+  'function buy(uint256 usdcIn, uint256 minPGOLDOut, uint256 deadline) external returns (uint256)',
+  'function sell(uint256 pgoldIn, uint256 minUSDCOut, uint256 deadline) external returns (uint256)',
   'function getBuyQuote(uint256 usdcIn) external view returns (uint256 pgoldOut, uint256 fee)',
   'function getSellQuote(uint256 pgoldIn) external view returns (uint256 usdcOut, uint256 fee)',
   'function getPrice() external view returns (uint256)',
@@ -611,8 +611,35 @@ async function initWeb3() {
     const network = await web3Provider.getNetwork();
 
     if (Number(network.chainId) !== CHAIN_ID) {
-      showToast('Please switch to Hardhat network (Chain ID 31337)', 'error');
-      return false;
+      showToast(isEn ? 'Switching network...' : '正在切换网络...', 'info');
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
+        });
+      } catch(switchErr) {
+        if (switchErr.code === 4902) {
+          const chainMeta = CHAIN_ID === 421614
+            ? { chainId: '0x' + (421614).toString(16), chainName: 'Arbitrum Sepolia',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://sepolia.arbiscan.io'] }
+            : { chainId: '0x' + CHAIN_ID.toString(16), chainName: 'Hardhat Local',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['http://127.0.0.1:8545'],
+                blockExplorerUrls: [] };
+          try {
+            await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [chainMeta] });
+          } catch(addErr) {
+            showToast(isEn ? 'Failed to add network' : '添加网络失败', 'error');
+            return false;
+          }
+        } else {
+          showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
+          return false;
+        }
+      }
+      web3Provider = new ethers.BrowserProvider(window.ethereum);
     }
 
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -1029,8 +1056,17 @@ async function selectWallet(type){
         web3Provider = new ethers.BrowserProvider(window.okxwallet);
         const network = await web3Provider.getNetwork();
         if (Number(network.chainId) !== CHAIN_ID) {
-          showToast(isEn ? 'Please switch to Hardhat network' : '请切换到 Hardhat 测试网络', 'error');
-          return;
+          showToast(isEn ? 'Switching network...' : '正在切换网络...', 'info');
+          try {
+            await window.okxwallet.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
+            });
+          } catch(switchErr) {
+            showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
+            return;
+          }
+          web3Provider = new ethers.BrowserProvider(window.okxwallet);
         }
         const accounts = await window.okxwallet.request({method:'eth_requestAccounts'});
         walletAddress = accounts[0];

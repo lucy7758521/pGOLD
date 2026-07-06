@@ -1166,7 +1166,32 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </div>
   </div>
 
-  <div class="sec-hd"><h2 data-i18n="ico.subscribBtn">立即认购</h2></div>
+  <!-- ICO 结束后：vesting claim 区域 -->
+  <div id="ico-claim-section" style="display:none">
+    <div class="sec-hd"><h2 data-i18n="ico.claimTitle">领取释放 pGOLD</h2></div>
+    <div class="info-card card-green">
+      <div class="info-row">
+        <span class="info-label" data-i18n="ico.claimable">可领取</span>
+        <span class="info-val" style="color:var(--green);font-weight:700"><span id="ico-claimable">0</span> pGOLD</span>
+      </div>
+      <div class="divider"></div>
+      <div class="info-row">
+        <span class="info-label" data-i18n="ico.claimVested">已释放总量</span>
+        <span class="info-val"><span id="ico-vested">0</span> pGOLD</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label" data-i18n="ico.claimPending">待释放</span>
+        <span class="info-val" style="color:var(--text2)"><span id="ico-pending">0</span> pGOLD</span>
+      </div>
+      <div class="divider"></div>
+      <button class="btn btn-gold btn-full" id="ico-claim-btn" onclick="claimVesting()" style="margin-top:8px">
+        <span class="btn-label" data-i18n="ico.claimBtn">领取 pGOLD</span>
+        <span class="btn-spinner"></span>
+      </button>
+    </div>
+  </div>
+
+
   <div class="info-card">
     <div class="form-row">
       <label data-i18n="ico.amountLabel">认购金额 (USDC)</label>
@@ -1449,6 +1474,31 @@ tr:hover td{background:rgba(212,168,67,.03);}
     </svg>
     <span id="rank-dl-label">下载月榜数据 (CSV)</span>
   </button>
+
+  <!-- 排名奖励领取（需后端提供 Merkle Proof） -->
+  <div class="sec-hd" style="margin-top:28px">
+    <h2 data-i18n="rank.claimTitle">领取排名奖励</h2>
+    <button onclick="document.getElementById('rank-claim-card').classList.toggle('hidden')"
+      style="font-size:.72em;color:var(--text2);background:none;border:none;cursor:pointer;font-family:inherit"
+      data-i18n="rank.claimToggle">展开</button>
+  </div>
+  <div class="info-card hidden" id="rank-claim-card">
+    <p style="font-size:.78em;color:var(--text2);margin-bottom:12px" data-i18n="rank.claimDesc">
+      粘贴后端发放的 Proof JSON，一键领取排名奖励（通过 VestingManager 3年线性释放）。
+    </p>
+    <div class="form-row">
+      <label data-i18n="rank.proofLabel">Proof JSON</label>
+      <textarea id="rankProofInput" rows="5"
+        style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text1);padding:10px;font-family:monospace;font-size:.78em;resize:vertical"
+        placeholder='{"roundId":0,"rank":1,"stakeAmount":"1000000000000000000","isAbsorbed":false,"absorbingRoundId":0,"proof":["0x..."]}'>
+      </textarea>
+      <div class="form-error" id="rankProofError"></div>
+    </div>
+    <button class="btn btn-gold btn-full" onclick="claimRankingReward()">
+      <span class="btn-label" data-i18n="rank.claimBtn">领取奖励</span>
+      <span class="btn-spinner"></span>
+    </button>
+  </div>
 </div>
 <!-- ══ TEAM ══ -->
 <div class="page" id="page-team">
@@ -1497,6 +1547,7 @@ tr:hover td{background:rgba(212,168,67,.03);}
         <tbody id="noteam-lb-tbody"></tbody>
       </table>
     </div>
+    <div id="noteam-lb-hint" style="display:none;font-size:.75em;color:var(--text2);margin-top:6px;text-align:right"></div>
   </div>
 
   <div id="teamTab-myTeam" class="info-card">
@@ -3464,6 +3515,15 @@ function renderNoTeamLeaderboard(){
       <td><button onclick="openJoinTeamDirect('${t.name}')" style="background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);color:var(--gold);border-radius:6px;padding:3px 10px;font-size:.75em;cursor:pointer;white-space:nowrap">${I18N.getLang()==='en'?'Join':'加入'}</button></td>
     </tr>`;
   }).join('');
+  // 如果是链上数据，在表格下方加提示
+  const hint = document.getElementById('noteam-lb-hint');
+  if (hint) {
+    const isEn = I18N.getLang() === 'en';
+    hint.textContent = isEn
+      ? 'Volume & rewards are updated off-chain at end of each round.'
+      : '交易量与奖励数据在每轮结束后链下更新。';
+    hint.style.display = '';
+  }
   // 初始化拖拽
   const wrap=document.getElementById('noteam-lb-wrap');
   if(wrap&&!wrap.dataset.drag){
@@ -3482,8 +3542,8 @@ function showTeamDetail(name){
   const team=ALL_TEAMS.find(t=>t.name===name);
   if(!team) return;
   const isEn=I18N.getLang()==='en';
-  // 使用 team.r (排名) 作为临时 teamId，因为 ALL_TEAMS 是 mock 数据
-  pendingAction={action:'joinTeam',teamId:team.r,teamName:name};
+  // 优先使用真实 teamId，fallback 到排名（mock 数据场景）
+  pendingAction={action:'joinTeam',teamId:team.teamId||team.r,teamName:name};
   document.getElementById('modalTitle').textContent=isEn?`Team: ${name}`:`战队：${name}`;
   document.getElementById('modalMsg').innerHTML=
     `<div style="display:flex;flex-direction:column;gap:8px">
@@ -3573,6 +3633,21 @@ let HIST_DATA=[
   {time:'2026-06-19 10:45',type:'buy', amt:+80,  price:83.90, fee:16.78, note:'市价买入',   noteEn:'Market buy'},
 ];
 
+// localStorage persistence — real txns override mock on load
+const HIST_KEY = 'pgold_hist_v1';
+(function() {
+  try {
+    const saved = localStorage.getItem(HIST_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        HIST_DATA.length = 0;
+        parsed.forEach(r => HIST_DATA.push(r));
+      }
+    }
+  } catch {}
+})();
+
 function fmtHistTime(){
   const now=new Date();
   return now.getFullYear()+'-'+
@@ -3584,6 +3659,9 @@ function fmtHistTime(){
 
 function pushHist(type,amt,note,price,fee){
   HIST_DATA.unshift({time:fmtHistTime(),type,amt:Math.abs(amt),price:price||null,fee:fee||null,note});
+  // cap at 500 records to avoid quota issues
+  if(HIST_DATA.length>500) HIST_DATA.length=500;
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(HIST_DATA)); } catch {}
   if(document.getElementById('page-history')?.classList.contains('active')||
      document.getElementById('hist-tbody')) renderHistTable();
   addNotifItem(type,amt,note);
@@ -4024,6 +4102,24 @@ let balanceVisible = true;
 const ICO_CAP_PGOLD=1000;
 let dappPgoldPrice=85;
 
+// 页面加载后用只读 provider 拉取链上金价，无需用户连接钱包
+(async function fetchReadonlyPrice() {
+  const RPC = CHAIN_ID === 421614
+    ? 'https://sepolia-rollup.arbitrum.io/rpc'
+    : 'http://127.0.0.1:8545';
+  const PRICE_ABI = [{"inputs":[],"name":"goldPriceUSD","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
+  try {
+    const roProvider = new ethers.JsonRpcProvider(RPC);
+    const roTreasury = new ethers.Contract(CONTRACT_ADDRS.treasury, PRICE_ABI, roProvider);
+    const price = await roTreasury.goldPriceUSD();
+    const p = parseFloat(ethers.formatUnits(price, 8));
+    if (p > 0) updateDappPriceDisplays(p);
+  } catch(e) {
+    // RPC unreachable (local node not running etc) — keep default
+  }
+  setTimeout(fetchReadonlyPrice, 30_000);
+})();
+
 function updateDappPriceDisplays(p){
   dappPgoldPrice=p;
   const fmt=v=>'$'+Math.round(v).toLocaleString('en-US');
@@ -4435,12 +4531,13 @@ const ABI = {
   ranking: [
     {"inputs":[{"name":"amount","type":"uint256"}],"name":"depositStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[{"name":"amount","type":"uint256"}],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[],"name":"claimReward","outputs":[{"name":"vestingId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"roundId","type":"uint256"},{"name":"rank","type":"uint256"},{"name":"stakeAmount","type":"uint256"},{"name":"isAbsorbed","type":"bool"},{"name":"absorbingRoundId","type":"uint256"},{"name":"proof","type":"bytes32[]"}],"name":"claimReward","outputs":[{"name":"vestingId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[{"name":"user","type":"address"}],"name":"getStake","outputs":[{"name":"amount","type":"uint256"},{"name":"active","type":"bool"}],"stateMutability":"view","type":"function"}
   ],
   genesis: [
     {"inputs":[{"name":"usdcAmount","type":"uint256"}],"name":"subscribe","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[{"name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"name":"usdcAmount","type":"uint256"},{"name":"backedPgold","type":"uint256"},{"name":"poolAllocation","type":"uint256"},{"name":"vested","type":"uint256"},{"name":"pending","type":"uint256"},{"name":"tier","type":"uint8"}],"stateMutability":"view","type":"function"}
+    {"inputs":[{"name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"name":"usdcAmount","type":"uint256"},{"name":"backedPgold","type":"uint256"},{"name":"poolAllocation","type":"uint256"},{"name":"vested","type":"uint256"},{"name":"pending","type":"uint256"},{"name":"tier","type":"uint8"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"claimed","outputs":[{"name":"","type":"bool"}],"stateMutability":"view","type":"function"}
   ],
   vpgold: [
     {"inputs":[{"name":"scheduleId","type":"uint256"}],"name":"wrap","outputs":[{"name":"vAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},
@@ -4467,6 +4564,8 @@ const ABI = {
     {"inputs":[{"name":"teamId","type":"uint256"}],"name":"joinTeam","outputs":[],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[{"name":"inviter","type":"address"}],"name":"bindInviter","outputs":[],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[{"name":"user","type":"address"}],"name":"userTeam","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[],"name":"nextTeamId","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"name":"teamId","type":"uint256"}],"name":"getTeam","outputs":[{"name":"id","type":"uint256"},{"name":"captain","type":"address"},{"name":"name","type":"string"},{"name":"memberCount","type":"uint256"},{"name":"createdAt","type":"uint256"},{"name":"active","type":"bool"}],"stateMutability":"view","type":"function"},
     {"inputs":[{"name":"teamId","type":"uint256"}],"name":"teams","outputs":[{"name":"id","type":"uint256"},{"name":"captain","type":"address"},{"name":"name","type":"string"},{"name":"memberCount","type":"uint256"},{"name":"createdAt","type":"uint256"},{"name":"active","type":"bool"}],"stateMutability":"view","type":"function"}
   ],
   treasury: [
@@ -4486,10 +4585,37 @@ async function initWeb3(addr) {
     web3Provider = new ethers.BrowserProvider(window.ethereum);
     const network = await web3Provider.getNetwork();
     if (Number(network.chainId) !== CHAIN_ID) {
-      showToast(isEn
-        ? `Wrong network — please switch to Hardhat (chainId ${CHAIN_ID})`
-        : `网络不对，请切换到 Hardhat 网络（chainId ${CHAIN_ID}）`, 'error');
-      return;
+      showToast(isEn ? 'Switching network...' : '正在切换网络...', 'info');
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x' + CHAIN_ID.toString(16) }],
+        });
+      } catch(switchErr) {
+        // 4902 = chain not added yet
+        if (switchErr.code === 4902) {
+          const chainMeta = CHAIN_ID === 421614
+            ? { chainId: '0x6' + (421614).toString(16), chainName: 'Arbitrum Sepolia',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://sepolia.arbiscan.io'] }
+            : { chainId: '0x' + CHAIN_ID.toString(16), chainName: 'Hardhat Local',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['http://127.0.0.1:8545'],
+                blockExplorerUrls: [] };
+          try {
+            await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [chainMeta] });
+          } catch(addErr) {
+            showToast(isEn ? 'Failed to add network' : '添加网络失败', 'error');
+            return;
+          }
+        } else {
+          showToast(isEn ? 'Network switch cancelled' : '已取消切换网络', 'error');
+          return;
+        }
+      }
+      // re-init provider after switch
+      web3Provider = new ethers.BrowserProvider(window.ethereum);
     }
     web3Signer = await web3Provider.getSigner();
     contracts.pgold   = new ethers.Contract(CONTRACT_ADDRS.pgold,   ABI.pgold,   web3Signer);
@@ -4503,6 +4629,7 @@ async function initWeb3(addr) {
     contracts.team    = new ethers.Contract(CONTRACT_ADDRS.team,    ABI.team,    web3Signer);
     contracts.treasury = new ethers.Contract(CONTRACT_ADDRS.treasury, ABI.treasury, web3Provider);
     await loadChainData(addr);
+    loadTeamData(addr); // non-blocking
   } catch(e) {
     console.error('initWeb3 failed', e);
   }
@@ -4533,12 +4660,179 @@ async function loadChainData(addr) {
     if (typeof updateVestingDisplays === 'function') updateVestingDisplays();
     if (typeof updateDappPriceDisplays === 'function') updateDappPriceDisplays(dappPgoldPrice);
     if (typeof updateDrawerAssets === 'function') updateDrawerAssets();
+    loadGenesisClaimData(addr); // non-blocking
   } catch(e) {
     console.error('loadChainData failed', e);
   }
 }
 
-async function approveIfNeeded(tokenContract, spender, amount) {
+async function loadGenesisClaimData(addr) {
+  try {
+    // Check if ICO has ended and user has a vesting schedule
+    const [userInfo, icoEnded] = await Promise.all([
+      contracts.genesis.getUserInfo(addr),
+      contracts.genesis.claimed(), // 'claimed' = snapshot finalized = ICO ended
+    ]);
+    const claimSection = document.getElementById('ico-claim-section');
+    if (!claimSection) return;
+
+    if (!icoEnded || Number(userInfo.usdcAmount) === 0) {
+      claimSection.style.display = 'none';
+      return;
+    }
+
+    // Get claimable amount from all vesting schedules
+    const scheduleIds = await contracts.vesting.getBeneficiarySchedules(addr);
+    let totalClaimable = 0n;
+    for (const id of scheduleIds) {
+      try {
+        const c = await contracts.vesting.getClaimableAmount(id);
+        totalClaimable += c;
+      } catch {}
+    }
+
+    const claimable = parseFloat(ethers.formatEther(totalClaimable));
+    const vested    = parseFloat(ethers.formatEther(userInfo.vested));
+    const pending   = parseFloat(ethers.formatEther(userInfo.pending));
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('ico-claimable', claimable.toFixed(4));
+    set('ico-vested',    vested.toFixed(4));
+    set('ico-pending',   pending.toFixed(4));
+
+    const btn = document.getElementById('ico-claim-btn');
+    if (btn) btn.disabled = claimable <= 0;
+
+    claimSection.style.display = '';
+  } catch(e) {
+    console.warn('loadGenesisClaimData failed', e);
+  }
+}
+
+async function loadTeamData(userAddr) {
+  try {
+    const nextId = Number(await contracts.team.nextTeamId());
+    if (nextId <= 1) return; // no teams yet
+    const MAX_TEAMS = 50;
+    const ids = Array.from({ length: Math.min(nextId - 1, MAX_TEAMS) }, (_, i) => i + 1);
+    const results = await Promise.all(ids.map(id => contracts.team.getTeam(id).catch(() => null)));
+    const chainTeams = results
+      .filter(t => t && t.active)
+      .map((t, i) => ({
+        r: i + 1,
+        teamId: Number(t.id),
+        name: t.name || `Team #${t.id}`,
+        leader: t.captain,
+        members: Number(t.memberCount),
+        vol: '—',
+        reward: 0,
+      }))
+      .sort((a, b) => b.members - a.members)
+      .map((t, i) => ({ ...t, r: i + 1 }));
+    if (chainTeams.length > 0) {
+      ALL_TEAMS.length = 0;
+      chainTeams.forEach(t => ALL_TEAMS.push(t));
+    }
+    // detect user's current team
+    if (userAddr) {
+      const myTeamId = Number(await contracts.team.userTeam(userAddr));
+      inTeam = myTeamId > 0;
+    }
+    // re-render leaderboard if it has already been rendered (clear cache so new data shows)
+    const lbTbody = document.getElementById('noteam-lb-tbody');
+    if (lbTbody && lbTbody.dataset.rendered) {
+      delete lbTbody.dataset.rendered;
+      renderNoTeamLeaderboard();
+    }
+  } catch(e) {
+    console.warn('loadTeamData failed', e);
+  }
+}
+
+async function claimVesting() {
+  const isEn = I18N.getLang() === 'en';
+  const btn = document.getElementById('ico-claim-btn');
+  if (btn) { btn.disabled = true; btn.classList.add('loading'); }
+  try {
+    const addr = await web3Signer.getAddress();
+    const scheduleIds = await contracts.vesting.getBeneficiarySchedules(addr);
+    let claimed = 0;
+    for (const id of scheduleIds) {
+      try {
+        const claimable = await contracts.vesting.getClaimableAmount(id);
+        if (claimable > 0n) {
+          const tx = await contracts.vesting.claim(id);
+          await tx.wait();
+          claimed++;
+        }
+      } catch {}
+    }
+    if (claimed > 0) {
+      showToast(isEn ? 'pGOLD claimed successfully!' : 'pGOLD 领取成功！', 'success');
+      await loadChainData(addr);
+    } else {
+      showToast(isEn ? 'Nothing to claim yet' : '暂无可领取', 'info');
+    }
+  } catch(e) {
+    if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+      showToast(isEn ? 'Cancelled' : '已取消', 'error');
+    } else {
+      console.error('claimVesting', e);
+      showToast(isEn ? 'Claim failed' : '领取失败', 'error');
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+  }
+}
+
+async function claimRankingReward() {
+  const isEn = I18N.getLang() === 'en';
+  const errEl = document.getElementById('rankProofError');
+  const btn = document.querySelector('#rank-claim-card .btn');
+  if (errEl) errEl.classList.remove('show');
+
+  const raw = document.getElementById('rankProofInput')?.value?.trim();
+  if (!raw) {
+    if (errEl) { errEl.textContent = isEn ? 'Paste your proof JSON first' : '请先粘贴 Proof JSON'; errEl.classList.add('show'); }
+    return;
+  }
+
+  let p;
+  try { p = JSON.parse(raw); } catch {
+    if (errEl) { errEl.textContent = isEn ? 'Invalid JSON' : 'JSON 格式错误'; errEl.classList.add('show'); }
+    return;
+  }
+
+  const { roundId, rank, stakeAmount, isAbsorbed, absorbingRoundId, proof } = p;
+  if (roundId === undefined || rank === undefined || !stakeAmount || !Array.isArray(proof)) {
+    if (errEl) { errEl.textContent = isEn ? 'Missing required fields' : '字段不完整'; errEl.classList.add('show'); }
+    return;
+  }
+
+  if (!_web3Ready) { showToast(isEn ? 'Connect wallet first' : '请先连接钱包', 'error'); return; }
+  if (btn) { btn.disabled = true; btn.classList.add('loading'); }
+  try {
+    const tx = await contracts.ranking.claimReward(
+      BigInt(roundId), BigInt(rank), BigInt(stakeAmount),
+      !!isAbsorbed, BigInt(absorbingRoundId ?? 0), proof
+    );
+    await tx.wait();
+    showToast(isEn ? 'Reward claimed! Vesting schedule created.' : '奖励已领取，归属计划已创建', 'success');
+    document.getElementById('rankProofInput').value = '';
+    await loadChainData(await web3Signer.getAddress());
+  } catch(e) {
+    if (e.code === 4001 || e.code === 'ACTION_REJECTED') {
+      showToast(isEn ? 'Cancelled' : '已取消', 'error');
+    } else {
+      const msg = e?.reason || e?.message || '';
+      showToast((isEn ? 'Failed: ' : '失败：') + msg.slice(0, 80), 'error');
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+  }
+}
+
+
   const signerAddr = await web3Signer.getAddress();
   const allowance = await tokenContract.allowance(signerAddr, spender);
   if (allowance < amount) {
