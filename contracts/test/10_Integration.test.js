@@ -57,7 +57,7 @@ describe("Integration — 全链路端到端测试", function () {
 
     // PGOLDSwap
     const PGOLDSwap = await ethers.getContractFactory("PGOLDSwap");
-    swap = await PGOLDSwap.deploy(pgold.target, mockUSDC.target, feeRouter.target);
+    swap = await PGOLDSwap.deploy(pgold.target, mockUSDC.target, feeRouter.target, treasury.target);
     await swap.waitForDeployment();
 
     // ==========================================================
@@ -197,21 +197,21 @@ describe("Integration — 全链路端到端测试", function () {
       // Alice 用 pGOLD 换 USDC (sell)
       const sellAmount = ethers.parseEther("100");
       await pgold.connect(alice).approve(swap.target, sellAmount);
-      const tx = await swap.connect(alice).sell(sellAmount, 0);
+      const tx = await swap.connect(alice).sell(sellAmount, 0, 9999999999);
       await tx.wait();
 
       // Bob 用 USDC 换 pGOLD (buy)
       const buyAmount = ethers.parseUnits("8500", 6);
       await mockUSDC.mint(bob.address, buyAmount);
       await mockUSDC.connect(bob).approve(swap.target, buyAmount);
-      const tx2 = await swap.connect(bob).buy(buyAmount, 0);
+      const tx2 = await swap.connect(bob).buy(buyAmount, 0, 9999999999);
       await tx2.wait();
 
       // Charlie 小额交易
       const charlieAmount = ethers.parseUnits("170", 6);
       await mockUSDC.mint(charlie.address, charlieAmount);
       await mockUSDC.connect(charlie).approve(swap.target, charlieAmount);
-      await swap.connect(charlie).buy(charlieAmount, 0);
+      await swap.connect(charlie).buy(charlieAmount, 0, 9999999999);
 
       // 验证手续费已转至 Treasury（非 FeeRouter）
       const feeBal = await mockUSDC.balanceOf(treasury.target);
@@ -285,7 +285,7 @@ describe("Integration — 全链路端到端测试", function () {
         const amount = ethers.parseUnits("85", 6);
         await mockUSDC.mint(alice.address, amount);
         await mockUSDC.connect(alice).approve(swap.target, amount);
-        await swap.connect(alice).buy(amount, 0);
+        await swap.connect(alice).buy(amount, 0, 9999999999);
       }
       expect(await mockUSDC.balanceOf(treasury.target)).to.be.gt(0n);
     });

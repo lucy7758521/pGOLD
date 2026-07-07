@@ -38,6 +38,10 @@ module.exports = {
     hardhat: {
       chainId: 31337,
     },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+      chainId: 31337,
+    },
   },
   // ── 合约验证 (Arbiscan) ──
   etherscan: {

@@ -31,7 +31,7 @@ describe("PriceDefense — 完整覆盖", function () {
     const feeRouter = await FeeRouter.deploy(treasury.target, mockUSDC.target);
 
     swap = await (await ethers.getContractFactory("PGOLDSwap")).deploy(
-      pgold.target, mockUSDC.target, feeRouter.target
+      pgold.target, mockUSDC.target, feeRouter.target, treasury.target
     );
 
     // 初始化流动性池：1,000,000 USDC / 11765 pGOLD → price ≈ $85/g

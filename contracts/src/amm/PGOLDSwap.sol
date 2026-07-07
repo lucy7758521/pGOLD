@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../core/RoleRegistry.sol";
 import "../core/PGOLDToken.sol";
+import "../core/Treasury.sol";
 import "./FeeRouter.sol";
 
 /**
@@ -31,6 +32,7 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     uint256 public constant FEE_RATE = 25;               // 0.25% (BPS)
     uint256 public constant BPS_DENOMINATOR = 10000;
+    uint256 public constant PRICE_FLOOR_BPS = 9850;      // 成交价不得低于 Oracle 金价的 98.5%
 
     // ──────────────────────────────────────────────
     // 不可变引用
@@ -38,6 +40,7 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
     PGOLDToken public immutable pGOLD;
     IERC20 public immutable USDC;
     FeeRouter public immutable feeRouter;
+    Treasury public immutable treasury;
 
     // ──────────────────────────────────────────────
     // 池状态
@@ -104,14 +107,16 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     // 构造函数
     // ──────────────────────────────────────────────
-    constructor(address _pGOLD, address _usdc, address _feeRouter) {
+    constructor(address _pGOLD, address _usdc, address _feeRouter, address _treasury) {
         require(_pGOLD != address(0), "Swap: zero pGOLD");
         require(_usdc != address(0), "Swap: zero USDC");
         require(_feeRouter != address(0), "Swap: zero router");
+        require(_treasury != address(0), "Swap: zero treasury");
 
         pGOLD = PGOLDToken(_pGOLD);
         USDC = IERC20(_usdc);
         feeRouter = FeeRouter(_feeRouter);
+        treasury = Treasury(_treasury);
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
@@ -159,7 +164,8 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     // 买入 pGOLD（用 USDC 买）
     // ──────────────────────────────────────────────
-    function buy(uint256 usdcIn, uint256 minPGOLDOut) external nonReentrant returns (uint256 pgoldOut) {
+    function buy(uint256 usdcIn, uint256 minPGOLDOut, uint256 deadline) external nonReentrant returns (uint256 pgoldOut) {
+        require(block.timestamp <= deadline, "Swap: expired");
         require(usdcIn > 0, "Swap: zero input");
         require(reserveUSDC > 0 && reservePGOLD > 0, "Swap: pool not initialized");
 
@@ -167,6 +173,14 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
         (pgoldOut, fee) = getBuyQuote(usdcIn);
         require(pgoldOut >= minPGOLDOut, "Swap: slippage");
         require(pgoldOut <= reservePGOLD, "Swap: insufficient reserve");
+
+        // Oracle 价格下限：成交价不得低于金价的 95%
+        uint256 oraclePrice = treasury.goldPriceUSD();
+        if (oraclePrice > 0) {
+            // executePrice = usdcIn(6dec) * 1e20 / pgoldOut(18dec) → 8 decimals
+            uint256 executePrice = (usdcIn * 1e20) / pgoldOut;
+            require(executePrice >= oraclePrice * PRICE_FLOOR_BPS / BPS_DENOMINATOR, "Swap: price below oracle floor");
+        }
 
         // 扣 USDC
         USDC.safeTransferFrom(msg.sender, address(this), usdcIn);
@@ -198,7 +212,8 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     // 卖出 pGOLD（换 USDC）
     // ──────────────────────────────────────────────
-    function sell(uint256 pgoldIn, uint256 minUSDCOut) external nonReentrant returns (uint256 usdcOut) {
+    function sell(uint256 pgoldIn, uint256 minUSDCOut, uint256 deadline) external nonReentrant returns (uint256 usdcOut) {
+        require(block.timestamp <= deadline, "Swap: expired");
         require(pgoldIn > 0, "Swap: zero input");
         require(reserveUSDC > 0 && reservePGOLD > 0, "Swap: pool not initialized");
 
@@ -206,6 +221,14 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
         (usdcOut, fee) = getSellQuote(pgoldIn);
         require(usdcOut >= minUSDCOut, "Swap: slippage");
         require(usdcOut <= reserveUSDC, "Swap: insufficient reserve");
+
+        // Oracle 价格下限：成交价不得低于金价的 95%
+        uint256 oraclePrice = treasury.goldPriceUSD();
+        if (oraclePrice > 0) {
+            // executePrice = (usdcOut+fee)(6dec) * 1e20 / pgoldIn(18dec) → 8 decimals
+            uint256 executePrice = ((usdcOut + fee) * 1e20) / pgoldIn;
+            require(executePrice >= oraclePrice * PRICE_FLOOR_BPS / BPS_DENOMINATOR, "Swap: price below oracle floor");
+        }
 
         // 扣 pGOLD
         pGOLD.transferFrom(msg.sender, address(this), pgoldIn);
@@ -259,6 +282,14 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
         require(reserveUSDC > 0, "Swap: pool not initialized");
         require(usdcAmount > 0 && pgoldAmount > 0, "Swap: zero amount");
 
+        // 注入比例必须与当前储备比例一致（容差 ±1%）
+        uint256 expectedPGOLD = (usdcAmount * reservePGOLD) / reserveUSDC;
+        uint256 tolerance = expectedPGOLD / 100; // 1%
+        require(
+            pgoldAmount >= expectedPGOLD - tolerance && pgoldAmount <= expectedPGOLD + tolerance,
+            "Swap: imbalanced liquidity"
+        );
+
         USDC.safeTransferFrom(msg.sender, address(this), usdcAmount);
         pGOLD.transferFrom(msg.sender, address(this), pgoldAmount);
 
@@ -280,5 +311,74 @@ contract PGOLDSwap is AccessControl, ReentrancyGuard {
         uint256 volume, uint256 fees, uint256 swaps, uint256 price
     ) {
         return (totalVolumeUSDC, totalFeesCollected, totalSwapCount, lastPrice);
+    }
+
+    // ──────────────────────────────────────────────
+    // BOT 查询接口
+    // ──────────────────────────────────────────────
+
+    /**
+     * @notice 一次性返回池子完整状态，减少 BOT 的 RPC 调用次数
+     * @return reserveUsdc     USDC 储备量 (6 decimals)
+     * @return reservePgold    pGOLD 储备量 (18 decimals)
+     * @return k               恒定乘积 k = x*y
+     * @return ammPrice        AMM 当前价格 (USDC/pGOLD, 8 decimals)
+     * @return oraclePrice     Oracle 金价 (USDC/gram, 8 decimals)
+     * @return priceFloorBps   价格下限比例 (BPS, 9850 = 98.5%)
+     * @return volume          累计交易量 USDC (6 decimals)
+     * @return fees            累计手续费 USDC (6 decimals)
+     * @return swapCount       累计交易笔数
+     */
+    function getPoolInfo() external view returns (
+        uint256 reserveUsdc,
+        uint256 reservePgold,
+        uint256 k,
+        uint256 ammPrice,
+        uint256 oraclePrice,
+        uint256 priceFloorBps,
+        uint256 volume,
+        uint256 fees,
+        uint256 swapCount
+    ) {
+        return (
+            reserveUSDC,
+            reservePGOLD,
+            constantProduct,
+            getPrice(),
+            treasury.goldPriceUSD(),
+            PRICE_FLOOR_BPS,
+            totalVolumeUSDC,
+            totalFeesCollected,
+            totalSwapCount
+        );
+    }
+
+    /**
+     * @notice 同时模拟买入和卖出报价，BOT 一次调用即可判断套利空间
+     * @param usdcIn   买入时投入的 USDC 量 (6 decimals)
+     * @param pgoldIn  卖出时投入的 pGOLD 量 (18 decimals)
+     * @return buyPgoldOut   买入可得 pGOLD (18 decimals)
+     * @return buyFee        买入手续费 USDC (6 decimals)
+     * @return sellUsdcOut   卖出可得 USDC (6 decimals)
+     * @return sellFee       卖出手续费 USDC (6 decimals)
+     * @return oraclePrice   当前 Oracle 金价 (8 decimals)
+     * @return ammPrice      当前 AMM 价格 (8 decimals)
+     */
+    function getArbitrageInfo(uint256 usdcIn, uint256 pgoldIn) external view returns (
+        uint256 buyPgoldOut,
+        uint256 buyFee,
+        uint256 sellUsdcOut,
+        uint256 sellFee,
+        uint256 oraclePrice,
+        uint256 ammPrice
+    ) {
+        if (usdcIn > 0) {
+            (buyPgoldOut, buyFee) = getBuyQuote(usdcIn);
+        }
+        if (pgoldIn > 0) {
+            (sellUsdcOut, sellFee) = getSellQuote(pgoldIn);
+        }
+        oraclePrice = treasury.goldPriceUSD();
+        ammPrice = getPrice();
     }
 }

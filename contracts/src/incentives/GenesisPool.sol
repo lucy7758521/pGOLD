@@ -66,6 +66,7 @@ contract GenesisPool is AccessControl, ReentrancyGuard {
     uint256 public totalPgoldMinted;
     uint256 public totalScore;      // sum of all weight scores
     uint256 public participants;    // unique participant count
+    uint256 public totalPoolAllocated; // cumulative genesis pool pGOLD allocated
 
     struct Subscription {
         uint256 usdcAmount;         // USDC deposited
@@ -214,6 +215,8 @@ contract GenesisPool is AccessControl, ReentrancyGuard {
         if (totalScore > 0) {
             sub.poolAllocation = (totalPool * sub.score) / totalScore;
         }
+        require(totalPoolAllocated + sub.poolAllocation <= POOL_TOTAL, "GenesisPool: pool exhausted");
+        totalPoolAllocated += sub.poolAllocation;
 
         // Queue vesting: 3yr quarterly linear release via VestingManager
         IVestingManager(vestingManager).createVestingSchedule(

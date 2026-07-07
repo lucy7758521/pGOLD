@@ -108,7 +108,7 @@ describe("PriceDefense", function () {
 
     // Deploy PGOLDSwap
     const PGOLDSwap = await ethers.getContractFactory("PGOLDSwap");
-    swap = await PGOLDSwap.deploy(pgold.target, mockUSDC.target, feeRouter.target);
+    swap = await PGOLDSwap.deploy(pgold.target, mockUSDC.target, feeRouter.target, treasury.target);
     await swap.waitForDeployment();
 
     // Wire FeeRouter

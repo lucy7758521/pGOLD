@@ -192,7 +192,7 @@ contract PriceDefense is AccessControl, ReentrancyGuard {
         usdc.approve(address(swap), usdcAmount);
 
         // 在 PGOLDSwap 买入 pGOLD
-        uint256 pgoldBought = swap.buy(usdcAmount, 0); // 无滑点限制（稳定基金不计成本）
+        uint256 pgoldBought = swap.buy(usdcAmount, 0, block.timestamp + 300);
 
         // 销毁买入的 pGOLD（减少流通量）
         PGOLDToken(address(treasury.pGOLD())).transfer(address(0xdead), pgoldBought);

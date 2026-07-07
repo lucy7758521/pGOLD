@@ -4,6 +4,7 @@ pragma solidity ^0.8.26;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./RoleRegistry.sol";
 import "./PGOLDToken.sol";
 import "./ConfigManager.sol";
@@ -25,7 +26,7 @@ import "./ConfigManager.sol";
  *   运营经费由团队从外部解决，不从手续费中提取。
  *   ⚠️ 不可升级合约 — 部署后永久不变，用户信任基石
  */
-contract Treasury is AccessControl {
+contract Treasury is AccessControl, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // ──────────────────────────────────────────────
@@ -158,7 +159,7 @@ contract Treasury is AccessControl {
     function swapUSDCforPAXG(
         uint256 amountIn,
         uint256 amountOutMinimum
-    ) external onlyRole(RoleRegistry.TREASURER_ROLE) {
+    ) external onlyRole(RoleRegistry.TREASURER_ROLE) nonReentrant {
         require(amountIn > 0, "Treasury: zero amount");
         require(amountIn <= accountBalances[uint256(Account.GOLD_RESERVE)], "Treasury: insufficient GOLD_RESERVE");
 
@@ -243,7 +244,7 @@ contract Treasury is AccessControl {
      * @dev 与内部 swapUSDCforPAXG 不同：此函数接受用户 USDC 而不是 GOLD_RESERVE 余额
      *      仅 GenesisPool 可调用。
      */
-    function swapUSDCforPAXG(uint256 usdcAmount) external returns (uint256 paxgAmount) {
+    function swapUSDCforPAXG(uint256 usdcAmount) external nonReentrant returns (uint256 paxgAmount) {
         require(genesisPoolAuthorized[msg.sender], "Treasury: not genesis pool");
         require(usdcAmount > 0, "Treasury: zero amount");
 

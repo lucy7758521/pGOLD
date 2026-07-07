@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import "../../src/core/PGOLDToken.sol";
+import "../core/PGOLDToken.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -20,7 +20,7 @@ contract MockTreasuryForGenesis {
 
     constructor(address _pgold, address _paxg) {
         pgold = PGOLDToken(_pgold);
-        paxg = ERC20(_paxg);
+        paxg = IERC20(_paxg);
     }
 
     function swapUSDCforPAXG(uint256 usdcAmount) external returns (uint256 paxgAmount) {

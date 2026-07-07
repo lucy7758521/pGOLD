@@ -23,10 +23,11 @@ contract StakingRewards is AccessControl, ReentrancyGuard {
     // 结构
     // ──────────────────────────────────────────────
     struct Stake {
-        uint256 amount;          // 质押量
-        uint256 rewardDebt;      // 已结算奖励债务
-        uint256 lastStakeTime;   // 最后质押时间
-        uint256 accumulatedRewards; // 累计获得奖励
+        uint256 amount;                   // 质押量
+        uint256 userRewardPerTokenPaid;   // 上次结算时的 rewardPerToken 快照
+        uint256 rewards;                  // 待领取奖励
+        uint256 lastStakeTime;            // 最后质押时间
+        uint256 accumulatedRewards;       // 累计已领取奖励
     }
 
     // ──────────────────────────────────────────────
@@ -74,6 +75,10 @@ contract StakingRewards is AccessControl, ReentrancyGuard {
      * @dev 每年或质押量大幅变化时调用
      */
     function updateRewardRate() external {
+        // checkpoint existing accumulation before changing rate
+        rewardPerTokenStored = rewardPerToken();
+        lastUpdateTime = block.timestamp;
+
         if (totalStaked == 0) {
             rewardRate = 0;
         } else {
@@ -81,7 +86,6 @@ contract StakingRewards is AccessControl, ReentrancyGuard {
             uint256 apr = config.dividendAPR(); // 基点 (350 = 3.50%)
             rewardRate = (totalStaked * apr) / 10000 / 365 / 86400;
         }
-        lastUpdateTime = block.timestamp;
         emit RewardRateUpdated(rewardRate);
     }
 
@@ -120,10 +124,10 @@ contract StakingRewards is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     function claimReward() external nonReentrant returns (uint256 reward) {
         _updateReward(msg.sender);
-        reward = stakes[msg.sender].rewardDebt;
+        reward = stakes[msg.sender].rewards;
         require(reward > 0, "Staking: no reward");
 
-        stakes[msg.sender].rewardDebt = 0;
+        stakes[msg.sender].rewards = 0;
         stakes[msg.sender].accumulatedRewards += reward;
         totalRewardsDistributed += reward;
 
@@ -137,8 +141,7 @@ contract StakingRewards is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     function earned(address account) public view returns (uint256) {
         Stake storage s = stakes[account];
-        uint256 perToken = rewardPerToken();
-        return s.rewardDebt + (s.amount * (perToken - _userRewardPerTokenPaid(account))) / 1e18;
+        return s.rewards + (s.amount * (rewardPerToken() - s.userRewardPerTokenPaid)) / 1e18;
     }
 
     function rewardPerToken() public view returns (uint256) {
@@ -156,20 +159,12 @@ contract StakingRewards is AccessControl, ReentrancyGuard {
     // ──────────────────────────────────────────────
     // 内部
     // ──────────────────────────────────────────────
-    function _userRewardPerTokenPaid(address account) private view returns (uint256) {
-        // 用 debt 反推：rewardPerTokenStored + debt/amount ≈ previous checkpoint
-        // 简化处理
-        return 0; // 简化版总是在 _updateReward 时计算
-    }
-
     function _updateReward(address account) private {
         rewardPerTokenStored = rewardPerToken();
         lastUpdateTime = block.timestamp;
-
-        Stake storage s = stakes[account];
-        if (s.amount > 0) {
-            uint256 pending = (s.amount * rewardPerTokenStored) / 1e18;
-            s.rewardDebt = pending; // 累积到 debt
+        if (account != address(0)) {
+            stakes[account].rewards = earned(account);
+            stakes[account].userRewardPerTokenPaid = rewardPerTokenStored;
         }
     }
 }

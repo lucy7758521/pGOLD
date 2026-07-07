@@ -51,7 +51,7 @@ describe("PGOLDSwap", function () {
 
     // Deploy PGOLDSwap
     const PGOLDSwap = await ethers.getContractFactory("PGOLDSwap");
-    swap = await PGOLDSwap.deploy(pgold.target, usdcMock.target, feeRouter.target);
+    swap = await PGOLDSwap.deploy(pgold.target, usdcMock.target, feeRouter.target, treasury.target);
     await swap.waitForDeployment();
 
     // Wire FeeRouter → set swapContract so routeFee doesn't revert
@@ -106,7 +106,7 @@ describe("PGOLDSwap", function () {
       await usdcMock.connect(alice).approve(swap.target, usdcIn);
 
       const balBefore = await pgold.balanceOf(alice.address);
-      await swap.connect(alice).buy(usdcIn, 0);
+      await swap.connect(alice).buy(usdcIn, 0, 9999999999);
       const balAfter = await pgold.balanceOf(alice.address);
 
       expect(balAfter).to.be.gt(balBefore);
@@ -117,7 +117,7 @@ describe("PGOLDSwap", function () {
       await usdcMock.mint(bob.address, usdcIn);
       await usdcMock.connect(bob).approve(swap.target, usdcIn);
 
-      await expect(swap.connect(bob).buy(usdcIn, 0))
+      await expect(swap.connect(bob).buy(usdcIn, 0, 9999999999))
         .to.emit(swap, "Swapped");
     });
   });
@@ -129,13 +129,13 @@ describe("PGOLDSwap", function () {
       // Give bob some pGOLD
       await usdcMock.mint(alice.address, ethers.parseUnits("850", 6));
       await usdcMock.connect(alice).approve(swap.target, ethers.parseUnits("850", 6));
-      await swap.connect(alice).buy(ethers.parseUnits("850", 6), 0);
+      await swap.connect(alice).buy(ethers.parseUnits("850", 6), 0, 9999999999);
       const alicePGOLD = await pgold.balanceOf(alice.address);
       await pgold.connect(alice).transfer(bob.address, pgoldIn);
 
       await pgold.connect(bob).approve(swap.target, pgoldIn);
       const balBefore = await usdcMock.balanceOf(bob.address);
-      await swap.connect(bob).sell(pgoldIn, 0);
+      await swap.connect(bob).sell(pgoldIn, 0, 9999999999);
       const balAfter = await usdcMock.balanceOf(bob.address);
       expect(balAfter).to.be.gt(balBefore);
     });
@@ -153,7 +153,7 @@ describe("PGOLDSwap", function () {
       await usdcMock.connect(alice).approve(swap.target, usdcIn);
 
       const treasuryBalBefore = await usdcMock.balanceOf(treasury.target);
-      await swap.connect(alice).buy(usdcIn, 0);
+      await swap.connect(alice).buy(usdcIn, 0, 9999999999);
       const treasuryBalAfter = await usdcMock.balanceOf(treasury.target);
       // 手续费直接转到 Treasury（FeeRouter 只做记账）
       expect(treasuryBalAfter).to.be.gt(treasuryBalBefore);
@@ -166,7 +166,7 @@ describe("PGOLDSwap", function () {
       const usdcIn = ethers.parseUnits("85", 6);
       await usdcMock.mint(bob.address, usdcIn);
       await usdcMock.connect(bob).approve(swap.target, usdcIn);
-      await expect(swap.connect(bob).buy(usdcIn, 0)).to.not.be.reverted;
+      await expect(swap.connect(bob).buy(usdcIn, 0, 9999999999)).to.not.be.reverted;
     });
 
     it("minOut 过高时 revert", async function () {
@@ -174,7 +174,7 @@ describe("PGOLDSwap", function () {
       await usdcMock.mint(alice.address, usdcIn);
       await usdcMock.connect(alice).approve(swap.target, usdcIn);
       await expect(
-        swap.connect(alice).buy(usdcIn, ethers.parseEther("100000"))
+        swap.connect(alice).buy(usdcIn, ethers.parseEther("100000"), 9999999999)
       ).to.be.reverted;
     });
   });
