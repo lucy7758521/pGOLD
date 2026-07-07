@@ -42,13 +42,17 @@ contract GoldOracle is AccessControl {
     // Chainlink Price Feeds（可更新）
     // ──────────────────────────────────────────────
     IAggregatorV3 public goldFeed;     // XAU/USD
-    IAggregatorV3 public paxgFeed;     // PAXG/USD（或 PAXG/ETH，需二次计算）
+    IAggregatorV3 public paxgFeed;     // PAXG/USD 直接 feed（可选）
+    IAggregatorV3 public paxgEthFeed;  // PAXG/ETH feed（两步计算模式）
+    IAggregatorV3 public ethUsdFeed;   // ETH/USD feed（两步计算模式）
+    bool public useTwoStepPAXG;        // true = PAXG/ETH × ETH/USD，false = 直接 PAXG/USD
 
     // ──────────────────────────────────────────────
     // 配置
     // ──────────────────────────────────────────────
     uint256 public constant MAX_STALENESS = 1 hours;    // 最大数据陈旧时间
     uint256 public constant MIN_UPDATE_INTERVAL = 5 minutes; // 最小更新间隔
+    uint256 public constant MAX_PRICE_CHANGE_BPS = 1000; // 单次最大价格变化 10%
 
     uint256 public lastGoldUpdate;
     uint256 public lastPAXGUpdate;
@@ -71,9 +75,10 @@ contract GoldOracle is AccessControl {
         treasury = Treasury(_treasury);
         goldFeed = IAggregatorV3(_goldFeed);
         paxgFeed = IAggregatorV3(_paxgFeed);
+        useTwoStepPAXG = false;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(RoleRegistry.GOLD_ORACLE_ROLE, msg.sender);
-        _grantRole(RoleRegistry.GOLD_ORACLE_ROLE, address(this)); // for updateAll() internal delegation
+        _grantRole(RoleRegistry.GOLD_ORACLE_ROLE, address(this));
     }
 
     // ──────────────────────────────────────────────
@@ -90,19 +95,19 @@ contract GoldOracle is AccessControl {
         require(block.timestamp - updatedAt <= MAX_STALENESS, "Oracle: stale gold price");
 
         uint8 feedDecimals = goldFeed.decimals();
+        uint256 price = _to8(uint256(answer), feedDecimals);
 
-        // 统一为 8 decimals
-        uint256 price;
-        if (feedDecimals <= 8) {
-            price = uint256(answer) * (10 ** (8 - feedDecimals));
-        } else {
-            price = uint256(answer) / (10 ** (feedDecimals - 8));
+        // 价格变化幅度检查（跳过首次设置）
+        if (goldPriceUSD > 0) {
+            uint256 maxChange = (goldPriceUSD * MAX_PRICE_CHANGE_BPS) / 10000;
+            require(
+                price >= goldPriceUSD - maxChange && price <= goldPriceUSD + maxChange,
+                "Oracle: gold price change exceeds 10%"
+            );
         }
 
         goldPriceUSD = price;
         lastGoldUpdate = block.timestamp;
-
-        // 将 XAU/oz 转为 USD/g 写入 Treasury
         // 1 oz = 31.1035g (×10000 = 311035)
         // goldPriceGram = price(per oz, 8dec) / 31.1035 → (price * 10000) / 311035
         uint256 goldPriceGram = (price * 10000) / 311035;
@@ -113,28 +118,57 @@ contract GoldOracle is AccessControl {
 
     /**
      * @notice 从 Chainlink 拉取最新 PAXG 价格并写入 Treasury
+     * @dev 支持两种模式：
+     *   1. 直接模式：paxgFeed 返回 PAXG/USD
+     *   2. 两步模式：paxgEthFeed(PAXG/ETH) × ethUsdFeed(ETH/USD) → PAXG/USD
+     *      Arbitrum 主网无 PAXG/USD 直接 feed，必须用两步模式
      */
     function updatePAXGPrice() external onlyRole(RoleRegistry.GOLD_ORACLE_ROLE) {
         require(block.timestamp >= lastPAXGUpdate + MIN_UPDATE_INTERVAL, "Oracle: too frequent");
 
-        (, int256 answer, , uint256 updatedAt, ) = paxgFeed.latestRoundData();
-        require(answer > 0, "Oracle: invalid PAXG price");
-        require(block.timestamp - updatedAt <= MAX_STALENESS, "Oracle: stale PAXG price");
-
-        uint8 feedDecimals = paxgFeed.decimals();
-
         uint256 price;
-        if (feedDecimals <= 8) {
-            price = uint256(answer) * (10 ** (8 - feedDecimals));
+
+        if (useTwoStepPAXG) {
+            require(address(paxgEthFeed) != address(0), "Oracle: paxgEthFeed not set");
+            require(address(ethUsdFeed)  != address(0), "Oracle: ethUsdFeed not set");
+
+            (, int256 paxgEth, , uint256 paxgEthAt, ) = paxgEthFeed.latestRoundData();
+            (, int256 ethUsd, , uint256 ethUsdAt,  ) = ethUsdFeed.latestRoundData();
+
+            require(paxgEth > 0, "Oracle: invalid PAXG/ETH price");
+            require(ethUsd  > 0, "Oracle: invalid ETH/USD price");
+            require(block.timestamp - paxgEthAt <= MAX_STALENESS, "Oracle: stale PAXG/ETH");
+            require(block.timestamp - ethUsdAt  <= MAX_STALENESS, "Oracle: stale ETH/USD");
+
+            uint8 paxgEthDec = paxgEthFeed.decimals();
+            uint8 ethUsdDec  = ethUsdFeed.decimals();
+
+            // 统一为 18 decimals 再相乘，结果截为 8 decimals
+            // paxgEth(18dec) × ethUsd(18dec) / 1e18 → paxgUsd(18dec) → /1e10 → 8dec
+            uint256 paxgEth18 = _to18(uint256(paxgEth), paxgEthDec);
+            uint256 ethUsd18  = _to18(uint256(ethUsd),  ethUsdDec);
+            price = (paxgEth18 * ethUsd18) / 1e18 / 1e10;
         } else {
-            price = uint256(answer) / (10 ** (feedDecimals - 8));
+            require(address(paxgFeed) != address(0), "Oracle: paxgFeed not set");
+
+            (, int256 answer, , uint256 updatedAt, ) = paxgFeed.latestRoundData();
+            require(answer > 0, "Oracle: invalid PAXG price");
+            require(block.timestamp - updatedAt <= MAX_STALENESS, "Oracle: stale PAXG price");
+
+            price = _to8(uint256(answer), paxgFeed.decimals());
+        }
+
+        if (paxgPriceUSD > 0) {
+            uint256 maxChange = (paxgPriceUSD * MAX_PRICE_CHANGE_BPS) / 10000;
+            require(
+                price >= paxgPriceUSD - maxChange && price <= paxgPriceUSD + maxChange,
+                "Oracle: PAXG price change exceeds 10%"
+            );
         }
 
         paxgPriceUSD = price;
         lastPAXGUpdate = block.timestamp;
-
         treasury.updatePAXGPrice(price);
-
         emit PAXGPriceUpdated(price, block.timestamp);
     }
 
@@ -159,6 +193,34 @@ contract GoldOracle is AccessControl {
         require(_feed != address(0), "Oracle: zero feed");
         emit FeedUpdated(address(paxgFeed), _feed, "PAXG");
         paxgFeed = IAggregatorV3(_feed);
+    }
+
+    // 配置两步模式：PAXG/ETH × ETH/USD
+    function setTwoStepPAXGFeeds(address _paxgEthFeed, address _ethUsdFeed) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_paxgEthFeed != address(0), "Oracle: zero paxgEthFeed");
+        require(_ethUsdFeed  != address(0), "Oracle: zero ethUsdFeed");
+        emit FeedUpdated(address(paxgEthFeed), _paxgEthFeed, "PAXG/ETH");
+        emit FeedUpdated(address(ethUsdFeed),  _ethUsdFeed,  "ETH/USD");
+        paxgEthFeed  = IAggregatorV3(_paxgEthFeed);
+        ethUsdFeed   = IAggregatorV3(_ethUsdFeed);
+        useTwoStepPAXG = true;
+    }
+
+    function disableTwoStepPAXG() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        useTwoStepPAXG = false;
+    }
+
+    // ──────────────────────────────────────────────
+    // 内部辅助
+    // ──────────────────────────────────────────────
+    function _to8(uint256 value, uint8 dec) internal pure returns (uint256) {
+        if (dec <= 8) return value * (10 ** (8 - dec));
+        return value / (10 ** (dec - 8));
+    }
+
+    function _to18(uint256 value, uint8 dec) internal pure returns (uint256) {
+        if (dec <= 18) return value * (10 ** (18 - dec));
+        return value / (10 ** (dec - 18));
     }
 
     // ──────────────────────────────────────────────

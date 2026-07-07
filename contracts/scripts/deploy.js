@@ -19,11 +19,15 @@ async function main() {
   console.log("========================================\n");
 
   // ── 外部地址（优先环境变量，后备硬编码） ──
-  const USDC_ADDRESS = process.env.USDC_ADDRESS || "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
-  const PAXG_ADDRESS = process.env.PAXG_ADDRESS || "0x_";  // 部署前必须配置！
-  const UNISWAP_ROUTER = process.env.UNISWAP_ROUTER || "0xE592427A0AEce92De3Edee1F18E0157C05861564";
-  const GOLD_FEED = process.env.CHAINLINK_XAU_USD || "0x_";   // 部署前必须配置！
-  const PAXG_FEED = process.env.CHAINLINK_PAXG_USD || "0x_";  // 部署前必须配置！
+  const USDC_ADDRESS   = process.env.USDC_ADDRESS        || "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+  const PAXG_ADDRESS   = process.env.PAXG_ADDRESS        || "0x_";  // 部署前必须配置！
+  const UNISWAP_ROUTER = process.env.UNISWAP_ROUTER      || "0xE592427A0AEce92De3Edee1F18E0157C05861564";
+  const GOLD_FEED      = process.env.CHAINLINK_XAU_USD   || "0x_";  // 部署前必须配置！
+  const PAXG_FEED      = process.env.CHAINLINK_PAXG_USD  || "0x_";  // 可选，两步模式时不需要
+  const PAXG_ETH_FEED  = process.env.CHAINLINK_PAXG_ETH  || "0x_";  // 两步模式：PAXG/ETH
+  const ETH_USD_FEED   = process.env.CHAINLINK_ETH_USD   || "0x_";  // 两步模式：ETH/USD
+  // 两步模式：Arbitrum 主网无 PAXG/USD 直接 feed，用 PAXG/ETH × ETH/USD 计算
+  const USE_TWO_STEP_PAXG = PAXG_ETH_FEED !== "0x_" && ETH_USD_FEED !== "0x_";
 
   // ⚠️ 部署前守卫检查
   if (hre.network.name !== "hardhat") {
@@ -218,6 +222,14 @@ async function main() {
   await oracle.waitForDeployment();
   deployed.GoldOracle = await oracle.getAddress();
   console.log("  ✅ GoldOracle:", deployed.GoldOracle);
+
+  // 主网：配置两步模式 PAXG/ETH × ETH/USD
+  if (USE_TWO_STEP_PAXG) {
+    await oracle.setTwoStepPAXGFeeds(PAXG_ETH_FEED, ETH_USD_FEED);
+    console.log("  ✅ Two-step PAXG price mode: PAXG/ETH ×ETH/USD");
+    console.log("     PAXG/ETH feed:", PAXG_ETH_FEED);
+    console.log("     ETH/USD feed: ", ETH_USD_FEED);
+  }
 
   // 授予 Oracle GOLD_ORACLE_ROLE
   const GOLD_ORACLE_ROLE = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("GOLD_ORACLE_ROLE"));
